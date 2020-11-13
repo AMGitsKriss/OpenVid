@@ -1,0 +1,9 @@
+﻿@model List<Database.Models.Tag>
+
+<b>Tags</b>
+<ul>
+    @foreach (var tag in Model)
+    {
+        <li>@tag.VideoTag.Count() - @Html.ActionLink(@tag.Name, "Index", "Search", new { SearchString = tag.Name })</li>
+    }
+</ul>

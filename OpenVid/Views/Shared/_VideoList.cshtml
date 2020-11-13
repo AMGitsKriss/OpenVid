@@ -1,0 +1,8 @@
+﻿@model List<Database.Models.Video>
+
+<div class="row">
+    @foreach (var video in Model)
+    {
+        <a href="@Url.Action("Index", "Play", new { md5 = video.Md5 })" data-toggle="tooltip"  title="@video.Name"><div class="tile"><img src="~/thumbnail/@(video.Md5).jpg" onerror="this.onerror = null; this.src = '/img/thumb.png';"/><br /><b>@video.Name</b></div></a>
+    }
+</div>

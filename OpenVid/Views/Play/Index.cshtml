@@ -1,0 +1,14 @@
+﻿@model OpenVid.Models.Play.PlayViewModel
+
+<div class="video-container">
+    <video width="1920" height="720" controls>
+        <source src="~/video/@Model.Video.Md5.@Model.Video.Extension" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+</div>
+
+<div class="container">
+    <div style="width:1920px;">
+        @{await Html.RenderPartialAsync("_UpdateForm", Model.Update);}
+    </div>
+</div>

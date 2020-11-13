@@ -1,0 +1,15 @@
+﻿@model OpenVid.Models.Search.SearchViewModel
+
+<div class="container">
+    <div class="row">
+        <div class="col-2 border-right">
+            @{await Html.RenderPartialAsync("_TagList", Model.Tags);}
+        </div>
+        <div class="col-10">
+            <h3 class="row">Search Results</h3>
+
+            @{await Html.RenderPartialAsync("_VideoList", Model.Videos);}
+
+            </div>
+    </div>
+</div>

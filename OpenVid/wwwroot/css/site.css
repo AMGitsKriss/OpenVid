@@ -1,0 +1,18 @@
+﻿.container {
+    max-width: initial;
+}
+
+.video-container {
+    background-color: #111;
+}
+
+    .video-container > video {
+        margin: 0 auto;
+    }
+
+.tile {
+    margin: 10px;
+    max-width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
