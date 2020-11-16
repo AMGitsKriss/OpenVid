@@ -338,3 +338,7 @@ ASALocalRun/
 
 # BeatPulse healthcheck temp database
 healthchecksdb
+
+# exclude everything
+OpenVid/wwwroot/video/*
+OpenVid/wwwroot/thumbnail/*

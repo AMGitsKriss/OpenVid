@@ -1,13 +1,16 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.Extensions.Configuration;
 
 namespace Database.Models
 {
     public partial class OpenVidContext : DbContext
     {
-        public OpenVidContext()
+        private IConfiguration _configuration;
+        public OpenVidContext(IConfiguration configuration)
         {
+            _configuration = configuration;
         }
 
         public OpenVidContext(DbContextOptions<OpenVidContext> options)
@@ -23,8 +26,7 @@ namespace Database.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer("Server=orion;Database=OpenVid;Trusted_Connection=True;");
+                optionsBuilder.UseSqlServer(_configuration["Database:ConnectionString"]);
             }
         }
 

@@ -1,6 +1,7 @@
 ﻿using Database.Extensions;
 using Database.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,14 +13,14 @@ namespace Database
     {
         OpenVidContext _context;
 
-        public Videos()
+        public Videos(IConfiguration configuration)
         {
-            _context = new OpenVidContext();
+            _context = new OpenVidContext(configuration);
         }
 
-        public List<Video> GetAllVideos()
+        public IQueryable<Video> GetAllVideos()
         {
-            return _context.Video.OrderByDescending(x => x.Id).OrderBy(x => Guid.NewGuid()).Take(100).ToList();
+            return _context.Video.Include(x => x.VideoTag).ThenInclude(x => x.Video).OrderByDescending(x => x.Id).OrderBy(x => Guid.NewGuid());
         }
 
         public Video GetVideo(string md5)
@@ -32,20 +33,28 @@ namespace Database
             return _context.Video.FirstOrDefault(x => x.Id == id);
         }
 
-        public List<Tag> GetAllTags()
+        public IQueryable<Tag> GetAllTags()
         {
-            var result = _context.Tag.Include(x => x.VideoTag).ThenInclude(x => x.Video).Where(x => x.VideoTag.Count() > 0).OrderByDescending(x => x.VideoTag.Count()).ThenBy(x => x.Name).ToList();
+            var result = _context.Tag.Include(x => x.VideoTag).ThenInclude(x => x.Video).Where(x => x.VideoTag.Count() > 0).OrderByDescending(x => x.VideoTag.Count()).ThenBy(x => x.Name);
             return result;
         }
 
-        public List<Video> Search(string search)
+        public IQueryable<VideoTag> VideosByTag()
+        {
+            var result = _context.VideoTag.Include(x => x.Video);
+            return result;
+        }
+
+        public IQueryable<Video> Search(string search)
         {
             var query = search.Trim().ToLower().Split(" ");
             var result = (from t in _context.Tag
                           join vt in _context.VideoTag on t.Id equals vt.TagId
                           join v in _context.Video on vt.VideoId equals v.Id
                           where query.Contains(t.Name.ToLower()) || query.Contains(v.Name)
-                          select v).DistinctBy(x => x.Id).ToList();
+                          group v by v.Id into g
+                          from vg in g
+                          select vg);
             return result;
         }
 
@@ -72,7 +81,7 @@ namespace Database
             }
         }
 
-        public List<Tag> DefineTags(List<string> tags)
+        public IQueryable<Tag> DefineTags(List<string> tags)
         {
             try
             {
@@ -89,7 +98,7 @@ namespace Database
 
                 _context.SaveChanges();
 
-                return _context.Tag.Where(x => tags.Contains(x.Name)).ToList();
+                return _context.Tag.Where(x => tags.Contains(x.Name));
             }
             catch (Exception ex)
             {
@@ -97,7 +106,7 @@ namespace Database
             }
         }
 
-        public List<Tag> SaveTagsForVideo(Video video, List<Tag> tags)
+        public IEnumerable<Tag> SaveTagsForVideo(Video video, IEnumerable<Tag> tags)
         {
             try
             {

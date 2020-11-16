@@ -1,5 +1,6 @@
 ﻿using Database;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using OpenVid.Models.Play;
 using OpenVid.Models.Upload;
@@ -10,20 +11,20 @@ namespace OpenVid.Controllers
     public class PlayController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private Videos _repo;
 
-        public PlayController(ILogger<HomeController> logger)
+        public PlayController(ILogger<HomeController> logger, Videos repo)
         {
             _logger = logger;
+            _repo = repo;
         }
 
         [Route("[controller]/{md5}")]
         public IActionResult Index(string md5)
         {
-            Videos video = new Videos();
-
             PlayViewModel viewModel = new PlayViewModel()
             {
-                Video = video.GetVideo(md5)
+                Video = _repo.GetVideo(md5)
             };
 
             if (viewModel.Video == null) return NotFound();

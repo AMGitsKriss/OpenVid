@@ -15,16 +15,19 @@ using MediaToolkit.Model;
 using MediaToolkit;
 using MediaToolkit.Options;
 using TagLib;
+using Microsoft.Extensions.Configuration;
 
 namespace OpenVid.Controllers
 {
     public class UploadController : Controller
     {
         private IWebHostEnvironment _hostingEnvironment;
+        private Videos _repo;
 
-        public UploadController(IWebHostEnvironment environment)
+        public UploadController(IWebHostEnvironment environment, Videos repo)
         {
             _hostingEnvironment = environment;
+            _repo = repo;
         }
 
         public IActionResult Index()
@@ -49,14 +52,13 @@ namespace OpenVid.Controllers
         [HttpPost]
         public IActionResult Update(UpdateFormViewModel viewModel)
         {
-            Videos video = new Videos();
-            Video toSave = video.GetVideo(viewModel.Md5);
+            Video toSave = _repo.GetVideo(viewModel.Md5);
             if (toSave == null)
                 return RedirectToAction("Index");
 
             toSave.Name = viewModel.Name;
-            var vid = video.SaveVideo(toSave);
-            var tag = video.SaveTagsForVideo(toSave, video.DefineTags((viewModel.Tags?.Trim() ?? string.Empty).Split(new char[] { ' ', '\n' }).ToList()));
+            var vid = _repo.SaveVideo(toSave);
+            var tag = _repo.SaveTagsForVideo(toSave, _repo.DefineTags((viewModel.Tags?.Trim() ?? string.Empty).Split(new char[] { ' ', '\n' }).ToList()));
 
             return RedirectToAction("Index", "Play", new { md5 = toSave.Md5 });
         }
@@ -71,43 +73,6 @@ namespace OpenVid.Controllers
                 return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
             }
         }
-
-        /*private TagLib.Properties GetMetadata(string location)
-        {
-            try
-            {
-                TagLib.File f = TagLib.File.Create(location);
-                return f.Properties;
-            }
-            catch (TagLib.UnsupportedFormatException)
-            {
-                return new TagLib.Properties();
-            }
-            catch (Exception)
-            {
-                return new TagLib.Properties();
-            }
-        }*/
-
-        /*private MediaProperties GetMetadata_MediaToolKit(string location)
-        {
-            var inputFile = new MediaFile { Filename = location };
-
-            using (var engine = new Engine())
-            {
-                engine.GetMetadata(inputFile);
-
-                var dimensions = inputFile.Metadata.VideoData.FrameSize.Split("x");
-                MediaProperties result = new MediaProperties()
-                {
-                    Duration = inputFile.Metadata.Duration,
-                    Width = int.Parse(dimensions[0]),
-                    Height = int.Parse(dimensions[1])
-                };
-                return result;
-            }
-        }*/
-
         private MediaProperties GetMetadata(string location)
         {
             string basePath = Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar;
@@ -170,10 +135,9 @@ namespace OpenVid.Controllers
             if (!file.ContentType.Contains("video") || file.Length == 0)
                 return PartialView("_UploadError", "Invalid File");
 
-            Videos video = new Videos();
             try
             {
-                Video toSave = await SaveVideo(video, file);
+                Video toSave = await SaveVideo(_repo, file);
 
                 UpdateFormViewModel viewModel = new UpdateFormViewModel()
                 {
@@ -201,8 +165,7 @@ namespace OpenVid.Controllers
             if (!file.ContentType.Contains("video") || file.Length == 0)
                 viewModel = new UploadResultViewModel() { Name = "Error" };
 
-            Videos video = new Videos();
-            Video toSave = await SaveVideo(video, file);
+            Video toSave = await SaveVideo(_repo, file);
 
             if (toSave == null)
                 viewModel = new UploadResultViewModel() { Name = "Video already exists!" };

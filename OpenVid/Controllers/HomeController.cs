@@ -1,6 +1,8 @@
 ﻿using System.Diagnostics;
+using System.Linq;
 using Database;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using OpenVid.Models;
 using OpenVid.Models.Home;
@@ -10,20 +12,20 @@ namespace OpenVid.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private Videos _repo;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, Videos repo)
         {
             _logger = logger;
+            _repo = repo;
         }
 
         public IActionResult Index()
         {
-            Videos video = new Videos();
-
             HomeViewModel viewModel = new HomeViewModel()
             {
-                Videos = video.GetAllVideos(),
-                Tags = video.GetAllTags()
+                Videos = _repo.GetAllVideos().Take(100).ToList(),
+                Tags = _repo.GetAllTags().ToList()
             };
 
             return View(viewModel);
