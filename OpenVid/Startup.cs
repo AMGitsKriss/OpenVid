@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Search.Filters;
+using Upload;
 
 namespace OpenVid
 {
@@ -30,6 +31,7 @@ namespace OpenVid
 
             services.AddTransient<Videos, Videos>();
             services.AddSingleton<Search.Search, Search.Search>();
+            services.AddSingleton<Save, Save>();
 
             services
               .AddSingleton<IFilter, TagFilter>()

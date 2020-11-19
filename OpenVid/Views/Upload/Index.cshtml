@@ -14,29 +14,31 @@
                         var fileUpload = $("#uploadForm>input").get(0);
                         var files = fileUpload.files;
                         var multipleFiles = files.length > 1;
-                        var promises = [];
-
-                        for (var i = 0; i < files.length; i++) {
-                            var formData = new FormData();
-                            formData.append('file', files[i]);
-                            formData.append('multipleFiles', multipleFiles);
-
-                            promises.push($.ajax({
-                                type: 'POST',
-                                url: '@Url.Action("Upload", "Upload")',
-                                data: formData,
-                                processData: false,
-                                contentType: false,
-                                success: function (data) {
-                                    $('#updateForm').append(data);
-                                },
-                                error: function (error) {
-                                    //stub
-                                }
-                            }));
-                        }
-                        Promise.all(promises);
+                        pushVideo(files, multipleFiles, 0)
                     });
+
+                    function pushVideo(files, multipleFiles, i) {
+                        var formData = new FormData();
+                        formData.append('file', files[i]);
+                        formData.append('multipleFiles', multipleFiles);
+
+                        $.ajax({
+                            type: 'POST',
+                            url: '@Url.Action("Upload", "Upload")',
+                            data: formData,
+                            processData: false,
+                            contentType: false,
+                            success: function (data) {
+                                $('#updateForm').append(data);
+                                if (i < files.length-1) {
+                                    pushVideo(files, multipleFiles, i+1);
+                                }
+                            },
+                            error: function (error) {
+                                $('#updateForm').append("<p>AJAX Error!</p>");
+                            }
+                        });
+                    }
                 </script>
             </div>
 
