@@ -20,7 +20,7 @@ namespace Database
 
         public IQueryable<Video> GetAllVideos()
         {
-            return _context.Video.Include(x => x.VideoTag).ThenInclude(x => x.Video).OrderByDescending(x => x.Id).OrderBy(x => Guid.NewGuid());
+            return _context.Video.Include(x => x.VideoTag).ThenInclude(x => x.Video).OrderByDescending(x => x.Id);
         }
 
         public Video GetVideo(string md5)
@@ -112,7 +112,7 @@ namespace Database
             {
                 var tagIDs = tags.Select(x => x.Id);
                 var removeTags = _context.VideoTag.Where(x => video.Id == x.VideoId && !tagIDs.Contains(x.TagId)).ToList();
-                var existingTags = _context.VideoTag.Where(x => video.Id == x.VideoId && tagIDs.Contains(x.TagId)).Select(x => x.TagId);
+                var existingTags = _context.VideoTag.Where(x => video.Id == x.VideoId && tagIDs.Contains(x.TagId)).Select(x => x.TagId).ToList();
 
                 _context.VideoTag.RemoveRange(removeTags);
 

@@ -27,7 +27,13 @@ namespace Search
             foreach (var item in parameters)
             {
                 var filter = FilterAttribute.GetFilter(_filters, item.Type);
-                results.AddRange(filter.Filter(item));
+
+                var paramResult = filter.Filter(item);
+
+                if (!results.Any())
+                    results.AddRange(paramResult);
+                else
+                    results = results.Intersect(paramResult, new Comparer()).ToList();
             }
             return results;
         }
@@ -35,7 +41,7 @@ namespace Search
         public List<SearchParameter> Deconstruct(string searchQuery)
         {
             searchQuery = searchQuery.ToLower().Trim();
-            string[] splitQuery = searchQuery.Split(new char[] { ' ', '\n' }, 2);
+            string[] splitQuery = searchQuery.Split(new char[] { ' ', '\n' });
             splitQuery = splitQuery.Select(x => x.Trim()).Where(x => !string.IsNullOrWhiteSpace(x)).ToArray();
 
             List<SearchParameter> parameters = new List<SearchParameter>();
@@ -44,9 +50,12 @@ namespace Search
                 string[] pair = item.Split(':', 2);
                 var type = ParameterType.General;
                 var value = pair[0];
+                var invert = false;
 
                 if (pair.Length == 2)
                 {
+                    invert = pair[0].IndexOf('-') == 0 ? true : false;
+                    pair[0] = pair[0].Trim('-');
                     type = (ParameterType)Enum.Parse(typeof(ParameterType), pair[0], true);
                     value = pair[1];
                 }
@@ -54,7 +63,8 @@ namespace Search
                 var p = new SearchParameter()
                 {
                     Type = type,
-                    Value = value
+                    Value = value, 
+                    InvertSearch = invert
                 };
                 parameters.Add(p);
             }
@@ -67,7 +77,7 @@ namespace Search
     {
         public ParameterType Type { get; set; }
         public string Value { get; set; }
-        public string ConnectionString { get; set; }
+        public bool InvertSearch { get; set; }
     }
 
     public enum ParameterType

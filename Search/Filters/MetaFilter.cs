@@ -27,13 +27,13 @@ namespace Search.Filters
 
         private List<Video> Untagged()
         {
-            var result = _repo.GetAllVideos().Where(x => x.VideoTag.Count() == 0).Take(200).ToList();
+            var result = _repo.GetAllVideos().Where(x => x.VideoTag.Count() == 0).ToList();
             return result;
         }
 
         private List<Video> Tagged()
         {
-            var result = _repo.GetAllVideos().Where(x => x.VideoTag.Count() != 0).Take(200).ToList();
+            var result = _repo.GetAllVideos().Where(x => x.VideoTag.Count() != 0).ToList();
             return result;
         }
 

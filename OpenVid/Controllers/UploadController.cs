@@ -39,13 +39,20 @@ namespace OpenVid.Controllers
         [DisableRequestSizeLimit]
         public async Task<IActionResult> Upload(IFormFile file, bool multipleFiles)
         {
-            if (multipleFiles)
+            try
             {
-                return await MultiUpload(file);
+                if (multipleFiles)
+                {
+                    return await MultiUpload(file);
+                }
+                else
+                {
+                    return await SingleUpload(file);
+                }
             }
-            else
+            catch (Exception ex)
             {
-                return await SingleUpload(file);
+                return PartialView("_UploadError", ex.Message);
             }
         }
 
@@ -210,6 +217,10 @@ namespace OpenVid.Controllers
                     Size = file.Length
                 };
                 toSave = video.SaveVideo(toSave);
+            }
+            else
+            {
+                toSave.Name = $"Already Exists! - {toSave.Name}";
             }
             return toSave;
         }

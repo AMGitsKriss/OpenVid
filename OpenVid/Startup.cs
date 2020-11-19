@@ -28,7 +28,7 @@ namespace OpenVid
             services.AddControllersWithViews();
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
 
-            services.AddSingleton<Videos, Videos>();
+            services.AddTransient<Videos, Videos>();
             services.AddSingleton<Search.Search, Search.Search>();
 
             services

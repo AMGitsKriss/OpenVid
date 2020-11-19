@@ -4,6 +4,6 @@
 <ul>
     @foreach (var tag in Model)
     {
-        <li>@tag.VideoTag.Count() - @Html.ActionLink(@tag.Name, "Index", "Search", new { SearchString = tag.Name })</li>
+        <li>@tag.VideoTag.Count() - @Html.ActionLink(@tag.Name, "Index", "Search", new { SearchString = $"tag:{tag.Name}" })</li>
     }
 </ul>

@@ -17,13 +17,13 @@ namespace Search.Filters
 
         public List<Video> Filter(SearchParameter parameter)
         {
-            return Tag(parameter.Value);
+            return Tag(parameter.Value, parameter.InvertSearch);
         }
 
-        public List<Video> Tag(string tag)
+        public List<Video> Tag(string tag, bool invert)
         {
             var tagObject = _repo.GetAllTags().FirstOrDefault(x => x.Name.ToLower() == tag.ToLower());
-            var result = _repo.VideosByTag().Where(x => x.TagId == tagObject.Id).Select(x=>x.Video).ToList();
+            var result = _repo.VideosByTag().Where(x => (x.TagId == tagObject.Id) == !invert).Select(x=>x.Video).ToList();
             return result;
         }
     }
