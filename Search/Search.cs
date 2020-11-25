@@ -22,6 +22,9 @@ namespace Search
         {
             var parameters = Deconstruct(searchQuery);
 
+            var order = parameters.FirstOrDefault(x => x.Type == ParameterType.Order);
+            parameters.Remove(order);
+
             var results = new List<Video>();
 
             foreach (var item in parameters)
@@ -35,6 +38,10 @@ namespace Search
                 else
                     results = results.Intersect(paramResult, new Comparer()).ToList();
             }
+
+            if (order?.Value == "random")
+                results = results.OrderBy(x => Guid.NewGuid()).ToList();
+
             return results;
         }
 
@@ -86,6 +93,7 @@ namespace Search
         Tag,
         Meta,
         MinDuration,
-        MaxDuration
+        MaxDuration,
+        Order
     }
 }

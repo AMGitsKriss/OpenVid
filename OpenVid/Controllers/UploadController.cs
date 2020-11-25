@@ -28,7 +28,8 @@ namespace OpenVid.Controllers
         }
 
         [HttpPost]
-        [DisableRequestSizeLimit]
+        [RequestSizeLimit(10L * 1024L * 1024L * 1024L)]
+        [RequestFormLimits(MultipartBodyLengthLimit = 10L * 1024L * 1024L * 1024L)]
         public async Task<IActionResult> Upload(IFormFile file, bool multipleFiles)
         {
             try

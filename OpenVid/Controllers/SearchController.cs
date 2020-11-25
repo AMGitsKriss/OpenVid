@@ -23,13 +23,12 @@ namespace OpenVid.Controllers
         [Route("[Controller]/{searchString}")]
         public IActionResult Index(string searchString)
         {
-            SearchViewModel viewModel = new SearchViewModel()
-            {
-                //Videos = video.Search(searchString),
-                Videos = _search.Query(searchString),
-                Tags = _repo.GetAllTags().ToList(),
-                SearchString = searchString
-            };
+            SearchViewModel viewModel = new SearchViewModel();
+            viewModel.Videos = _search.Query(searchString);
+            var videoIDs = viewModel.Videos.Select(x => x.Id).ToList();
+            var tagIDs = _repo.GetAllVideos().Where(x => videoIDs.Contains(x.Id)).SelectMany(x => x.VideoTag).Select(x => x.TagId).ToList();
+            viewModel.Tags = _repo.GetAllTags().Where(x => tagIDs.Contains(x.Id)).ToList();
+            viewModel.SearchString = searchString;
 
             return View(viewModel);
         }
