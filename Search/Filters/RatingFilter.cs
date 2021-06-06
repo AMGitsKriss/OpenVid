@@ -28,7 +28,7 @@ namespace Search.Filters
             List<Video> result;
             if (isNullRating && !invert)
             {
-                result = _repo.GetAllVideos().ToList();
+                result = _repo.GetAllVideos().Where(x => x.RatingId == null).ToList();
             }
             else if (isNullRating && invert)
             {
