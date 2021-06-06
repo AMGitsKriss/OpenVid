@@ -18,9 +18,14 @@ namespace Database
             _context = new OpenVidContext(configuration);
         }
 
+        public IQueryable<Video> GetDeletedVideos()
+        {
+            return _context.Video.Include(x => x.VideoTag).Where(v => v.IsDeleted).OrderByDescending(x => x.Id);
+        }
+
         public IQueryable<Video> GetAllVideos()
         {
-            return _context.Video.Include(x => x.VideoTag).ThenInclude(x => x.Video).OrderByDescending(x => x.Id);
+            return _context.Video.Include(x => x.VideoTag).ThenInclude(x => x.Video).ThenInclude(x => x.Rating).Where(v => !v.IsDeleted).OrderByDescending(x => x.Id);
         }
 
         public Video GetVideo(string md5)
@@ -37,6 +42,11 @@ namespace Database
         {
             var result = _context.Tag.Include(x => x.VideoTag).ThenInclude(x => x.Video).Where(x => x.VideoTag.Count() > 0).OrderByDescending(x => x.VideoTag.Count()).ThenBy(x => x.Name);
             return result;
+        }
+
+        public List<Ratings> GetRatings()
+        {
+            return _context.Ratings.ToList();
         }
 
         public IQueryable<VideoTag> VideosByTag()
@@ -79,6 +89,24 @@ namespace Database
             {
                 return null;
             }
+        }
+
+        public bool DeleteVideo(string md5)
+        {
+            Video video = GetVideo(md5);
+
+            if (video.IsDeleted)
+            {
+                // TODO - Hard Delete baby!
+            }
+            else
+            {
+                video.IsDeleted = true;
+            }
+
+            SaveVideo(video);
+
+            return true;
         }
 
         public IQueryable<Tag> DefineTags(List<string> tags)

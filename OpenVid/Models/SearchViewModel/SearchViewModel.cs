@@ -1,4 +1,5 @@
 ﻿using Database.Models;
+using OpenVid.Models.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +9,7 @@ namespace OpenVid.Models.Search
 {
     public class SearchViewModel : BaseViewModel
     {
-        public List<Video> Videos { get; set; }
+        public VideoListViewModel Videos { get; set; }
         public List<Tag> Tags { get; set; }
     }
 }

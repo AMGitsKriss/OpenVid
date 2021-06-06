@@ -24,14 +24,22 @@ namespace Search.Filters
         {
             var tagObject = _repo.GetAllTags().FirstOrDefault(x => x.Name.ToLower() == tag.ToLower());
 
-            var result = _repo.VideosByTag().Where(x => x.TagId == tagObject.Id).Select(x => x.Video);
-            if (invert)
+            List<Video> result;
+            if(tagObject == null)
             {
-                var ids = result.Select(x => x.Id);
-                result = _repo.VideosByTag().Where(x => !ids.Contains(x.VideoId)).Select(x => x.Video);
+                result = new List<Video>();
             }
-
+            else if (invert)
+            {
+                //var ids = result.Select(x => x.Id);
+                result = _repo.GetAllVideos().Where(x => !x.VideoTag.Select(t => t.TagId).Contains(tagObject.Id)).ToList();
+            }
+            else
+            {
+                result = _repo.VideosByTag().Where(x => x.TagId == tagObject.Id).Select(x => x.Video).ToList();
+            }
             return result.ToList();
+
         }
     }
 }

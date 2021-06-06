@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Search;
 using Search.Filters;
 using Upload;
 
@@ -30,14 +31,17 @@ namespace OpenVid
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
 
             services.AddTransient<Videos, Videos>();
-            services.AddSingleton<Search.Search, Search.Search>();
+            services.AddSingleton<PaginatedSearch, PaginatedSearch>();
             services.AddSingleton<Save, Save>();
 
             services
+              .AddSingleton<IFilter, GeneralFilter>()
               .AddSingleton<IFilter, TagFilter>()
               .AddSingleton<IFilter, MetaFilter>()
+              .AddSingleton<IFilter, RatingFilter>()
               .AddSingleton<IFilter, MinDurationFilter>()
               .AddSingleton<IFilter, MaxDurationFilter>();
+            // TODO 0 The filters should be automatically loaded, not specified here
 
         }
 

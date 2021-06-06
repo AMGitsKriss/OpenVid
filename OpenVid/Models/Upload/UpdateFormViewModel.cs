@@ -1,5 +1,6 @@
 ﻿using Database.Models;
 using OpenVid.Models;
+using System.Collections.Generic;
 
 namespace OpenVid.Models.Upload
 {
@@ -12,8 +13,11 @@ namespace OpenVid.Models.Upload
         public int Width { get; set; }
         public int Height { get; set; }
         public decimal Size { get; set; }
-
-
+        public string Description { get; set; }
+        public string Meta { get; set; }
         public string Tags { get; set; }
+        public bool IsFlaggedForDeletion { get; set; }
+        public int RatingId { get; set; }
+        public List<Ratings> PossibleRatings { get; set; }
     }
 }

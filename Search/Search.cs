@@ -10,7 +10,7 @@ namespace Search
 {
     public class Search
     {
-        private Videos _repo;
+        internal Videos _repo;
         private IEnumerable<IFilter> _filters;
 
         public Search(Videos repo, IEnumerable<IFilter> filters)
@@ -26,21 +26,31 @@ namespace Search
             parameters.Remove(order);
 
             var results = new List<Video>();
-
-            foreach (var item in parameters)
+            if (parameters.Any())
             {
-                var filter = FilterAttribute.GetFilter(_filters, item.Type);
+                foreach (var item in parameters)
+                {
+                    var filter = FilterAttribute.GetFilter(_filters, item.Type); // TODO - Fail gracefully if a filter is missing
 
-                var paramResult = filter.Filter(item);
+                    var paramResult = filter.Filter(item);
 
-                if (!results.Any())
-                    results.AddRange(paramResult);
-                else
-                    results = results.Intersect(paramResult, new Comparer()).ToList();
+                    if (!results.Any())
+                        results.AddRange(paramResult);
+                    else
+                        results = results.Intersect(paramResult, new Comparer()).ToList();
+                }
+            }
+            else
+            {
+                results.AddRange(_repo.GetAllVideos());
             }
 
             if (order?.Value == "random")
                 results = results.OrderBy(x => Guid.NewGuid()).ToList();
+            else if (order?.Value == "size")
+                results = results.OrderByDescending(x => x.Size).ToList();
+            else if (order?.Value == "size_asc")
+                results = results.OrderBy(x => x.Size).ToList();
 
             return results;
         }
@@ -54,29 +64,56 @@ namespace Search
             List<SearchParameter> parameters = new List<SearchParameter>();
             foreach (var item in splitQuery)
             {
-                string[] pair = item.Split(':', 2);
-                var type = ParameterType.General;
-                var value = pair[0];
-                var invert = false;
+                SearchParameter param;
 
-                if (pair.Length == 2)
-                {
-                    invert = pair[0].IndexOf('-') == 0 ? true : false;
-                    pair[0] = pair[0].Trim('-');
-                    type = (ParameterType)Enum.Parse(typeof(ParameterType), pair[0], true);
-                    value = pair[1];
-                }
+                if (item.Contains(":"))
+                    param = TagSearch(item);
+                else
+                    param = StringSearch(item);
 
-                var p = new SearchParameter()
-                {
-                    Type = type,
-                    Value = value, 
-                    InvertSearch = invert
-                };
-                parameters.Add(p);
+                parameters.Add(param);
+
+
             }
 
             return parameters;
+        }
+
+        private SearchParameter TagSearch(string searchValue)
+        {
+            string[] pair = searchValue.Split(':', 2);
+            var type = ParameterType.Tag;
+            var value = pair[0];
+            var invert = false;
+
+            if (pair.Length == 2)
+            {
+                invert = pair[0].IndexOf('-') == 0 ? true : false;
+                pair[0] = pair[0].Trim('-');
+                type = (ParameterType)Enum.Parse(typeof(ParameterType), pair[0], true);
+                value = pair[1];
+            }
+
+            var p = new SearchParameter()
+            {
+                Type = type,
+                Value = value,
+                InvertSearch = invert
+            };
+            return p;
+        }
+
+        private SearchParameter StringSearch(string searchValue)
+        {
+            var invert = searchValue.IndexOf('-') == 0 ? true : false;
+
+            var p = new SearchParameter()
+            {
+                Type = ParameterType.General,
+                Value = searchValue,
+                InvertSearch = invert
+            };
+            return p;
         }
     }
 
@@ -94,6 +131,7 @@ namespace Search
         Meta,
         MinDuration,
         MaxDuration,
-        Order
+        Order,
+        Rating
     }
 }

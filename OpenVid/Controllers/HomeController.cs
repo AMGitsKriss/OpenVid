@@ -2,10 +2,10 @@
 using System.Linq;
 using Database;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using OpenVid.Models;
 using OpenVid.Models.Home;
+using Search;
 
 namespace OpenVid.Controllers
 {
@@ -13,18 +13,26 @@ namespace OpenVid.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private Videos _repo;
+        private PaginatedSearch _search;
 
-        public HomeController(ILogger<HomeController> logger, Videos repo)
+        public HomeController(ILogger<HomeController> logger, Videos repo, PaginatedSearch search)
         {
             _logger = logger;
             _repo = repo;
+            _search = search;
         }
 
         public IActionResult Index()
         {
             HomeViewModel viewModel = new HomeViewModel()
             {
-                Videos = _repo.GetAllVideos().Take(100).ToList(),
+                Videos = new Models.Shared.VideoListViewModel()
+                {
+                    Videos = _search.PaginatedQuery(string.Empty, 1, out var hasNext),
+                    NextPageNumber = 2,
+                    SearchQuery = string.Empty,
+                    HasNextPage = hasNext
+                },
                 Tags = _repo.GetAllTags().ToList()
             };
 

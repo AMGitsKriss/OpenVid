@@ -57,10 +57,21 @@ namespace OpenVid.Controllers
                 return RedirectToAction("Index");
 
             toSave.Name = viewModel.Name;
+            toSave.MetaText = viewModel.Meta;
+            toSave.Description = viewModel.Description;
+            toSave.RatingId = viewModel.RatingId;
             var vid = _repo.SaveVideo(toSave);
             var tag = _repo.SaveTagsForVideo(toSave, _repo.DefineTags((viewModel.Tags?.Trim() ?? string.Empty).Split(new char[] { ' ', '\n' }).ToList()));
 
             return RedirectToAction("Index", "Play", new { md5 = toSave.Md5 });
+        }
+
+        [HttpPost]
+        public IActionResult Delete(UpdateFormViewModel viewModel)
+        {
+            _repo.DeleteVideo(viewModel.Md5);
+
+            return RedirectToAction("Index", "Play", new { md5 = viewModel.Md5 });
         }
 
         private async Task<IActionResult> SingleUpload(IFormFile file)
@@ -84,7 +95,9 @@ namespace OpenVid.Controllers
                     Width = response.Video.Width,
                     Height = response.Video.Height,
                     Size = response.Video.Size,
-                    Tags = string.Join(" ", response.Video.VideoTag.Select(x => x.Tag.Name))
+                    Tags = string.Join(" ", response.Video.VideoTag.Select(x => x.Tag.Name)),
+                    RatingId = response.Video.RatingId ?? 0,
+                    PossibleRatings = _repo.GetRatings()
                 };
 
                 return PartialView("_UpdateForm", viewModel);

@@ -4,6 +4,7 @@
 
 .video-container {
     background-color: #111;
+    display: flex;
 }
 
     .video-container > video {

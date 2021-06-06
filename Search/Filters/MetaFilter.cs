@@ -37,6 +37,12 @@ namespace Search.Filters
             return result;
         }
 
+        private List<Video> Deleted()
+        {
+            var result = _repo.GetDeletedVideos().ToList();
+            return result;
+        }
+
         private List<Video> Thumbnail()
         {
             throw new NotImplementedException();

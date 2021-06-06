@@ -37,7 +37,12 @@ namespace OpenVid.Controllers
                 Width = viewModel.Video.Width,
                 Height = viewModel.Video.Height,
                 Size = viewModel.Video.Size,
-                Tags = string.Join(" ", viewModel.Video.VideoTag.Select(x => x.Tag.Name))
+                Description = viewModel.Video.Description,
+                Meta = viewModel.Video.MetaText,
+                Tags = string.Join(" ", viewModel.Video.VideoTag.Select(x => x.Tag.Name)),
+                IsFlaggedForDeletion = viewModel.Video.IsDeleted,
+                RatingId = viewModel.Video.RatingId ?? 0,
+                PossibleRatings = _repo.GetRatings()
             };
 
             return View(viewModel);

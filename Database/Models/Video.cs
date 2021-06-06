@@ -18,7 +18,12 @@ namespace Database.Models
         public int Height { get; set; }
         public TimeSpan Length { get; set; }
         public long Size { get; set; }
+        public string Description { get; set; }
+        public string MetaText { get; set; }
+        public bool IsDeleted { get; set; }
+        public int? RatingId { get; set; }
 
+        public virtual Ratings Rating { get; set; }
         public virtual ICollection<VideoTag> VideoTag { get; set; }
     }
 }
