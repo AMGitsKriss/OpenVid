@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace Search.Filters
 {
-    [Filter(ParameterType.ExtensionFilter)]
+    [Filter(ParameterType.Extension)]
     public class ExtensionFilter : IFilter
     {
         private Videos _repo;
