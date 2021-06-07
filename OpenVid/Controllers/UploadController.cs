@@ -59,7 +59,7 @@ namespace OpenVid.Controllers
             toSave.Name = viewModel.Name;
             toSave.MetaText = viewModel.Meta;
             toSave.Description = viewModel.Description;
-            toSave.RatingId = viewModel.RatingId;
+            toSave.RatingId = viewModel.RatingId == 0 ? null : viewModel.RatingId;
             var vid = _repo.SaveVideo(toSave);
             var tag = _repo.SaveTagsForVideo(toSave, _repo.DefineTags((viewModel.Tags?.Trim() ?? string.Empty).Split(new char[] { ' ', '\n' }).ToList()));
 
