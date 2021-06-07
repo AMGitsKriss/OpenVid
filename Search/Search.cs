@@ -132,6 +132,7 @@ namespace Search
         MinDuration,
         MaxDuration,
         Order,
+        ExtensionFilter,
         Rating
     }
 }

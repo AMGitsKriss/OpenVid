@@ -38,6 +38,7 @@ namespace OpenVid
               .AddSingleton<IFilter, GeneralFilter>()
               .AddSingleton<IFilter, TagFilter>()
               .AddSingleton<IFilter, MetaFilter>()
+              .AddSingleton<IFilter, ExtensionFilter>()
               .AddSingleton<IFilter, RatingFilter>()
               .AddSingleton<IFilter, MinDurationFilter>()
               .AddSingleton<IFilter, MaxDurationFilter>();
