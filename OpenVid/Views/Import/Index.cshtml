@@ -36,7 +36,7 @@
                             processData: false,
                             contentType: false,
                             success: function (data) {
-                                $('[data-file-name="' + fileName + '"] .status').html(data.responseText);
+                                $('[data-file-name="' + fileName + '"] .status').html(data);
                                 $('[data-file-name="' + fileName + '"]').attr('data-uploaded', "true");
                                 if ($('[data-uploaded="false"]').length > 0) {
                                     importVideo(getNextVideo());
