@@ -51,6 +51,12 @@ namespace Search
                 results = results.OrderByDescending(x => x.Size).ToList();
             else if (order?.Value == "size_asc")
                 results = results.OrderBy(x => x.Size).ToList();
+            else if (order?.Value == "duration")
+                results = results.OrderByDescending(x => x.Length).ToList();
+            else if (order?.Value == "duration_asc")
+                results = results.OrderBy(x => x.Length).ToList();
+            else
+                results = results.OrderByDescending(x => x.Id).ToList();
 
             return results;
         }
@@ -133,6 +139,8 @@ namespace Search
         MaxDuration,
         Order,
         Extension,
-        Rating
+        Rating,
+        RatingOrSafer,
+        RatingOrRiskier
     }
 }

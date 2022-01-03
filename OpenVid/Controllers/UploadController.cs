@@ -61,7 +61,7 @@ namespace OpenVid.Controllers
             toSave.Description = viewModel.Description;
             toSave.RatingId = viewModel.RatingId == 0 ? null : viewModel.RatingId;
             var vid = _repo.SaveVideo(toSave);
-            var tag = _repo.SaveTagsForVideo(toSave, _repo.DefineTags((viewModel.Tags?.Trim() ?? string.Empty).Split(new char[] { ' ', '\n' }).ToList()));
+            var tag = _repo.SaveTagsForVideo(toSave, _repo.DefineTags((viewModel.Tags?.Trim() ?? string.Empty).Split(new char[] { ' ', '\n' }, StringSplitOptions.RemoveEmptyEntries).ToList()));
 
             return RedirectToAction("Index", "Play", new { md5 = toSave.Md5 });
         }

@@ -40,9 +40,11 @@ namespace OpenVid
               .AddSingleton<IFilter, MetaFilter>()
               .AddSingleton<IFilter, ExtensionFilter>()
               .AddSingleton<IFilter, RatingFilter>()
+              .AddSingleton<IFilter, RatingOrSaferFilter>()
+              .AddSingleton<IFilter, RatingOrRiskierFilter>()
               .AddSingleton<IFilter, MinDurationFilter>()
               .AddSingleton<IFilter, MaxDurationFilter>();
-            // TODO 0 The filters should be automatically loaded, not specified here
+            // TODO - The filters should be automatically loaded, not specified here
 
         }
 
