@@ -12,11 +12,13 @@ namespace OpenVid.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private Videos _repo;
+        private IConfiguration _configuration;
 
-        public PlayController(ILogger<HomeController> logger, Videos repo)
+        public PlayController(ILogger<HomeController> logger, Videos repo, IConfiguration configuration)
         {
             _logger = logger;
             _repo = repo;
+            _configuration = configuration;
         }
 
         [Route("[controller]/{md5}")]
@@ -24,7 +26,8 @@ namespace OpenVid.Controllers
         {
             PlayViewModel viewModel = new PlayViewModel()
             {
-                Video = _repo.GetVideo(md5)
+                Video = _repo.GetVideo(md5),
+                FileBaseUrl = _configuration["FileBaseUrl"]
             };
 
             if (viewModel.Video == null) return NotFound();
@@ -42,7 +45,8 @@ namespace OpenVid.Controllers
                 Tags = string.Join(" ", viewModel.Video.VideoTag.Select(x => x.Tag.Name)),
                 IsFlaggedForDeletion = viewModel.Video.IsDeleted,
                 RatingId = viewModel.Video.RatingId ?? 0,
-                PossibleRatings = _repo.GetRatings()
+                PossibleRatings = _repo.GetRatings(),
+                FileBaseUrl = _configuration["FileBaseUrl"]
             };
 
             return View(viewModel);

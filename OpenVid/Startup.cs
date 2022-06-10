@@ -30,20 +30,20 @@ namespace OpenVid
             services.AddControllersWithViews();
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
 
-            services.AddTransient<Videos, Videos>();
-            services.AddSingleton<PaginatedSearch, PaginatedSearch>();
-            services.AddSingleton<Save, Save>();
+            services.AddScoped<Videos, Videos>();
+            services.AddScoped<PaginatedSearch, PaginatedSearch>();
+            services.AddScoped<Save, Save>();
 
             services
-              .AddSingleton<IFilter, GeneralFilter>()
-              .AddSingleton<IFilter, TagFilter>()
-              .AddSingleton<IFilter, MetaFilter>()
-              .AddSingleton<IFilter, ExtensionFilter>()
-              .AddSingleton<IFilter, RatingFilter>()
-              .AddSingleton<IFilter, RatingOrSaferFilter>()
-              .AddSingleton<IFilter, RatingOrRiskierFilter>()
-              .AddSingleton<IFilter, MinDurationFilter>()
-              .AddSingleton<IFilter, MaxDurationFilter>();
+              .AddScoped<IFilter, GeneralFilter>()
+              .AddScoped<IFilter, TagFilter>()
+              .AddScoped<IFilter, MetaFilter>()
+              .AddScoped<IFilter, ExtensionFilter>()
+              .AddScoped<IFilter, RatingFilter>()
+              .AddScoped<IFilter, RatingOrSaferFilter>()
+              .AddScoped<IFilter, RatingOrRiskierFilter>()
+              .AddScoped<IFilter, MinDurationFilter>()
+              .AddScoped<IFilter, MaxDurationFilter>();
             // TODO - The filters should be automatically loaded, not specified here
 
         }

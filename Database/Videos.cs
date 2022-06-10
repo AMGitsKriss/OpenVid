@@ -74,20 +74,20 @@ namespace Database
             {
                 if (video.Id == 0)
                 {
-                    _context.Video.Add(video);
+                    _context.Video.AddAsync(video);
                 }
                 else
                 {
                     _context.Video.Update(video);
                 }
 
-                _context.SaveChanges();
+                _context.SaveChangesAsync();
 
                 return video;
             }
             catch (Exception ex)
             {
-                return null;
+                throw ex;
             }
         }
 
@@ -113,7 +113,7 @@ namespace Database
         {
             try
             {
-                var existingTags = _context.Tag.Select(x => x.Name.ToLower()).ToList();
+                var existingTags = _context.Tag.Select(x => x.Name.ToLower());
 
                 foreach (var unsafeTag in tags)
                 {
@@ -126,7 +126,8 @@ namespace Database
 
                 _context.SaveChanges();
 
-                return _context.Tag.Where(x => tags.Contains(x.Name));
+                var tagsInDatabase = _context.Tag.Where(x => tags.Contains(x.Name));
+                return tagsInDatabase;
             }
             catch (Exception ex)
             {

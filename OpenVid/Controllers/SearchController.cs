@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using OpenVid.Models.Search;
 using OpenVid.Models.Shared;
 using Search;
+using System;
 using System.Linq;
 
 namespace OpenVid.Controllers
@@ -14,12 +15,14 @@ namespace OpenVid.Controllers
         private readonly ILogger<HomeController> _logger;
         private Videos _repo;
         private PaginatedSearch _search;
+        private IConfiguration _configuration;
 
-        public SearchController(ILogger<HomeController> logger, Videos repo, PaginatedSearch search)
+        public SearchController(ILogger<HomeController> logger, Videos repo, PaginatedSearch search, IConfiguration configuration)
         {
             _logger = logger;
             _repo = repo;
             _search = search;
+            _configuration = configuration;
         }
 
         [Route("[Controller]/{searchString}")]
@@ -31,7 +34,8 @@ namespace OpenVid.Controllers
                 Videos = _search.PaginatedQuery(searchString, 1, out var hasNext),
                 NextPageNumber = 2,
                 HasNextPage = hasNext,
-                SearchQuery = searchString
+                SearchQuery = searchString,
+                FileBaseUrl = _configuration["FileBaseUrl"]
             };
             var videoIDs = viewModel.Videos.Videos.Select(x => x.Id).ToList();
             var tagIDs = _repo.GetAllVideos().Where(x => videoIDs.Contains(x.Id)).SelectMany(x => x.VideoTag).Select(x => x.TagId).ToList();
@@ -48,7 +52,8 @@ namespace OpenVid.Controllers
                 Videos = _search.PaginatedQuery(searchString ?? "", pageNo, out var hasMore),
                 HasNextPage = hasMore,
                 NextPageNumber = pageNo + 1,
-                SearchQuery = searchString
+                SearchQuery = searchString,
+                FileBaseUrl = _configuration["FileBaseUrl"]
             };
             return PartialView("_VideoList", viewModel);
         }

@@ -7,19 +7,19 @@
             SIDEBAR
         </div>
         <div class="col-10">
+            <p>@Model.DiscoveredFiles.Count() files found.</p>
             <div id="importForm">
+                <input type="submit" value="Import" />
+                <br />
                 @foreach (var file in Model.DiscoveredFiles)
                 {
-                    <div class="row alert alert-secondary" data-file-name="@file.FileName" data-uploaded="false">
-                        <div class="col-1 status"><i>Pending</i></div>
-                        <div class="col-3 name">@file.FileName</div>
-                        <div class="col-8 tags">Suggested Tags: <i>@String.Join(", ", file.SuggestedTags)</i></div>
-                    </div>
+                <div class="row alert alert-secondary" data-file-name="@file.FileName" data-uploaded="false">
+                    <div class="col-1 status"><i>Pending</i></div>
+                    <div class="col-3 name">@file.FileName</div>
+                    <div class="col-8 tags">Suggested Tags: <i>@String.Join(", ", file.SuggestedTags)</i></div>
+                </div>
                 }
 
-                <br />
-
-                <input type="submit" value="Import" />
                 <script>
                     $(document).on('click', '#importForm>input', function (e) {
                         importVideo(getNextVideo())

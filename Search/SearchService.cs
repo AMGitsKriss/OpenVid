@@ -8,19 +8,19 @@ using System.Linq;
 
 namespace Search
 {
-    public class Search
+    public class SearchService
     {
         internal Videos _repo;
         private IEnumerable<IFilter> _filters;
 
-        public Search(Videos repo, IEnumerable<IFilter> filters)
+        public SearchService(Videos repo, IEnumerable<IFilter> filters)
         {
             _repo = repo;
             _filters = filters;
         }
         public List<Video> Query(string searchQuery)
         {
-            var parameters = Deconstruct(searchQuery);
+            var parameters = MapSearchQueryToParameters(searchQuery);
 
             var order = parameters.FirstOrDefault(x => x.Type == ParameterType.Order);
             parameters.Remove(order);
@@ -55,13 +55,17 @@ namespace Search
                 results = results.OrderByDescending(x => x.Length).ToList();
             else if (order?.Value == "duration_asc")
                 results = results.OrderBy(x => x.Length).ToList();
+            else if (order?.Value == "name")
+                results = results.OrderBy(x => x.Name).ToList();
+            else if (order?.Value == "name_za")
+                results = results.OrderByDescending(x => x.Name).ToList();
             else
                 results = results.OrderByDescending(x => x.Id).ToList();
 
             return results;
         }
 
-        public List<SearchParameter> Deconstruct(string searchQuery)
+        public List<SearchParameter> MapSearchQueryToParameters(string searchQuery)
         {
             searchQuery = searchQuery.ToLower().Trim();
             string[] splitQuery = searchQuery.Split(new char[] { ' ', '\n' });
@@ -77,9 +81,8 @@ namespace Search
                 else
                     param = StringSearch(item);
 
-                parameters.Add(param);
-
-
+                if (param != null)
+                    parameters.Add(param);
             }
 
             return parameters;
@@ -88,25 +91,25 @@ namespace Search
         private SearchParameter TagSearch(string searchValue)
         {
             string[] pair = searchValue.Split(':', 2);
-            var type = ParameterType.Tag;
             var value = pair[0];
-            var invert = false;
+            var invert = pair[0].IndexOf('-') == 0 ? true : false;
 
+            var isSuccess = Enum.TryParse(typeof(ParameterType), pair[0].Trim('-'), true, out var type);
             if (pair.Length == 2)
             {
-                invert = pair[0].IndexOf('-') == 0 ? true : false;
-                pair[0] = pair[0].Trim('-');
-                type = (ParameterType)Enum.Parse(typeof(ParameterType), pair[0], true);
                 value = pair[1];
             }
 
-            var p = new SearchParameter()
+            if (isSuccess)
             {
-                Type = type,
-                Value = value,
-                InvertSearch = invert
-            };
-            return p;
+                return new SearchParameter()
+                {
+                    Type = (ParameterType)type,
+                    Value = value,
+                    InvertSearch = invert
+                };
+            }
+            return null;
         }
 
         private SearchParameter StringSearch(string searchValue)
@@ -116,31 +119,10 @@ namespace Search
             var p = new SearchParameter()
             {
                 Type = ParameterType.General,
-                Value = searchValue,
+                Value = searchValue.Trim('-'),
                 InvertSearch = invert
             };
             return p;
         }
-    }
-
-    public class SearchParameter
-    {
-        public ParameterType Type { get; set; }
-        public string Value { get; set; }
-        public bool InvertSearch { get; set; }
-    }
-
-    public enum ParameterType
-    {
-        General,
-        Tag,
-        Meta,
-        MinDuration,
-        MaxDuration,
-        Order,
-        Extension,
-        Rating,
-        RatingOrSafer,
-        RatingOrRiskier
     }
 }

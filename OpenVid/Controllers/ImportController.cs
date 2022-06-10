@@ -105,10 +105,13 @@ namespace OpenVid.Controllers
             SaveVideoResponse response = await _save.SaveVideoAsync(request);
             _repo.SaveTagsForVideo(response.Video, _repo.DefineTags(fileInfo.SuggestedTags));
 
-            System.IO.File.Delete(fileInfo.FullName);
+            if (response.Video != null && response.Video.Id > 0)
+                System.IO.File.Delete(fileInfo.FullName);
 
             if (response.AlreadyExists)
                 return BadRequest("Already Exists");
+            else if(response.Video == null || response.Video.Id == 0)
+                return BadRequest("Failed DB Insert: " + response.Message);
             else
             {
                 return Ok("Done");

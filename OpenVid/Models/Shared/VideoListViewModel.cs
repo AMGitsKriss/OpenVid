@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace OpenVid.Models.Shared
 {
-    public class VideoListViewModel
+    public class VideoListViewModel : BaseViewModel
     {
         public List<Database.Models.Video> Videos { get; set; }
         public int NextPageNumber { get; set; }

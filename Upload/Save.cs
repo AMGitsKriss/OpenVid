@@ -26,6 +26,7 @@ namespace Upload
         {
             string hash = GenerateHash(request.File);
             Video toSave = _repo.GetVideo(hash);
+            string error = null;
             bool exists = toSave != null;
             if (!exists)
             {
@@ -37,7 +38,14 @@ namespace Upload
                 string thumbPath = Path.Combine(thumbDirectory, $"{hash}.jpg");
                 using (Stream fileStream = new FileStream(filePath, FileMode.Create))
                 {
-                    await request.File.CopyToAsync(fileStream);
+                    try
+                    {
+                        await request.File.CopyToAsync(fileStream);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new Exception("Failed to write file");
+                    }
                 }
                 SaveThumb(filePath, thumbPath);
 
@@ -52,12 +60,19 @@ namespace Upload
                     Length = meta.Duration,
                     Size = request.File.Length
                 };
-                toSave = _repo.SaveVideo(toSave);
+                try
+                {
+                    toSave = _repo.SaveVideo(toSave);
+                }
+                catch (Exception ex) {
+                    error = ex.Message;
+                }
             }
             SaveVideoResponse response = new SaveVideoResponse()
             {
                 Video = toSave,
-                AlreadyExists = exists
+                AlreadyExists = exists,
+                Message = error
             };
 
             return response;

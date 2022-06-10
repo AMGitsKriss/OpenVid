@@ -8,7 +8,7 @@ using System.Text;
 
 namespace Search
 {
-    public class PaginatedSearch : Search
+    public class PaginatedSearch : SearchService
     {
         public PaginatedSearch(Videos repo, IEnumerable<IFilter> filters) : base(repo, filters) { }
 
