@@ -14,23 +14,26 @@ namespace Upload
 {
     public class Save : Videos
     {
+        private IConfiguration _configuration;
         private IHostingEnvironment _hostingEnvironment;
 
         public Save(IHostingEnvironment environment, OpenVidContext context, IConfiguration configuration) : base(configuration, context)
         {
+            _configuration = configuration;
             _hostingEnvironment = environment;
         }
 
         public async Task<SaveVideoResponse> SaveVideoAsync(SaveVideoRequest request)
         {
             string hash = GenerateHash(request.File);
+            string subFolder = hash.Substring(0, 2);
             Video toSave = GetVideo(hash);
             string error = null;
             bool exists = toSave != null;
             if (!exists)
             {
-                string videoDirectory = Path.Combine(_hostingEnvironment.WebRootPath, "video");
-                string thumbDirectory = Path.Combine(_hostingEnvironment.WebRootPath, "thumbnail");
+                string videoDirectory = Path.Combine(_configuration["Urls:BucketDirectory"], "video", subFolder);
+                string thumbDirectory = Path.Combine(_configuration["Urls:BucketDirectory"], "thumbnail", subFolder);
                 string ext = Path.GetExtension(request.File.FileName).Replace(".", "");
                 string originalName = Path.GetFileNameWithoutExtension(request.File.FileName);
                 string filePath = Path.Combine(videoDirectory, $"{hash}.{ext}");
