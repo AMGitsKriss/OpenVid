@@ -2,6 +2,7 @@
 using Database.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -11,21 +12,19 @@ using Upload.Models;
 
 namespace Upload
 {
-    public class Save
+    public class Save : Videos
     {
         private IHostingEnvironment _hostingEnvironment;
-        private Videos _repo;
 
-        public Save(IHostingEnvironment environment, Videos repo)
+        public Save(IHostingEnvironment environment, OpenVidContext context, IConfiguration configuration) : base(configuration, context)
         {
             _hostingEnvironment = environment;
-            _repo = repo;
         }
 
         public async Task<SaveVideoResponse> SaveVideoAsync(SaveVideoRequest request)
         {
             string hash = GenerateHash(request.File);
-            Video toSave = _repo.GetVideo(hash);
+            Video toSave = GetVideo(hash);
             string error = null;
             bool exists = toSave != null;
             if (!exists)
@@ -62,7 +61,7 @@ namespace Upload
                 };
                 try
                 {
-                    toSave = _repo.SaveVideo(toSave);
+                    toSave = SaveVideo(toSave);
                 }
                 catch (Exception ex) {
                     error = ex.Message;

@@ -18,9 +18,9 @@
         <br />
         Size:  @((Model.Size/1024)/1024)MB
     </div>
-    <div class="form-group">
+    <div class="form-group ui-widget">
         <label>Tags:</label>
-        @Html.TextBoxFor(m => m.Tags, new { @class = "form-control", style = "word-break: break-word;" })
+        @Html.TextAreaFor(m => m.Tags, new { @class = "form-control", style = "word-break: break-word;" })
     </div>
     <div class="form-group">
         <label>Description:</label>
@@ -37,3 +37,65 @@
     <input type="submit" />
     <input type="submit" value="Delete" formaction="@Url.Action("Delete", "Upload")" />
 </form>
+
+
+
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.13.1/themes/base/jquery-ui.css">
+<script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+<script src="https://code.jquery.com/ui/1.13.1/jquery-ui.js"></script>
+<script>
+    $(function () {
+
+        var availableTags = [];
+
+        function split(val) {
+            return val.split(/ \s*/);
+        }
+        function extractLast(term) {
+            return split(term).pop();
+        }
+
+            $.ajax({
+                type: 'GET',
+                url: '/play/gettags',
+                success: function (data) {
+                    availableTags = data;
+                },
+                error: function (error) {
+                    alert('Unable to get video tag list.');
+                }
+            });
+
+        $("#Tags")
+            // don't navigate away from the field on tab when selecting an item
+            .on("keydown", function (event) {
+                if (event.keyCode === $.ui.keyCode.TAB &&
+                    $(this).autocomplete("instance").menu.active) {
+                    event.preventDefault();
+                }
+            })
+            .autocomplete({
+                minLength: 0,
+                source: function (request, response) {
+                    // delegate back to autocomplete, but extract the last term
+                    response($.ui.autocomplete.filter(
+                        availableTags, extractLast(request.term)));
+                },
+                focus: function () {
+                    // prevent value inserted on focus
+                    return false;
+                },
+                select: function (event, ui) {
+                    var terms = split(this.value);
+                    // remove the current input
+                    terms.pop();
+                    // add the selected item
+                    terms.push(ui.item.value);
+                    // add placeholder to get the comma-and-space at the end
+                    terms.push("");
+                    this.value = terms.join(" ");
+                    return false;
+                }
+            });
+    });
+</script>

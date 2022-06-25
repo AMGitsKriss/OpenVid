@@ -10,13 +10,11 @@ namespace OpenVid.Controllers
 {
     public class PlayController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
         private Videos _repo;
         private IConfiguration _configuration;
 
-        public PlayController(ILogger<HomeController> logger, Videos repo, IConfiguration configuration)
+        public PlayController(Videos repo, IConfiguration configuration)
         {
-            _logger = logger;
             _repo = repo;
             _configuration = configuration;
         }
@@ -50,6 +48,13 @@ namespace OpenVid.Controllers
             };
 
             return View(viewModel);
+        }
+
+        public IActionResult GetTags()
+        {
+            var tags = _repo.GetAllTags().Select(t => t.Name).ToList();
+
+            return Json(tags);
         }
     }
 }

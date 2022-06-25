@@ -13,9 +13,9 @@ namespace Database
     {
         OpenVidContext _context;
 
-        public Videos(IConfiguration configuration)
+        public Videos(IConfiguration configurationm, OpenVidContext context)
         {
-            _context = new OpenVidContext(configuration);
+            _context = context;
         }
 
         public IQueryable<Video> GetDeletedVideos()
@@ -74,14 +74,14 @@ namespace Database
             {
                 if (video.Id == 0)
                 {
-                    _context.Video.AddAsync(video);
+                    _context.Video.Add(video);
                 }
                 else
                 {
                     _context.Video.Update(video);
                 }
 
-                _context.SaveChangesAsync();
+                _context.SaveChanges();
 
                 return video;
             }

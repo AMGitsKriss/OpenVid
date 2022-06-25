@@ -8,12 +8,8 @@ namespace Database.Models
     public partial class OpenVidContext : DbContext
     {
         private IConfiguration _configuration;
-        public OpenVidContext(IConfiguration configuration)
-        {
-            _configuration = configuration;
-        }
 
-        public OpenVidContext(DbContextOptions<OpenVidContext> options)
+        public OpenVidContext(DbContextOptions<OpenVidContext> options, IConfiguration configuration)
             : base(options)
         {
         }

@@ -1,7 +1,6 @@
 ﻿using OpenVid.Models.Upload;
 using System;
 using System.Linq;
-using Database;
 using Database.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -13,12 +12,10 @@ namespace OpenVid.Controllers
 {
     public class UploadController : Controller
     {
-        private Videos _repo;
         private Save _save;
 
-        public UploadController(Videos repo, Save save)
+        public UploadController(Save save)
         {
-            _repo = repo;
             _save = save;
         }
 
@@ -52,7 +49,7 @@ namespace OpenVid.Controllers
         [HttpPost]
         public IActionResult Update(UpdateFormViewModel viewModel)
         {
-            Video toSave = _repo.GetVideo(viewModel.Md5);
+            Video toSave = _save.GetVideo(viewModel.Md5);
             if (toSave == null)
                 return RedirectToAction("Index");
 
@@ -60,9 +57,9 @@ namespace OpenVid.Controllers
             toSave.MetaText = viewModel.Meta;
             toSave.Description = viewModel.Description;
             toSave.RatingId = viewModel.RatingId == 0 ? null : viewModel.RatingId;
-            var vid = _repo.SaveVideo(toSave);
-            var tagList = _repo.DefineTags((viewModel.Tags?.Trim() ?? string.Empty).Split(new char[] { ' ', '\n' }, StringSplitOptions.RemoveEmptyEntries).ToList());
-            var tag = _repo.SaveTagsForVideo(toSave, tagList);
+            var vid = _save.SaveVideo(toSave);
+            var tagList = _save.DefineTags((viewModel.Tags?.Trim() ?? string.Empty).Split(new char[] { ' ', '\n' }, StringSplitOptions.RemoveEmptyEntries).ToList());
+            var tag = _save.SaveTagsForVideo(toSave, tagList);
 
             return RedirectToAction("Index", "Play", new { md5 = toSave.Md5 });
         }
@@ -70,7 +67,7 @@ namespace OpenVid.Controllers
         [HttpPost]
         public IActionResult Delete(UpdateFormViewModel viewModel)
         {
-            _repo.DeleteVideo(viewModel.Md5);
+            _save.DeleteVideo(viewModel.Md5);
 
             return RedirectToAction("Index", "Play", new { md5 = viewModel.Md5 });
         }
@@ -98,7 +95,7 @@ namespace OpenVid.Controllers
                     Size = response.Video.Size,
                     Tags = string.Join(" ", response.Video.VideoTag.Select(x => x.Tag.Name)),
                     RatingId = response.Video.RatingId ?? 0,
-                    PossibleRatings = _repo.GetRatings()
+                    PossibleRatings = _save.GetRatings()
                 };
 
                 return PartialView("_UpdateForm", viewModel);
