@@ -34,6 +34,10 @@ namespace Upload
             {
                 string videoDirectory = Path.Combine(_configuration["Urls:BucketDirectory"], "video", subFolder);
                 string thumbDirectory = Path.Combine(_configuration["Urls:BucketDirectory"], "thumbnail", subFolder);
+
+                TouchDirectory(videoDirectory);
+                TouchDirectory(thumbDirectory);
+
                 string ext = Path.GetExtension(request.File.FileName).Replace(".", "");
                 string originalName = Path.GetFileNameWithoutExtension(request.File.FileName);
                 string filePath = Path.Combine(videoDirectory, $"{hash}.{ext}");
@@ -66,7 +70,8 @@ namespace Upload
                 {
                     toSave = SaveVideo(toSave);
                 }
-                catch (Exception ex) {
+                catch (Exception ex)
+                {
                     error = ex.Message;
                 }
             }
@@ -80,6 +85,91 @@ namespace Upload
             return response;
         }
 
+        public async Task<SaveVideoResponse> ImportVideoAsync(ImportVideoRequest request)
+        {
+            string md5 = GenerateHash(request.FileNameFull);
+            string subFolder = md5.Substring(0, 2);
+            string ext = Path.GetExtension(request.FileName).Replace(".", "");
+            bool videoExists = GetVideo(md5) != null;
+
+            string videoDirectory = $"{_configuration["Urls:BucketDirectory"]}\\video\\{subFolder}\\";
+            string thumbnailDirectory = $"{_configuration["Urls:BucketDirectory"]}\\thumbnail\\{subFolder}\\";
+
+            if (videoExists)
+                return new SaveVideoResponse()
+                {
+                    AlreadyExists = true,
+                    Message = $"Video with the hash {md5} already exists. Skipping."
+                };
+
+            //THUMBNAIL
+            string thumbPath = Path.Combine(thumbnailDirectory, $"{md5}.jpg");
+            SaveThumb(request.FileNameFull, thumbPath);
+
+            var metaData = GetMetadata(request.FileNameFull);
+            FileInfo fileInfo = new FileInfo(request.FileNameFull);
+            var newVideo = new Video()
+            {
+                Md5 = md5,
+                Name = Path.GetFileNameWithoutExtension(request.FileName),
+                Extension = ext,
+                Width = metaData.Width,
+                Height = metaData.Height,
+                Length = metaData.Duration,
+                Size = fileInfo.Length
+            };
+
+            // DATABASE
+            try
+            {
+                SaveVideo(newVideo);
+            }
+            catch (Exception ex)
+            {
+                return new SaveVideoResponse()
+                {
+                    AlreadyExists = false,
+                    Message = $"Video named {request.FileName} couldn't be added to the database. Skipping."
+                };
+            }
+
+            // FILE
+            try
+            {
+                string destinationFileName = $"{videoDirectory}{md5}.{ext}";
+                if (File.Exists(request.FileNameFull))
+                {
+                    if (!Directory.Exists(videoDirectory))
+                        Directory.CreateDirectory(videoDirectory);
+                    File.Move(request.FileNameFull, destinationFileName);
+                }
+            }
+            catch (Exception ex)
+            {
+                return new SaveVideoResponse()
+                {
+                    AlreadyExists = false,
+                    Message = $"Video named {request.FileName} Couldn't be copied to the bucket. Skipping."
+                };
+            }
+
+            return new SaveVideoResponse()
+            {
+                Video = newVideo
+            };
+        }
+
+        private string GenerateHash(object fileLocation)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void TouchDirectory(string directory)
+        {
+            if (!Directory.Exists(directory))
+                Directory.CreateDirectory(directory);
+        }
+
         private string GenerateHash(IFormFile file)
         {
             using (var md5 = MD5.Create())
@@ -90,6 +180,20 @@ namespace Upload
                 return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
             }
         }
+
+        private string GenerateHash(string filename)
+        {
+            using (var md5 = MD5.Create())
+            {
+                using (var ms = File.OpenRead(filename))
+                {
+                    byte[] hash = md5.ComputeHash(ms);
+                    return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
+                }
+            }
+
+        }
+
         private void SaveThumb(string videoPath, string thumbPath)
         {
             var cmd = $" -y -itsoffset -1 -i \"{videoPath}\" -vcodec mjpeg -vframes 60 -filter:v \"scale='-1:min(168\\,iw)', pad=w=300:h=168:x=(ow-iw)/2:y=(oh-ih)/2:color=black\" \"{thumbPath}\"";

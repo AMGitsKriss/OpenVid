@@ -14,6 +14,7 @@ namespace OpenVid.Models.Import
     {
         public string FileName { get; set; }
         public string FullName { get; set; }
+        public string FileLocation { get; set; }
         public List<string> SuggestedTags { get; set; }
     }
 }

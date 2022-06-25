@@ -55,6 +55,7 @@ namespace OpenVid.Controllers
                     {
                         FileName = info.Name,
                         FullName = info.FullName,
+                        FileLocation = info.DirectoryName,
                         SuggestedTags = suggestedTags
                     };
                     result.Add(video);
@@ -78,45 +79,25 @@ namespace OpenVid.Controllers
         [HttpPost]
         public async Task<IActionResult> Save(string fileName)
         {
-            try
+            var fileInfo = PendingImports.Single(f => f.FileName == fileName);
+
+            ImportVideoRequest request = new ImportVideoRequest()
             {
-                var fileInfo = PendingImports.Single(f => f.FileName == fileName);
-
-                using var stream = new MemoryStream(System.IO.File.ReadAllBytes(fileInfo.FullName).ToArray());
-                var formFile = new FormFile(stream, 0, stream.Length, "streamFile", fileInfo.FileName);
-
-                return await Import(fileInfo, formFile);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
-        }
-
-        private async Task<IActionResult> Import(FoundVideoViewModel fileInfo, IFormFile file)
-        {
-            if (file.Length == 0)
-                return BadRequest("No File Data");
-
-            SaveVideoRequest request = new SaveVideoRequest()
-            {
-                File = file
+                FileName = fileInfo.FileName,
+                FileLocation = fileInfo.FileLocation
             };
-            SaveVideoResponse response = await _save.SaveVideoAsync(request);
-            _repo.SaveTagsForVideo(response.Video, _repo.DefineTags(fileInfo.SuggestedTags));
 
-            if (response.Video != null && response.Video.Id > 0)
-                System.IO.File.Delete(fileInfo.FullName);
+            SaveVideoResponse response = await _save.ImportVideoAsync(request);
+            _repo.SaveTagsForVideo(response.Video, _repo.DefineTags(fileInfo.SuggestedTags));
 
             if (response.AlreadyExists)
                 return BadRequest("Already Exists");
-            else if(response.Video == null || response.Video.Id == 0)
+            else if (response.Video == null || response.Video.Id == 0)
                 return BadRequest("Failed DB Insert: " + response.Message);
             else
             {
                 return Ok("Done");
             }
-            
         }
     }
 }

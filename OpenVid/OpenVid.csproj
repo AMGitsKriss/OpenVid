@@ -26,9 +26,4 @@
     </Content>
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="wwwroot\thumbnail\" />
-    <Folder Include="wwwroot\video\" />
-  </ItemGroup>
-
 </Project>
