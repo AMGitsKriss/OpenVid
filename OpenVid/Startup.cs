@@ -36,6 +36,7 @@ namespace OpenVid
             services.AddScoped<Videos, Videos>();
             services.AddScoped<PaginatedSearch, PaginatedSearch>();
             services.AddScoped<Save, Save>();
+            services.AddScoped<UrlResolver, UrlResolver>();
 
             services
               .AddScoped<IFilter, GeneralFilter>()

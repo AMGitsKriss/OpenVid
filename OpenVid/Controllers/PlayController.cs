@@ -1,49 +1,54 @@
 ﻿using Database;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using OpenVid.Models.Play;
 using OpenVid.Models.Upload;
+using Search;
 using System.Linq;
+using Upload;
 
 namespace OpenVid.Controllers
 {
     public class PlayController : Controller
     {
-        private Videos _repo;
+        private Save _service;
+        private UrlResolver _urlResolver;
         private IConfiguration _configuration;
 
-        public PlayController(Videos repo, IConfiguration configuration)
+        public PlayController(Save service, UrlResolver urlResolver, IConfiguration configuration)
         {
-            _repo = repo;
+            _service = service;
+            _urlResolver = urlResolver;
             _configuration = configuration;
         }
 
         [Route("[controller]/{md5}")]
         public IActionResult Index(string md5)
         {
+            var video = _service.GetVideo(md5);
+
             PlayViewModel viewModel = new PlayViewModel()
             {
-                Video = _repo.GetVideo(md5),
+                VideoUrl = _urlResolver.GetVideoUrl(video),
                 FileBaseUrl = _configuration["FileBaseUrl"]
             };
 
-            if (viewModel.Video == null) return NotFound();
+            if (string.IsNullOrWhiteSpace(viewModel.VideoUrl)) return NotFound();
 
             viewModel.Update = new UpdateFormViewModel()
             {
-                Md5 = viewModel.Video.Md5,
-                Name = viewModel.Video.Name,
-                Extension = viewModel.Video.Extension,
-                Width = viewModel.Video.Width,
-                Height = viewModel.Video.Height,
-                Size = viewModel.Video.Size,
-                Description = viewModel.Video.Description,
-                Meta = viewModel.Video.MetaText,
-                Tags = string.Join(" ", viewModel.Video.VideoTag.Select(x => x.Tag.Name)),
-                IsFlaggedForDeletion = viewModel.Video.IsDeleted,
-                RatingId = viewModel.Video.RatingId ?? 0,
-                PossibleRatings = _repo.GetRatings(),
+                Md5 = video.Md5,
+                Name = video.Name,
+                Extension = video.Extension,
+                Width = video.Width,
+                Height = video.Height,
+                Size = video.Size,
+                Description = video.Description,
+                Meta = video.MetaText,
+                Tags = string.Join(" ", video.VideoTag.Select(x => x.Tag.Name)),
+                IsFlaggedForDeletion = video.IsDeleted,
+                RatingId = video.RatingId ?? 0,
+                PossibleRatings = _service.GetRatings(),
                 FileBaseUrl = _configuration["FileBaseUrl"]
             };
 
@@ -52,7 +57,7 @@ namespace OpenVid.Controllers
 
         public IActionResult GetTags()
         {
-            var tags = _repo.GetAllTags().Select(t => t.Name).ToList();
+            var tags = _service.GetAllTags().Select(t => t.Name).ToList();
 
             return Json(tags);
         }

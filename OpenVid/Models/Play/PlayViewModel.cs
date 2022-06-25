@@ -5,7 +5,7 @@ namespace OpenVid.Models.Play
 {
     public class PlayViewModel : BaseViewModel
     {
-        public Video Video { get; set; }
+        public string VideoUrl { get; set; }
         public UpdateFormViewModel Update { get; set; }
     }
 }

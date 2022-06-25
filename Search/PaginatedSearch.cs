@@ -19,5 +19,6 @@ namespace Search
 
             return results.Take(48).ToList();
         }
+        //FileBaseUrl/thumbnail/@(video.Md5).jpg
     }
 }

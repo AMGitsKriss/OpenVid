@@ -3,7 +3,7 @@
 <div class="row">
     @foreach (var video in Model.Videos)
     {
-        <a href="@Url.Action("Index", "Play", new { md5 = video.Md5 })" data-toggle="tooltip" title="@video.Name"><div class="tile"><img src="@Model.FileBaseUrl/thumbnail/@(video.Md5).jpg" onerror="this.onerror = null; this.src = '/img/thumb.png';" /><br /><b>@video.Name</b></div></a>
+        <a href="@Url.Action("Index", "Play", new { md5 = video.Md5 })" data-toggle="tooltip" title="@video.Name"><div class="tile"><img src="@video.ThumbnailUrl" onerror="this.onerror = null; this.src = '/img/thumb.png';" /><br /><b>@video.Name</b></div></a>
         <p></p>
     }
 </div>

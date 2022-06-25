@@ -16,13 +16,15 @@ namespace OpenVid.Controllers
         private Videos _repo;
         private PaginatedSearch _search;
         private IConfiguration _configuration;
+        private UrlResolver _urlResolver;
 
-        public SearchController(ILogger<HomeController> logger, Videos repo, PaginatedSearch search, IConfiguration configuration)
+        public SearchController(ILogger<HomeController> logger, Videos repo, UrlResolver urlResolver, PaginatedSearch search, IConfiguration configuration)
         {
             _logger = logger;
             _repo = repo;
             _search = search;
             _configuration = configuration;
+            _urlResolver = urlResolver;
         }
 
         [Route("[Controller]/{searchString}")]
@@ -31,7 +33,13 @@ namespace OpenVid.Controllers
             SearchViewModel viewModel = new SearchViewModel();
             viewModel.Videos = new VideoListViewModel()
             {
-                Videos = _search.PaginatedQuery(searchString, 1, out var hasNext),
+                Videos = _search.PaginatedQuery(searchString, 1, out var hasNext).Select(v => new VideoViewModel()
+                {
+                    Id = v.Id,
+                    Name = v.Name,
+                    Md5 = v.Md5,
+                    ThumbnailUrl = _urlResolver.GetThumbnailUrl(v)
+                }).ToList(),
                 NextPageNumber = 2,
                 HasNextPage = hasNext,
                 SearchQuery = searchString,
@@ -49,7 +57,13 @@ namespace OpenVid.Controllers
         {
             VideoListViewModel viewModel = new VideoListViewModel()
             {
-                Videos = _search.PaginatedQuery(searchString ?? "", pageNo, out var hasMore),
+                Videos = _search.PaginatedQuery(searchString ?? "", pageNo, out var hasMore).Select(v => new VideoViewModel()
+                {
+                    Id = v.Id,
+                    Name = v.Name,
+                    Md5 = v.Md5,
+                    ThumbnailUrl = _urlResolver.GetThumbnailUrl(v)
+                }).ToList(),
                 HasNextPage = hasMore,
                 NextPageNumber = pageNo + 1,
                 SearchQuery = searchString,

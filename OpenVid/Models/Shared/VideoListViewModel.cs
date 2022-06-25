@@ -7,9 +7,17 @@ namespace OpenVid.Models.Shared
 {
     public class VideoListViewModel : BaseViewModel
     {
-        public List<Database.Models.Video> Videos { get; set; }
+        public List<VideoViewModel> Videos { get; set; }
         public int NextPageNumber { get; set; }
         public string SearchQuery { get; internal set; }
         public bool HasNextPage { get; internal set; }
+    }
+
+    public class VideoViewModel
+    {
+        public object Id { get; internal set; }
+        public string Name { get; internal set; }
+        public string Md5 { get; internal set; }
+        public string ThumbnailUrl { get; internal set; }
     }
 }
