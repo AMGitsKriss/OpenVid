@@ -46,7 +46,9 @@ namespace OpenVid.Controllers
                 FileBaseUrl = _configuration["FileBaseUrl"]
             };
             var videoIDs = viewModel.Videos.Videos.Select(x => x.Id).ToList();
-            var tagIDs = _repo.GetAllVideos().Where(x => videoIDs.Contains(x.Id)).SelectMany(x => x.VideoTag).Select(x => x.TagId).ToList();
+            var selectedVideos = _repo.GetAllVideos().Where(x => videoIDs.Contains(x.Id));
+            var tags = selectedVideos.SelectMany(x => x.VideoTag);
+            var tagIDs = tags.Select(x => x.TagId).ToList();
             viewModel.Tags = _repo.GetAllTags().Where(x => tagIDs.Contains(x.Id)).ToList();
             viewModel.SearchString = searchString;
 

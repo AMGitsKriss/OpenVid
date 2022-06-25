@@ -15,7 +15,7 @@ namespace OpenVid.Models.Shared
 
     public class VideoViewModel
     {
-        public object Id { get; internal set; }
+        public int Id { get; internal set; }
         public string Name { get; internal set; }
         public string Md5 { get; internal set; }
         public string ThumbnailUrl { get; internal set; }
