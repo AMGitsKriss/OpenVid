@@ -19,5 +19,6 @@ namespace OpenVid.Models.Upload
         public bool IsFlaggedForDeletion { get; set; }
         public int RatingId { get; set; }
         public List<Ratings> PossibleRatings { get; set; }
+         public List<SuggestedTagViewModel> SuggestedTags { get; set; }
     }
 }

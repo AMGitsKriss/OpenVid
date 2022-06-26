@@ -9,7 +9,7 @@ using System.Linq;
 namespace Database
 {
     // Scaffold-DbContext "Server=orion;Database=OpenVid;Trusted_Connection=True;" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Models -Force
-    public class Videos
+    public class Videos : IVideos
     {
         OpenVidContext _context;
 

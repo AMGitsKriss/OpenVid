@@ -11,7 +11,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Search", "Search\Search.csp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Upload", "Upload\Upload.csproj", "{67EAD822-53AA-497B-B02B-2FD31AF8655E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{C9DC3320-5F35-4F42-B9B6-E8B5939E38F3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests", "Tests\Tests.csproj", "{C9DC3320-5F35-4F42-B9B6-E8B5939E38F3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagCache", "TagCache\TagCache.csproj", "{B5EF9DC2-B3EC-4975-A758-720CDF54CFBD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{C9DC3320-5F35-4F42-B9B6-E8B5939E38F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C9DC3320-5F35-4F42-B9B6-E8B5939E38F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C9DC3320-5F35-4F42-B9B6-E8B5939E38F3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B5EF9DC2-B3EC-4975-A758-720CDF54CFBD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B5EF9DC2-B3EC-4975-A758-720CDF54CFBD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B5EF9DC2-B3EC-4975-A758-720CDF54CFBD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B5EF9DC2-B3EC-4975-A758-720CDF54CFBD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

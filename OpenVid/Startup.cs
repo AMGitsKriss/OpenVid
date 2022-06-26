@@ -13,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Search;
 using Search.Filters;
+using TagCache;
 using Upload;
 
 namespace OpenVid
@@ -48,8 +49,8 @@ namespace OpenVid
               .AddScoped<IFilter, RatingOrRiskierFilter>()
               .AddScoped<IFilter, MinDurationFilter>()
               .AddScoped<IFilter, MaxDurationFilter>();
-            // TODO - The filters should be automatically loaded, not specified here
 
+            services.TagCacheInstaller();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

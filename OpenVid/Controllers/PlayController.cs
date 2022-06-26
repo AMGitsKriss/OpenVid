@@ -4,7 +4,9 @@ using Microsoft.Extensions.Configuration;
 using OpenVid.Models.Play;
 using OpenVid.Models.Upload;
 using Search;
+using System.Collections.Generic;
 using System.Linq;
+using TagCache;
 using Upload;
 
 namespace OpenVid.Controllers
@@ -14,12 +16,14 @@ namespace OpenVid.Controllers
         private Save _service;
         private UrlResolver _urlResolver;
         private IConfiguration _configuration;
+        private RelatedTags _relatedTags;
 
-        public PlayController(Save service, UrlResolver urlResolver, IConfiguration configuration)
+        public PlayController(Save service, UrlResolver urlResolver, RelatedTags relatedTags, IConfiguration configuration)
         {
             _service = service;
             _urlResolver = urlResolver;
             _configuration = configuration;
+            _relatedTags = relatedTags;
         }
 
         [Route("[controller]/{md5}")]
@@ -35,6 +39,15 @@ namespace OpenVid.Controllers
 
             if (string.IsNullOrWhiteSpace(viewModel.VideoUrl)) return NotFound();
 
+            var tagCollection = video.VideoTag.Select(x => x.Tag.Name);
+            var tagSuggestions = new List<SuggestedTagViewModel>();
+
+            // TODO - This can be cached
+            foreach (var item in tagCollection)
+            {
+                tagSuggestions.Add(new SuggestedTagViewModel() { TagName = item, RelatedTags = _relatedTags.Get(item) });
+            }
+
             viewModel.Update = new UpdateFormViewModel()
             {
                 Md5 = video.Md5,
@@ -45,11 +58,12 @@ namespace OpenVid.Controllers
                 Size = video.Size,
                 Description = video.Description,
                 Meta = video.MetaText,
-                Tags = string.Join(" ", video.VideoTag.Select(x => x.Tag.Name)),
+                Tags = string.Join(" ", tagCollection),
                 IsFlaggedForDeletion = video.IsDeleted,
                 RatingId = video.RatingId ?? 0,
                 PossibleRatings = _service.GetRatings(),
-                FileBaseUrl = _configuration["FileBaseUrl"]
+                FileBaseUrl = _configuration["FileBaseUrl"],
+                SuggestedTags = tagSuggestions
             };
 
             return View(viewModel);

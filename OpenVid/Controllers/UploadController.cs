@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using Upload;
 using Upload.Models;
+using System.Collections.Generic;
 
 namespace OpenVid.Controllers
 {
@@ -95,7 +96,8 @@ namespace OpenVid.Controllers
                     Size = response.Video.Size,
                     Tags = string.Join(" ", response.Video.VideoTag.Select(x => x.Tag.Name)),
                     RatingId = response.Video.RatingId ?? 0,
-                    PossibleRatings = _save.GetRatings()
+                    PossibleRatings = _save.GetRatings(),
+                    SuggestedTags = new List<SuggestedTagViewModel>()
                 };
 
                 return PartialView("_UpdateForm", viewModel);

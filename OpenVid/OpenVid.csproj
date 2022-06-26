@@ -16,6 +16,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Database\Database.csproj" />
     <ProjectReference Include="..\Search\Search.csproj" />
+    <ProjectReference Include="..\TagCache\TagCache.csproj" />
     <ProjectReference Include="..\Upload\Upload.csproj" />
   </ItemGroup>
 
