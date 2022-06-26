@@ -216,8 +216,7 @@ namespace Upload
 
         private MediaProperties GetMetadata(string location)
         {
-            string basePath = Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar;
-            string cmd = $"-v error -select_streams v:0 -show_entries stream=width,height,duration -show_entries format=duration -of csv=s=x:p=0 {location}";
+            string cmd = $"-v error -select_streams v:0 -show_entries stream=width,height,duration -show_entries format=duration -of csv=s=x:p=0 \"{location}\"";
             Process proc = new Process();
             proc.StartInfo.FileName = @"c:\ffmpeg\ffprobe.exe";
             proc.StartInfo.Arguments = cmd;
