@@ -30,6 +30,9 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Import" asp-action="Index">Import</a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Curation" asp-action="Index">Curation</a>
+                        </li>
+                        <li class="nav-item">
                             <form id="searchBar" class="nav-link" onsubmit="submitSearch()">
                                 @Html.TextBoxFor(s => s.SearchString)
                                 <input type="submit" value="&#x1f50d;" />

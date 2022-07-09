@@ -13,7 +13,7 @@ namespace Database
     {
         OpenVidContext _context;
 
-        public Videos(IConfiguration configurationm, OpenVidContext context)
+        public Videos(IConfiguration configuration, OpenVidContext context)
         {
             _context = context;
         }
@@ -28,6 +28,11 @@ namespace Database
             return _context.Video.Include(x => x.VideoTag).ThenInclude(x => x.Video).ThenInclude(x => x.Rating).Where(v => !v.IsDeleted).OrderByDescending(x => x.Id);
         }
 
+        public IQueryable<Video> GetSoftDeletedVideos()
+        {
+            return _context.Video.Where(v => v.IsDeleted).OrderByDescending(x => x.Id);
+        }
+
         public Video GetVideo(string md5)
         {
             return _context.Video.Include(x => x.VideoTag).ThenInclude(x => x.Tag).FirstOrDefault(x => x.Md5 == md5);
@@ -40,7 +45,7 @@ namespace Database
 
         public IQueryable<Tag> GetAllTags()
         {
-            var result = _context.Tag.Include(x => x.VideoTag).ThenInclude(x => x.Video).Where(x => x.VideoTag.Count() > 0).OrderByDescending(x => x.VideoTag.Count()).ThenBy(x => x.Name);
+            var result = _context.Tag.Include(x => x.VideoTag).ThenInclude(x => x.Video).Where(x => x.VideoTag.Any(v => !v.Video.IsDeleted)).OrderByDescending(x => x.VideoTag.Count()).ThenBy(x => x.Name);
             return result;
         }
 

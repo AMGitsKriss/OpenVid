@@ -43,6 +43,14 @@ namespace Search.Filters
             return result;
         }
 
+        private List<Video> SameLength()
+        {
+            var result = _repo.GetAllVideos().ToList().GroupBy(m => new { m.Length, m.Width, m.Height })
+                               .Where(a => a.Count() > 1)
+                               .SelectMany(a => a.ToList());
+            return result.ToList();
+        }
+
         private List<Video> Thumbnail()
         {
             throw new NotImplementedException();

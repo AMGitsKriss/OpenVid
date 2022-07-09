@@ -39,7 +39,8 @@ namespace OpenVid.Controllers
                         Id = v.Id,
                         Name = v.Name,
                         Md5=v. Md5, 
-                        ThumbnailUrl = _urlResolver.GetThumbnailUrl(v)
+                        ThumbnailUrl = _urlResolver.GetThumbnailUrl(v),
+                        Length = string.Format("{0:00}:{1:00}", (int)v.Length.TotalMinutes, v.Length.Seconds)
                     }).ToList(),
                     NextPageNumber = 2,
                     SearchQuery = string.Empty,

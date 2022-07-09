@@ -17,3 +17,14 @@
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
+
+.tag-suggestion {
+    font-size: 0.95em;
+    color: #007bff;
+    cursor: pointer;
+}
+    .tag-suggestion.selected {
+        color: white;
+        background-color: #007bff;
+    }

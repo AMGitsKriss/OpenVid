@@ -6,7 +6,10 @@ namespace TagCache
     {
         public static void TagCacheInstaller(this IServiceCollection services)
         {
+            services.AddScoped<TagManager>();
+
             services.AddScoped<RelatedTags>();
+            services.AddScoped<SuggestedTags>();
         }
     }
 }

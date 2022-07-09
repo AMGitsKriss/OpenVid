@@ -12,6 +12,7 @@ namespace Database.Models
 
         public int Id { get; set; }
         public string Name { get; set; }
+        public byte Type { get; set; }
 
         public virtual ICollection<VideoTag> VideoTag { get; set; }
     }

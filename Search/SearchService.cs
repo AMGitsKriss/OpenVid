@@ -59,6 +59,8 @@ namespace Search
                 results = results.OrderBy(x => x.Name).ToList();
             else if (order?.Value == "name_za")
                 results = results.OrderByDescending(x => x.Name).ToList();
+            else if (order?.Value == "id_asc")
+                results = results.OrderBy(x => x.Id).ToList();
             else
                 results = results.OrderByDescending(x => x.Id).ToList();
 

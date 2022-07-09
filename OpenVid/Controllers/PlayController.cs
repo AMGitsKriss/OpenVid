@@ -6,6 +6,7 @@ using OpenVid.Models.Upload;
 using Search;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using TagCache;
 using Upload;
 
@@ -16,14 +17,14 @@ namespace OpenVid.Controllers
         private Save _service;
         private UrlResolver _urlResolver;
         private IConfiguration _configuration;
-        private RelatedTags _relatedTags;
+        private TagManager _tagManager;
 
-        public PlayController(Save service, UrlResolver urlResolver, RelatedTags relatedTags, IConfiguration configuration)
+        public PlayController(Save service, UrlResolver urlResolver, TagManager tagManager, IConfiguration configuration)
         {
             _service = service;
             _urlResolver = urlResolver;
             _configuration = configuration;
-            _relatedTags = relatedTags;
+            _tagManager = tagManager;
         }
 
         [Route("[controller]/{md5}")]
@@ -45,7 +46,15 @@ namespace OpenVid.Controllers
             // TODO - This can be cached
             foreach (var item in tagCollection)
             {
-                tagSuggestions.Add(new SuggestedTagViewModel() { TagName = item, RelatedTags = _relatedTags.Get(item) });
+                tagSuggestions.Add(new SuggestedTagViewModel()
+                {
+                    TagName = item,
+                    RelatedTags = _tagManager.GetRelatedTags(item).Select(t => new RelatedTagViewModel()
+                    {
+                        TagName = t,
+                        AlreadyUsed = tagCollection.Contains(t)
+                    }).ToList()
+                });
             }
 
             viewModel.Update = new UpdateFormViewModel()
@@ -58,7 +67,7 @@ namespace OpenVid.Controllers
                 Size = video.Size,
                 Description = video.Description,
                 Meta = video.MetaText,
-                Tags = string.Join(" ", tagCollection),
+                Tags = string.Join(" ", tagCollection) + " ",
                 IsFlaggedForDeletion = video.IsDeleted,
                 RatingId = video.RatingId ?? 0,
                 PossibleRatings = _service.GetRatings(),
@@ -71,7 +80,7 @@ namespace OpenVid.Controllers
 
         public IActionResult GetTags()
         {
-            var tags = _service.GetAllTags().Select(t => t.Name).ToList();
+            var tags = _tagManager.GetAllUsedTags();
 
             return Json(tags);
         }

@@ -4,29 +4,30 @@ using Database.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace TagCache
 {
     public class RelatedTags
     {
         private readonly Videos _repository;
-        private ICachedObject<Dictionary<string, List<string>>> _relatedTags;
+        private static ICachedObject<Dictionary<string, List<string>>> _relatedTags;
 
         public RelatedTags(Videos repository)
         {
             _repository = repository;
         }
 
-        public Dictionary<string, List<string>> Build()
+        public async Task<Dictionary<string, List<string>>> Build()
         {
-            var tags = _repository.GetAllTags();
+            var tags = _repository.GetAllTags().ToList();
             Dictionary<string, List<string>> relatedTags = new Dictionary<string, List<string>>();
 
             foreach (var tag in tags)
             {
-                var tagGroup = GetMutualTags(tag).GroupBy(t => t).OrderByDescending(t => t.Count()).Select(t => t.Key).Take(15);
+                var tagGroup = GetMutualTags(tag).GroupBy(t => t).OrderByDescending(t => t.Count()).Select(t => t.Key).Take(15).ToList();
 
-                relatedTags.TryAdd(tag.Name, tagGroup.ToList());
+                relatedTags.TryAdd(tag.Name, tagGroup);
             }
 
             return relatedTags;
@@ -35,7 +36,7 @@ namespace TagCache
         private IQueryable<string> GetMutualTags(Tag tag)
         {
             var videoTags = _repository.VideosByTag().Where(t => t.TagId == tag.Id);
-            var allTags = videoTags.SelectMany(vt => vt.Video.VideoTag).Where(t => t.TagId != tag.Id).Select(t => t.Tag.Name);
+            var allTags = videoTags.SelectMany(vt => vt.Video.VideoTag).Where(t => t.TagId != tag.Id && t.Tag.Type == 0).Select(t => t.Tag.Name);
 
             return allTags;
         }
@@ -43,10 +44,10 @@ namespace TagCache
         public List<string> Get(string tag)
         {
             if (_relatedTags == null)
-                Build();
+                Initialize();
 
             _relatedTags.Value.TryGetValue(tag, out var result);
-            return result;
+            return result ?? new List<string>();
         }
 
         public void Refresh()
@@ -54,15 +55,15 @@ namespace TagCache
             _relatedTags.RefreshValue(TimeSpan.MinValue);
         }
 
-        public void Initialize()
+        public async Task Initialize()
         {
 
             _relatedTags = CachedObjectFactory
                                         .ConfigureFor(Build)
-                                        .WithRefreshInterval(TimeSpan.FromHours(6))
+                                        .WithRefreshInterval(TimeSpan.FromHours(1))
                                         .Build();
 
-            _relatedTags.Initialize();
+            await _relatedTags.InitializeAsync();
         }
     }
 }

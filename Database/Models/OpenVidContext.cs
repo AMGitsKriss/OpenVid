@@ -83,6 +83,8 @@ namespace Database.Models
                     .HasMaxLength(256)
                     .IsUnicode(false);
 
+                entity.Property(e => e.RatingId).HasColumnName("RatingID");
+
                 entity.HasOne(d => d.Rating)
                     .WithMany(p => p.Video)
                     .HasForeignKey(d => d.RatingId)

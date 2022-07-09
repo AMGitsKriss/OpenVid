@@ -36,7 +36,7 @@ namespace Search.Filters
             }
             else
             {
-                result = _repo.VideosByTag().Where(x => x.TagId == tagObject.Id).Select(x => x.Video).ToList();
+                result = _repo.VideosByTag().Where(x => x.TagId == tagObject.Id && !x.Video.IsDeleted).Select(x => x.Video).ToList();
             }
             return result.ToList();
 

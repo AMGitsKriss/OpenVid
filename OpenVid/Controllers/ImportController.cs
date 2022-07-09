@@ -1,9 +1,6 @@
 ﻿using Database;
-using Database.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using OpenVid.Models.Import;
-using OpenVid.Models.Upload;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -16,13 +13,11 @@ namespace OpenVid.Controllers
 {
     public class ImportController : Controller
     {
-        private Videos _repo;
         private Save _save;
         private static List<FoundVideoViewModel> PendingImports;
 
-        public ImportController(Videos repo, Save save)
+        public ImportController(Save save)
         {
-            _repo = repo;
             _save = save;
         }
         public IActionResult Index()
@@ -88,7 +83,7 @@ namespace OpenVid.Controllers
             };
 
             SaveVideoResponse response = await _save.ImportVideoAsync(request);
-            _repo.SaveTagsForVideo(response.Video, _repo.DefineTags(fileInfo.SuggestedTags));
+            _save.SaveTagsForVideo(response.Video, _save.DefineTags(fileInfo.SuggestedTags));
 
             if (response.AlreadyExists)
                 return BadRequest("Already Exists");

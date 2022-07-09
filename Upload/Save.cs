@@ -85,6 +85,24 @@ namespace Upload
             return response;
         }
 
+        public void UpdateMeta(string md5)
+        {
+            Video toSave = GetVideo(md5);
+
+            string hash = toSave.Md5;
+            string subFolder = hash.Substring(0, 2);
+            string videoDirectory = Path.Combine(_configuration["Urls:BucketDirectory"], "video", subFolder);
+            string filePath = Path.Combine(videoDirectory, $"{toSave.Md5}.{toSave.Extension}");
+            var meta = GetMetadata(filePath);
+
+            toSave.Width = meta.Width;
+            toSave.Height = meta.Height;
+            toSave.Length = meta.Duration;
+            toSave.Size = new FileInfo(filePath).Length;
+
+            SaveVideo(toSave);
+
+        }
         public async Task<SaveVideoResponse> ImportVideoAsync(ImportVideoRequest request)
         {
             string md5 = GenerateHash(request.FileNameFull);
