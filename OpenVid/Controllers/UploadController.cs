@@ -71,7 +71,7 @@ namespace OpenVid.Controllers
         {
             _save.SoftDelete(viewModel.Id);
 
-            return RedirectToAction("Index", "Play", new { md5 = viewModel.Id });
+            return RedirectToAction("Index", "Play", new { Id = viewModel.Id });
         }
 
         [HttpGet]
@@ -100,6 +100,9 @@ namespace OpenVid.Controllers
                     File = file
                 };
                 SaveVideoResponse response = await _save.SaveVideoAsync(request);
+
+                if(!string.IsNullOrWhiteSpace(response.Message))
+                    return PartialView("_UploadError", response.Message);
 
                 UpdateFormViewModel viewModel = new UpdateFormViewModel()
                 {

@@ -15,7 +15,7 @@
     {
 
         <div class="form-group">
-            MD5: @metadata.Md5 <a href="@Url.Action("Index", "Play", new { md5 = metadata.Md5 })">[View]</a>
+            MD5: @metadata.Md5 <a href="@Url.Action("Index", "Play", new { Id = Model.Id })">[View]</a>
             <br />
             Dimensions: @(metadata.Width)x@(metadata.Height)
             <br />

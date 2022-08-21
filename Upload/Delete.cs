@@ -22,7 +22,7 @@ namespace Upload
         {
             Video video = GetVideo(id);
 
-            foreach (var source in video.VideoSource)
+            foreach (var source in video.VideoSource.ToList())
             {
                 var bucketDirectory = $"{_configuration["Urls:BucketDirectory"]}\\video\\{source.Md5.Substring(0, 2)}\\";
                 var internalDirectory = $"{_configuration["Urls:InternalDirectory"]}\\video\\";
