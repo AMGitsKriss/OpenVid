@@ -1,8 +1,8 @@
-﻿using Database.Models;
+﻿using OpenVid.Models;
 using OpenVid.Models.Upload;
 using System.Collections.Generic;
 
-namespace OpenVid.Models.Play
+namespace OpenVid.Areas.Playback.Models.Play
 {
     public class PlayViewModel : BaseViewModel
     {
