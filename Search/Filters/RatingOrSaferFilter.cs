@@ -9,8 +9,8 @@ namespace Search.Filters
     [Filter(ParameterType.RatingOrSafer)]
     public class RatingOrSaferFilter : IFilter
     {
-        private Videos _repo;
-        public RatingOrSaferFilter(Videos repo)
+        private IVideoRepository _repo;
+        public RatingOrSaferFilter(IVideoRepository repo)
         {
             _repo = repo;
         }
@@ -25,7 +25,7 @@ namespace Search.Filters
             rating = rating.ToLower();
             var selectedRating = _repo.GetRatings().FirstOrDefault(r => r.Name.ToLower() == rating);
 
-            List<Video> result = _repo.GetAllVideos().Where(x => x.RatingId <= selectedRating.Id).ToList();
+            List<Video> result = _repo.GetViewableVideos().Where(x => x.RatingId <= selectedRating.Id).ToList();
 
             return result.ToList();
 

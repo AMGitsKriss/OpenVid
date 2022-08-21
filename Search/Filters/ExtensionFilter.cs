@@ -9,8 +9,8 @@ namespace Search.Filters
     [Filter(ParameterType.Extension)]
     public class ExtensionFilter : IFilter
     {
-        private Videos _repo;
-        public ExtensionFilter(Videos repo)
+        private IVideoRepository _repo;
+        public ExtensionFilter(IVideoRepository repo)
         {
             _repo = repo;
         }
@@ -27,11 +27,11 @@ namespace Search.Filters
             List<Video> result;
             if (invert)
             {
-                result = _repo.GetAllVideos().Where(x => !(x.VideoSource.Any(s => s.Extension.ToLower() == extension))).ToList();
+                result = _repo.GetViewableVideos().Where(x => !(x.VideoSource.Any(s => s.Extension.ToLower() == extension))).ToList();
             }
             else
             {
-                result = _repo.GetAllVideos().Where(x => x.VideoSource.Any(s => s.Extension.ToLower() == extension)).ToList();
+                result = _repo.GetViewableVideos().Where(x => x.VideoSource.Any(s => s.Extension.ToLower() == extension)).ToList();
             }
             return result.ToList();
 

@@ -9,8 +9,8 @@ namespace Search.Filters
     [Filter(ParameterType.General)]
     public class GeneralFilter : IFilter
     {
-        private Videos _repo;
-        public GeneralFilter(Videos repo)
+        private IVideoRepository _repo;
+        public GeneralFilter(IVideoRepository repo)
         {
             _repo = repo;
         }
@@ -22,7 +22,7 @@ namespace Search.Filters
 
         public List<Video> FindByName(string tag, bool invert)
         {
-            List<Video> result = _repo.GetAllVideos().Where(v => v.Name.Contains(tag) == !invert).ToList();
+            List<Video> result = _repo.GetViewableVideos().Where(v => v.Name.Contains(tag) == !invert).ToList();
 
             return result;
 

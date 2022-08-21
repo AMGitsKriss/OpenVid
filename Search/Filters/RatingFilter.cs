@@ -9,8 +9,8 @@ namespace Search.Filters
     [Filter(ParameterType.Rating)]
     public class RatingFilter : IFilter
     {
-        private Videos _repo;
-        public RatingFilter(Videos repo)
+        private IVideoRepository _repo;
+        public RatingFilter(IVideoRepository repo)
         {
             _repo = repo;
         }
@@ -28,20 +28,20 @@ namespace Search.Filters
             List<Video> result;
             if (isNullRating && !invert)
             {
-                result = _repo.GetAllVideos().Where(x => x.RatingId == null).ToList();
+                result = _repo.GetViewableVideos().Where(x => x.RatingId == null).ToList();
             }
             else if (isNullRating && invert)
             {
-                result = _repo.GetAllVideos().Where(x => x.RatingId != null).ToList();
+                result = _repo.GetViewableVideos().Where(x => x.RatingId != null).ToList();
             }
             else if (invert)
             {
                 //var ids = result.Select(x => x.Id);
-                result = _repo.GetAllVideos().Where(x => !(x.Rating.Name.ToLower() == rating)).ToList();
+                result = _repo.GetViewableVideos().Where(x => !(x.Rating.Name.ToLower() == rating)).ToList();
             }
             else
             {
-                result = _repo.GetAllVideos().Where(x => x.Rating.Name.ToLower() == rating).ToList();
+                result = _repo.GetViewableVideos().Where(x => x.Rating.Name.ToLower() == rating).ToList();
             }
             return result.ToList();
 

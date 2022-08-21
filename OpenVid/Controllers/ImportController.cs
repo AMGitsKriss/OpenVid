@@ -1,5 +1,4 @@
-﻿using Database;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using OpenVid.Models.Import;
 using System;
 using System.Collections.Generic;
@@ -13,10 +12,10 @@ namespace OpenVid.Controllers
 {
     public class ImportController : Controller
     {
-        private Save _save;
+        private IVideoManager _save;
         private static List<FoundVideoViewModel> PendingImports;
 
-        public ImportController(Save save)
+        public ImportController(IVideoManager save)
         {
             _save = save;
         }

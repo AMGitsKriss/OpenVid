@@ -1,6 +1,5 @@
 ﻿using CacheMeIfYouCan;
 using Database;
-using Database.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,15 +9,15 @@ namespace TagCache
 {
     public class SuggestedTags
     {
-        private readonly Videos _repository;
+        private readonly IVideoRepository _repository;
         private static ICachedObject<List<string>> _allUsedTags;
 
-        public SuggestedTags(Videos repository)
+        public SuggestedTags(IVideoRepository repository)
         {
             _repository = repository;
         }
 
-        public async Task<List<string>> Build()
+        public List<string> Build()
         {
             List<string> validTags = _repository.GetAllTags().Where(t => t.VideoTag.Any()).Select(t => t.Name).ToList();
 

@@ -1,15 +1,20 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.Extensions.Configuration;
+
+// Code scaffolded by EF Core assumes nullable reference types (NRTs) are not used or disabled.
+// If you have enabled NRTs for your project, then un-comment the following line:
+// #nullable disable
 
 namespace Database.Models
 {
     public partial class OpenVidContext : DbContext
     {
-        private IConfiguration _configuration;
+        public OpenVidContext()
+        {
+        }
 
-        public OpenVidContext(DbContextOptions<OpenVidContext> options, IConfiguration configuration)
+        public OpenVidContext(DbContextOptions<OpenVidContext> options)
             : base(options)
         {
         }
@@ -24,7 +29,7 @@ namespace Database.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer(_configuration["Database:ConnectionString"]);
+                optionsBuilder.UseSqlServer("name=ConnectionStrings:DefaultDatabase");
             }
         }
 
@@ -54,18 +59,26 @@ namespace Database.Models
 
             modelBuilder.Entity<Video>(entity =>
             {
-                
+                entity.HasIndex(e => e.Md5)
+                    .HasName("IX_Video_Unique_MD5")
+                    .IsUnique();
+
                 entity.Property(e => e.Id).HasColumnName("ID");
 
                 entity.Property(e => e.Description)
                     .HasMaxLength(500)
                     .IsUnicode(false);
 
-                
+                entity.Property(e => e.Extension)
+                    .HasMaxLength(4)
+                    .IsUnicode(false);
 
                 entity.Property(e => e.Length).HasColumnType("time(0)");
 
-                
+                entity.Property(e => e.Md5)
+                    .HasColumnName("MD5")
+                    .HasMaxLength(32)
+                    .IsUnicode(false);
 
                 entity.Property(e => e.MetaText).IsUnicode(false);
 

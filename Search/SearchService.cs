@@ -10,10 +10,10 @@ namespace Search
 {
     public class SearchService
     {
-        internal Videos _repo;
+        internal IVideoRepository _repo;
         private IEnumerable<IFilter> _filters;
 
-        public SearchService(Videos repo, IEnumerable<IFilter> filters)
+        public SearchService(IVideoRepository repo, IEnumerable<IFilter> filters)
         {
             _repo = repo;
             _filters = filters;
@@ -42,7 +42,7 @@ namespace Search
             }
             else
             {
-                results.AddRange(_repo.GetAllVideos());
+                results.AddRange(_repo.GetViewableVideos());
             }
 
             if (order?.Value == "random")

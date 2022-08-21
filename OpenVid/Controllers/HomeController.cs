@@ -1,24 +1,24 @@
 ﻿using System.Linq;
-using Database;
 using Microsoft.AspNetCore.Mvc;
 using OpenVid.Models.Home;
+using Upload;
 
 namespace OpenVid.Controllers
 {
     public class HomeController : Controller
     {
-        private Videos _repo;
+        private IVideoManager _manager;
 
-        public HomeController(Videos repo)
+        public HomeController(IVideoManager manager)
         {
-            _repo = repo;
+            _manager = manager;
         }
 
         public IActionResult Index()
         {
             HomeViewModel viewModel = new HomeViewModel()
             {
-                Tags = _repo.GetAllTags().ToList()
+                Tags = _manager.GetAllTags().ToList()
             };
 
             return View(viewModel);

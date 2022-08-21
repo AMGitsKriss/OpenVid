@@ -1,12 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Database;
 using Database.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -34,10 +29,9 @@ namespace OpenVid
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
 
             services.AddDbContext<OpenVidContext>(o => o.UseSqlServer(Configuration.GetConnectionString("DefaultDatabase")));
-            services.AddScoped<Videos, Videos>();
+            services.AddScoped<IVideoRepository, VideoRepository>();
             services.AddScoped<PaginatedSearch, PaginatedSearch>();
-            services.AddScoped<Save, Save>();
-            services.AddScoped<Delete>();
+            services.AddScoped<IVideoManager, VideoManager>();
             services.AddScoped<UrlResolver, UrlResolver>();
 
             services

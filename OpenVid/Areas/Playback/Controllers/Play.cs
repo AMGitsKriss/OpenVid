@@ -15,14 +15,14 @@ namespace OpenVid.Areas.Playback.Controllers
     public class Play : Controller
     {
 
-        private Save _service;
+        private IVideoManager _videoService;
         private UrlResolver _urlResolver;
         private IConfiguration _configuration;
         private TagManager _tagManager;
 
-        public Play(Save service, UrlResolver urlResolver, TagManager tagManager, IConfiguration configuration)
+        public Play(IVideoManager videoService, UrlResolver urlResolver, TagManager tagManager, IConfiguration configuration)
         {
-            _service = service;
+            _videoService = videoService;
             _urlResolver = urlResolver;
             _configuration = configuration;
             _tagManager = tagManager;
@@ -30,7 +30,7 @@ namespace OpenVid.Areas.Playback.Controllers
         [Route("{id}")]
         public IActionResult Index(int id)
         {
-            var video = _service.GetVideo(id);
+            var video = _videoService.GetVideo(id);
 
             if (video == null)
                 return NotFound();
@@ -68,7 +68,7 @@ namespace OpenVid.Areas.Playback.Controllers
                 Tags = string.Join(" ", tagCollection) + " ",
                 IsFlaggedForDeletion = video.IsDeleted,
                 RatingId = video.RatingId ?? 0,
-                PossibleRatings = _service.GetRatings(),
+                PossibleRatings = _videoService.GetRatings(),
                 FileBaseUrl = _configuration["FileBaseUrl"],
                 SuggestedTags = tagSuggestions,
                 Metadata = video.VideoSource.Select(s => new MetadataViewModel()

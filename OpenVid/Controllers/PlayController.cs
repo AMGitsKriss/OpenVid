@@ -1,8 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using Search;
 using TagCache;
-using Upload;
 
 namespace OpenVid.Controllers
 {

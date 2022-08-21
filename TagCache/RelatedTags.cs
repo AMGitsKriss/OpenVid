@@ -10,10 +10,10 @@ namespace TagCache
 {
     public class RelatedTags
     {
-        private readonly Videos _repository;
+        private readonly IVideoRepository _repository;
         private static ICachedObject<Dictionary<string, List<string>>> _relatedTags;
 
-        public RelatedTags(Videos repository)
+        public RelatedTags(IVideoRepository repository)
         {
             _repository = repository;
         }
@@ -35,7 +35,7 @@ namespace TagCache
 
         private IQueryable<string> GetMutualTags(Tag tag)
         {
-            var videoTags = _repository.VideosByTag().Where(t => t.TagId == tag.Id);
+            var videoTags = _repository.TagsWithVideos().Where(t => t.TagId == tag.Id);
             var allTags = videoTags.SelectMany(vt => vt.Video.VideoTag).Where(t => t.TagId != tag.Id && t.Tag.Type == 0).Select(t => t.Tag.Name);
 
             return allTags;

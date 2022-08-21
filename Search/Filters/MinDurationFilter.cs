@@ -4,16 +4,14 @@ using Search.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using System.Text;
 
 namespace Search.Filters
 {
     [Filter(ParameterType.MinDuration)]
     public class MinDurationFilter : IFilter
     {
-        private Videos _repo;
-        public MinDurationFilter(Videos repo)
+        private IVideoRepository _repo;
+        public MinDurationFilter(IVideoRepository repo)
         {
             _repo = repo;
         }
@@ -21,7 +19,7 @@ namespace Search.Filters
         public List<Video> Filter(SearchParameter parameter)
         {
             var duration = TimeSpan.Parse(parameter.Value);
-            var results = _repo.GetAllVideos().Where(x => x.Length >= duration).ToList();
+            var results = _repo.GetViewableVideos().Where(x => x.Length >= duration).ToList();
             return results;
         }
     }

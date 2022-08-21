@@ -1,41 +1,40 @@
 ﻿using Database.Extensions;
 using Database.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Database
 {
-    // Scaffold-DbContext "Server=orion;Database=OpenVid;Trusted_Connection=True;" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Models -Force
-    public class Videos : IVideos
+    // Scaffold-DbContext "name=ConnectionStrings:DefaultDatabase" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Models -Force
+    public class VideoRepository : IVideoRepository
     {
         OpenVidContext _context;
 
-        public Videos(IConfiguration configuration, OpenVidContext context)
+        public VideoRepository(OpenVidContext context)
         {
             _context = context;
         }
 
-        public IQueryable<Video> GetDeletedVideos()
-        {
-            return _context.Video.Include(x => x.VideoTag).Where(v => v.IsDeleted).OrderByDescending(x => x.Id);
-        }
-
         public IQueryable<Video> GetAllVideos()
         {
-            return _context.Video.Include(v => v.VideoSource).Include(x => x.VideoTag).ThenInclude(x => x.Video).ThenInclude(x => x.Rating).Where(v => !v.IsDeleted).OrderByDescending(x => x.Id);
+            return _context.Video.Include(v => v.VideoSource);
+        }
+
+        public IQueryable<Video> GetViewableVideos()
+        {
+            return GetAllVideos().Include(x => x.VideoTag).ThenInclude(x => x.Video).ThenInclude(x => x.Rating).Where(v => !v.IsDeleted).OrderByDescending(x => x.Id);
         }
 
         public IQueryable<Video> GetSoftDeletedVideos()
         {
-            return _context.Video.Include(v => v.VideoSource).Where(v => v.IsDeleted).OrderByDescending(x => x.Id);
+            return GetAllVideos().Where(v => v.IsDeleted).OrderByDescending(x => x.Id);
         }
 
         public Video GetVideo(string md5)
         {
-            return _context.Video.Include(v => v.VideoSource).Include(x => x.VideoTag).ThenInclude(x => x.Tag).FirstOrDefault(x => x.VideoSource.Any(v => v.Md5 == md5));
+            return GetAllVideos().Include(x => x.VideoTag).ThenInclude(x => x.Tag).FirstOrDefault(x => x.VideoSource.Any(v => v.Md5 == md5));
         }
 
         public VideoSource GetVideoSource(string md5)
@@ -45,7 +44,7 @@ namespace Database
 
         public Video GetVideo(int id)
         {
-            return _context.Video.Include(v => v.VideoSource).Include(x => x.VideoTag).ThenInclude(x => x.Tag).FirstOrDefault(x => x.Id == id);
+            return GetAllVideos().Include(x => x.VideoTag).ThenInclude(x => x.Tag).FirstOrDefault(x => x.Id == id);
         }
 
         public IQueryable<Tag> GetAllTags()
@@ -59,10 +58,22 @@ namespace Database
             return _context.Ratings.ToList();
         }
 
-        public IQueryable<VideoTag> VideosByTag()
+        public IQueryable<VideoTag> TagsWithVideos()
         {
             var result = _context.VideoTag.Include(x => x.Video);
             return result;
+        }
+
+        public void RemoveTagsFromVideo(IEnumerable<VideoTag> tagsToRemove)
+        {
+            _context.VideoTag.RemoveRange(tagsToRemove);
+            _context.SaveChanges();
+        }
+
+        public void AddTagsToVideo(IEnumerable<VideoTag> tagsToAdd)
+        {
+            _context.VideoTag.AddRange(tagsToAdd);
+            _context.SaveChanges();
         }
 
         public IQueryable<Video> Search(string search)
@@ -177,32 +188,6 @@ namespace Database
 
                 var tagsInDatabase = _context.Tag.Where(x => tags.Contains(x.Name));
                 return tagsInDatabase;
-            }
-            catch (Exception ex)
-            {
-                return null;
-            }
-        }
-
-        public IEnumerable<Tag> SaveTagsForVideo(Video video, IEnumerable<Tag> tags)
-        {
-            try
-            {
-                var tagIDs = tags.Select(x => x.Id);
-                var removeTags = _context.VideoTag.Where(x => video.Id == x.VideoId && !tagIDs.Contains(x.TagId)).ToList();
-                var existingTags = _context.VideoTag.Where(x => video.Id == x.VideoId && tagIDs.Contains(x.TagId)).Select(x => x.TagId).ToList();
-
-                _context.VideoTag.RemoveRange(removeTags);
-
-                foreach (var tag in tags)
-                {
-                    if (!existingTags.Contains(tag.Id))
-                        _context.VideoTag.Add(new VideoTag() { TagId = tag.Id, VideoId = video.Id });
-                }
-
-                _context.SaveChanges();
-
-                return tags;
             }
             catch (Exception ex)
             {

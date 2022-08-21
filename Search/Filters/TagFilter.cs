@@ -9,8 +9,8 @@ namespace Search.Filters
     [Filter(ParameterType.Tag)]
     public class TagFilter : IFilter
     {
-        private Videos _repo;
-        public TagFilter(Videos repo)
+        private IVideoRepository _repo;
+        public TagFilter(IVideoRepository repo)
         {
             _repo = repo;
         }
@@ -32,11 +32,11 @@ namespace Search.Filters
             else if (invert)
             {
                 //var ids = result.Select(x => x.Id);
-                result = _repo.GetAllVideos().Where(x => !x.VideoTag.Select(t => t.TagId).Contains(tagObject.Id)).ToList();
+                result = _repo.GetViewableVideos().Where(x => !x.VideoTag.Select(t => t.TagId).Contains(tagObject.Id)).ToList();
             }
             else
             {
-                result = _repo.VideosByTag().Where(x => x.TagId == tagObject.Id && !x.Video.IsDeleted).Select(x => x.Video).ToList();
+                result = _repo.TagsWithVideos().Where(x => x.TagId == tagObject.Id && !x.Video.IsDeleted).Select(x => x.Video).ToList();
             }
             return result.ToList();
 

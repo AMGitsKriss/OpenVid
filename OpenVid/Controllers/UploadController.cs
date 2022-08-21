@@ -8,17 +8,16 @@ using System.Threading.Tasks;
 using Upload;
 using Upload.Models;
 using System.Collections.Generic;
-using System.Threading;
 
 namespace OpenVid.Controllers
 {
     public class UploadController : Controller
     {
-        private Save _save;
+        private IVideoManager _videoManager;
 
-        public UploadController(Save save)
+        public UploadController(IVideoManager save)
         {
-            _save = save;
+            _videoManager = save;
         }
 
         public IActionResult Index()
@@ -51,7 +50,7 @@ namespace OpenVid.Controllers
         [HttpPost]
         public IActionResult Update(UpdateFormViewModel viewModel)
         {
-            Video toSave = _save.GetVideo(viewModel.Id);
+            Video toSave = _videoManager.GetVideo(viewModel.Id);
             if (toSave == null)
                 return RedirectToAction("Index");
 
@@ -59,9 +58,9 @@ namespace OpenVid.Controllers
             toSave.Description = viewModel.Description;
             toSave.RatingId = viewModel.RatingId == 0 ? null : viewModel.RatingId;
 
-            _save.SaveVideo(toSave);
-            var tagList = _save.DefineTags((viewModel.Tags?.Trim() ?? string.Empty).Split(new char[] { ' ', '\n' }, StringSplitOptions.RemoveEmptyEntries).ToList());
-            _save.SaveTagsForVideo(toSave, tagList);
+            _videoManager.SaveVideo(toSave);
+            var tagList = _videoManager.DefineTags((viewModel.Tags?.Trim() ?? string.Empty).Split(new char[] { ' ', '\n' }, StringSplitOptions.RemoveEmptyEntries).ToList());
+            _videoManager.SaveTagsForVideo(toSave, tagList);
 
             return RedirectToAction("Index", "Play", new { Id = toSave.Id });
         }
@@ -69,7 +68,7 @@ namespace OpenVid.Controllers
         [HttpPost]
         public IActionResult Delete(UpdateFormViewModel viewModel)
         {
-            _save.SoftDelete(viewModel.Id);
+            _videoManager.SoftDelete(viewModel.Id);
 
             return RedirectToAction("Index", "Play", new { Id = viewModel.Id });
         }
@@ -77,12 +76,12 @@ namespace OpenVid.Controllers
         [HttpGet]
         public IActionResult UpdateAllMeta()
         {
-            var allMds5 = _save.GetAllVideos().OrderBy(v => v.Id).SelectMany(v => v.VideoSource.Select(s => s.Md5)).ToList();
+            var allMds5 = _videoManager.GetVideos().OrderBy(v => v.Id).SelectMany(v => v.VideoSource.Select(s => s.Md5)).ToList();
             int count = 0;
             int total = allMds5.Count();
             foreach (var md5 in allMds5)
             {
-                _save.UpdateMeta(md5);
+                _videoManager.UpdateMeta(md5);
                 count++;
             }
             return PartialView(200);
@@ -99,7 +98,7 @@ namespace OpenVid.Controllers
                 {
                     File = file
                 };
-                SaveVideoResponse response = await _save.SaveVideoAsync(request);
+                SaveVideoResponse response = await _videoManager.SaveVideoAsync(request);
 
                 if(!string.IsNullOrWhiteSpace(response.Message))
                     return PartialView("_UploadError", response.Message);
@@ -110,7 +109,7 @@ namespace OpenVid.Controllers
                     Name = response.Video.Name,
                     Tags = string.Join(" ", response.Video.VideoTag.Select(x => x.Tag.Name)),
                     RatingId = response.Video.RatingId ?? 0,
-                    PossibleRatings = _save.GetRatings(),
+                    PossibleRatings = _videoManager.GetRatings(),
                     SuggestedTags = new List<SuggestedTagViewModel>(),
                     Metadata = response.Video.VideoSource.Select(s => new MetadataViewModel()
                     {
@@ -142,7 +141,7 @@ namespace OpenVid.Controllers
             {
                 File = file
             };
-            SaveVideoResponse response = await _save.SaveVideoAsync(request);
+            SaveVideoResponse response = await _videoManager.SaveVideoAsync(request);
 
             if (response.AlreadyExists)
                 viewModel = new UploadResultViewModel() { Name = "Video already exists!" };

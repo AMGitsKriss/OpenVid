@@ -1,6 +1,4 @@
-﻿using Database;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.AspNetCore.Mvc;
 using OpenVid.Models.Curation;
 using OpenVid.Models.Shared;
 using Search;
@@ -12,21 +10,19 @@ namespace OpenVid.Controllers
 {
     public class CurationController : Controller
     {
-        private Delete _repo;
-        private IConfiguration _configuration;
+        private IVideoManager _videoManager;
         private UrlResolver _urlResolver;
 
-        public CurationController(Delete repo, UrlResolver urlResolver, IConfiguration configuration)
+        public CurationController(IVideoManager videoManager, UrlResolver urlResolver)
         {
-            _repo = repo;
-            _configuration = configuration;
+            _videoManager = videoManager;
             _urlResolver = urlResolver;
         }
         public IActionResult Index()
         {
             var model = new CurationViewModel()
             {
-                VideosForDeletion = _repo.GetSoftDeletedVideos().Select(v => new VideoViewModel()
+                VideosForDeletion = _videoManager.GetSoftDeletedVideos().Select(v => new VideoViewModel()
                 {
                     Id = v.Id,
                     Name = v.Name,
@@ -44,7 +40,7 @@ namespace OpenVid.Controllers
         {
             try
             {
-                _repo.DeleteVideo(id);
+                _videoManager.HardDeleteVideo(id);
                 return Ok();
             }
             catch (Exception ex)
