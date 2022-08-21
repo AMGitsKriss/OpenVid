@@ -10,7 +10,7 @@ $(document).on('click', '#loadMore', function () {
 function loadMore(page, searchQuery) {
     $.ajax({
         type: 'GET',
-        url: '/search/page?searchString=' + searchQuery + '&pageNo=' + page,
+        url: '/Playback/VideoList?searchString=' + searchQuery + '&pageNo=' + page,
         success: function (data) {
             $('#loadMore').replaceWith(data);
         },
