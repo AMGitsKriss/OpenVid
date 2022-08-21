@@ -5,9 +5,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace Search
+namespace VideoHandler
 {
-    public class UrlResolver
+    public class UrlResolver : IUrlResolver
     {
         private IConfiguration _configuration;
 
@@ -46,7 +46,7 @@ namespace Search
 
             if (!File.Exists(bucketDirectory + fileName))
             {
-                if(!TryMove(internalDirectory, bucketDirectory, fileName))
+                if (!TryMove(internalDirectory, bucketDirectory, fileName))
                     return $"{_configuration["Urls:InternalUrl"]}/thumbnail/{md5}.jpg";
             }
 

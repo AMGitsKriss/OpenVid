@@ -1,6 +1,6 @@
-﻿namespace Search
+﻿namespace VideoHandler
 {
-    public enum ParameterType
+    public enum FilterType
     {
         General,
         Tag,

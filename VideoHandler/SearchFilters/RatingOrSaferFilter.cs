@@ -1,16 +1,17 @@
 ﻿using Database;
 using Database.Models;
-using Search.Attributes;
 using System.Collections.Generic;
 using System.Linq;
+using VideoHandler.Attributes;
+using VideoHandler.Models;
 
-namespace Search.Filters
+namespace VideoHandler.SearchFilters
 {
-    [Filter(ParameterType.RatingOrRiskier)]
-    public class RatingOrRiskierFilter : IFilter
+    [Filter(FilterType.RatingOrSafer)]
+    public class RatingOrSaferFilter : IFilter
     {
         private IVideoRepository _repo;
-        public RatingOrRiskierFilter(IVideoRepository repo)
+        public RatingOrSaferFilter(IVideoRepository repo)
         {
             _repo = repo;
         }
@@ -25,7 +26,7 @@ namespace Search.Filters
             rating = rating.ToLower();
             var selectedRating = _repo.GetRatings().FirstOrDefault(r => r.Name.ToLower() == rating);
 
-            List<Video> result = _repo.GetViewableVideos().Where(x => x.RatingId >= selectedRating.Id).ToList();
+            List<Video> result = _repo.GetViewableVideos().Where(x => x.RatingId <= selectedRating.Id).ToList();
 
             return result.ToList();
 

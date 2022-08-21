@@ -1,8 +1,10 @@
-﻿namespace Search
+﻿using VideoHandler;
+
+namespace VideoHandler.Models
 {
     public class SearchParameter
     {
-        public ParameterType Type { get; set; }
+        public FilterType Type { get; set; }
         public string Value { get; set; }
         public bool InvertSearch { get; set; }
     }

@@ -1,12 +1,13 @@
 ﻿using Database;
 using Database.Models;
-using Search.Attributes;
 using System.Collections.Generic;
 using System.Linq;
+using VideoHandler.Attributes;
+using VideoHandler.Models;
 
-namespace Search.Filters
+namespace VideoHandler.SearchFilters
 {
-    [Filter(ParameterType.Extension)]
+    [Filter(FilterType.Extension)]
     public class ExtensionFilter : IFilter
     {
         private IVideoRepository _repo;

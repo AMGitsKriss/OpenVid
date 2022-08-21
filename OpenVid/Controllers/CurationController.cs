@@ -1,10 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using OpenVid.Models.Curation;
 using OpenVid.Models.Shared;
-using Search;
 using System;
 using System.Linq;
-using Upload;
+using VideoHandler;
 
 namespace OpenVid.Controllers
 {

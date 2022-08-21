@@ -2,19 +2,19 @@
 using Microsoft.Extensions.Configuration;
 using OpenVid.Areas.Playback.Models.VideoList;
 using OpenVid.Models.Shared;
-using Search;
 using System.Linq;
+using VideoHandler;
 
 namespace OpenVid.Areas.Playback.Controllers
 {
     [Area("Playback")]
     public class VideoListController : Controller
     {
-        private readonly PaginatedSearch _search;
+        private readonly ISearchManager _search;
         private readonly IConfiguration _configuration;
-        private readonly UrlResolver _urlResolver;
+        private readonly IUrlResolver _urlResolver;
 
-        public VideoListController(UrlResolver urlResolver, PaginatedSearch search, IConfiguration configuration)
+        public VideoListController(IUrlResolver urlResolver, ISearchManager search, IConfiguration configuration)
         {
             _search = search;
             _configuration = configuration;

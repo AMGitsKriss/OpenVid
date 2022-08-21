@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Upload.Models
+namespace VideoHandler.Models
 {
     public class MediaProperties
     {

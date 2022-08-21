@@ -1,28 +1,38 @@
 ﻿using Database;
 using Database.Models;
-using Search.Attributes;
-using Search.Filters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using VideoHandler.Attributes;
+using VideoHandler.Models;
+using VideoHandler.SearchFilters;
 
-namespace Search
+namespace VideoHandler
 {
-    public class SearchService
+    public class SearchManager : ISearchManager
     {
         internal IVideoRepository _repo;
         private IEnumerable<IFilter> _filters;
 
-        public SearchService(IVideoRepository repo, IEnumerable<IFilter> filters)
+        public SearchManager(IVideoRepository repo, IEnumerable<IFilter> filters)
         {
             _repo = repo;
             _filters = filters;
         }
+
+        public List<Video> PaginatedQuery(string searchQuery, int pageNumber, out bool hasMore)
+        {
+            var results = Query(searchQuery).Skip((pageNumber - 1) * 48);
+            hasMore = (results.Count() > 48);
+
+            return results.Take(48).ToList();
+        }
+
         public List<Video> Query(string searchQuery)
         {
             var parameters = MapSearchQueryToParameters(searchQuery);
 
-            var order = parameters.FirstOrDefault(x => x.Type == ParameterType.Order);
+            var order = parameters.FirstOrDefault(x => x.Type == FilterType.Order);
             parameters.Remove(order);
 
             var results = new List<Video>();
@@ -92,7 +102,7 @@ namespace Search
             var value = pair[0];
             var invert = pair[0].IndexOf('-') == 0 ? true : false;
 
-            var isSuccess = Enum.TryParse(typeof(ParameterType), pair[0].Trim('-'), true, out var type);
+            var isSuccess = Enum.TryParse(typeof(FilterType), pair[0].Trim('-'), true, out var type);
             if (pair.Length == 2)
             {
                 value = pair[1];
@@ -102,7 +112,7 @@ namespace Search
             {
                 return new SearchParameter()
                 {
-                    Type = (ParameterType)type,
+                    Type = (FilterType)type,
                     Value = value,
                     InvertSearch = invert
                 };
@@ -116,7 +126,7 @@ namespace Search
 
             var p = new SearchParameter()
             {
-                Type = ParameterType.General,
+                Type = FilterType.General,
                 Value = searchValue.Trim('-'),
                 InvertSearch = invert
             };

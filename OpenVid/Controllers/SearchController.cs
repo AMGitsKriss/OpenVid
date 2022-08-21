@@ -1,22 +1,19 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using OpenVid.Models.Search;
-using Search;
 using System.Linq;
-using Upload;
+using VideoHandler;
 
 namespace OpenVid.Controllers
 {
     public class SearchController : Controller
     {
         private IVideoManager _videoManager;
-        private PaginatedSearch _search;
-        private UrlResolver _urlResolver;
+        private ISearchManager _search;
 
-        public SearchController(IVideoManager videoManager, UrlResolver urlResolver, PaginatedSearch search)
+        public SearchController(IVideoManager videoManager, ISearchManager search)
         {
             _videoManager = videoManager;
             _search = search;
-            _urlResolver = urlResolver;
         }
 
         [Route("[Controller]/{searchString}")]

@@ -1,9 +1,9 @@
 ﻿using Database.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Upload.Models;
+using VideoHandler.Models;
 
-namespace Upload
+namespace VideoHandler
 {
     public interface IVideoManager
     {

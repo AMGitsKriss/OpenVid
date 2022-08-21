@@ -1,8 +1,6 @@
 using NUnit.Framework;
-using Search;
-using System;
-using System.Collections.Generic;
 using System.Linq;
+using VideoHandler;
 
 namespace Tests
 {
@@ -23,7 +21,7 @@ namespace Tests
         [TestCase("-tag:testtag tag:food minduration:0:1:0 order:size", 4)]
         public void SearchParsingTest(string searchString, int expectedCount)
         {
-            SearchService service = new SearchService(null, null);
+            SearchManager service = new SearchManager(null, null);
             var searchParams = service.MapSearchQueryToParameters(searchString);
             Assert.AreEqual(expectedCount, searchParams.Count());
         }

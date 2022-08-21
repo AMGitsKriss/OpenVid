@@ -1,9 +1,8 @@
 ﻿using Database.Models;
-using System;
 using System.Collections.Generic;
-using System.Text;
+using VideoHandler.Models;
 
-namespace Search.Filters
+namespace VideoHandler.SearchFilters
 {
     public interface IFilter
     {

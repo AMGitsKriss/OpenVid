@@ -1,10 +1,8 @@
 ﻿using Database.Models;
-using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Text;
 
-namespace Search
+namespace VideoHandler
 {
     class Comparer : IEqualityComparer<Video>
     {

@@ -5,9 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using OpenVid.Areas.Playback.Models.Play;
 using OpenVid.Models.Upload;
-using Search;
 using TagCache;
-using Upload;
+using VideoHandler;
 
 namespace OpenVid.Areas.Playback.Controllers
 {

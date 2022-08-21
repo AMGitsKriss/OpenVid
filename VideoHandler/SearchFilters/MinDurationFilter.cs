@@ -1,13 +1,14 @@
 ﻿using Database;
 using Database.Models;
-using Search.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using VideoHandler.Attributes;
+using VideoHandler.Models;
 
-namespace Search.Filters
+namespace VideoHandler.SearchFilters
 {
-    [Filter(ParameterType.MinDuration)]
+    [Filter(FilterType.MinDuration)]
     public class MinDurationFilter : IFilter
     {
         private IVideoRepository _repo;

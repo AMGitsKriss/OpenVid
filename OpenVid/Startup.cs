@@ -6,10 +6,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Search;
-using Search.Filters;
 using TagCache;
-using Upload;
+using VideoHandler;
+using VideoHandler.SearchFilters;
 
 namespace OpenVid
 {
@@ -30,9 +29,9 @@ namespace OpenVid
 
             services.AddDbContext<OpenVidContext>(o => o.UseSqlServer(Configuration.GetConnectionString("DefaultDatabase")));
             services.AddScoped<IVideoRepository, VideoRepository>();
-            services.AddScoped<PaginatedSearch, PaginatedSearch>();
+            services.AddScoped<ISearchManager, SearchManager>();
             services.AddScoped<IVideoManager, VideoManager>();
-            services.AddScoped<UrlResolver, UrlResolver>();
+            services.AddScoped<IUrlResolver, UrlResolver>();
 
             services
               .AddScoped<IFilter, GeneralFilter>()

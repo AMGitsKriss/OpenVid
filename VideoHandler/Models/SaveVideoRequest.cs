@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Upload.Models
+namespace VideoHandler.Models
 {
     public class SaveVideoRequest
     {

@@ -9,9 +9,9 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
-using Upload.Models;
+using VideoHandler.Models;
 
-namespace Upload
+namespace VideoHandler
 {
     public class VideoManager : IVideoManager
     {

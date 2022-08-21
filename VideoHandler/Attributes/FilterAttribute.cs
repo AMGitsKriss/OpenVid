@@ -1,22 +1,22 @@
-﻿using Search.Filters;
+﻿using VideoHandler.SearchFilters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 
-namespace Search.Attributes
+namespace VideoHandler.Attributes
 {
     class FilterAttribute : Attribute
     {
-        public ParameterType Enum { get; set; }
+        public FilterType Enum { get; set; }
 
-        public FilterAttribute(ParameterType filterType)
+        public FilterAttribute(FilterType filterType)
         {
             Enum = filterType;
         }
 
-        internal static IFilter GetFilter(IEnumerable<IFilter> filters, ParameterType filter)
+        internal static IFilter GetFilter(IEnumerable<IFilter> filters, FilterType filter)
         {
 
             foreach (var f in filters)

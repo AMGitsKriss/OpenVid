@@ -1,15 +1,16 @@
 ﻿using Database;
 using Database.Models;
-using Search.Attributes;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using VideoHandler.Attributes;
+using VideoHandler.Models;
 using System.Reflection;
+using System.Diagnostics.CodeAnalysis;
 
-namespace Search.Filters
+namespace VideoHandler.SearchFilters
 {
-    [Filter(ParameterType.Meta)]
+    [Filter(FilterType.Meta)]
     public class MetaFilter : IFilter
     {
         private IVideoRepository _repo;
