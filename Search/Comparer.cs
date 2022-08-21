@@ -15,7 +15,7 @@ namespace Search
 
         public int GetHashCode([DisallowNull] Video obj)
         {
-            return obj.Md5.GetHashCode();
+            return obj.Id;
         }
     }
 }

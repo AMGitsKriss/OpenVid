@@ -4,17 +4,19 @@ using Microsoft.Extensions.Configuration;
 using OpenVid.Models.Curation;
 using OpenVid.Models.Shared;
 using Search;
+using System;
 using System.Linq;
+using Upload;
 
 namespace OpenVid.Controllers
 {
     public class CurationController : Controller
     {
-        private Videos _repo;
+        private Delete _repo;
         private IConfiguration _configuration;
         private UrlResolver _urlResolver;
 
-        public CurationController(Videos repo, UrlResolver urlResolver, IConfiguration configuration)
+        public CurationController(Delete repo, UrlResolver urlResolver, IConfiguration configuration)
         {
             _repo = repo;
             _configuration = configuration;
@@ -28,14 +30,27 @@ namespace OpenVid.Controllers
                 {
                     Id = v.Id,
                     Name = v.Name,
-                    Md5 = v.Md5,
-                    SizeMb = (int)((v.Size / 1024) / 1024),
+                    SizeMb = (int)((v.VideoSource.First().Size / 1024) / 1024),
                     Length = v.Length.ToString(),
                     ThumbnailUrl = _urlResolver.GetThumbnailUrl(v)
                 }).ToList()
             };
 
             return View(model);
+        }
+
+        [HttpPost]
+        public IActionResult Delete(int id)
+        {
+            try
+            {
+                _repo.DeleteVideo(id);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500);
+            }
         }
     }
 }

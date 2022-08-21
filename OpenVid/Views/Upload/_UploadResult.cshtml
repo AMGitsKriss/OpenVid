@@ -5,10 +5,7 @@
         <div class="col-1">@Model.Icon</div>
         <div class="col-10">@Model.Name</div>
         <div class="col-1">
-            @if (Model.MD5 != null)
-            {
-                <a href="@Url.Action("Index", "Play", new { md5 = Model.MD5 })">[View]</a>
-            }
+            <a href="@Url.Action("Index", "Play", new { md5 = Model.Id })">[View]</a>
         </div>
     </div>
 </div>

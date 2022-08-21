@@ -27,11 +27,11 @@ namespace Search.Filters
             List<Video> result;
             if (invert)
             {
-                result = _repo.GetAllVideos().Where(x => !(x.Extension.ToLower() == extension)).ToList();
+                result = _repo.GetAllVideos().Where(x => !(x.VideoSource.Any(s => s.Extension.ToLower() == extension))).ToList();
             }
             else
             {
-                result = _repo.GetAllVideos().Where(x => x.Extension.ToLower() == extension).ToList();
+                result = _repo.GetAllVideos().Where(x => x.VideoSource.Any(s => s.Extension.ToLower() == extension)).ToList();
             }
             return result.ToList();
 

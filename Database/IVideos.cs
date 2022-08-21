@@ -7,7 +7,7 @@ namespace Database
     public interface IVideos
     {
         IQueryable<Tag> DefineTags(List<string> tags);
-        bool DeleteVideo(string md5);
+        bool SoftDelete(int id);
         IQueryable<Tag> GetAllTags();
         IQueryable<Video> GetAllVideos();
         IQueryable<Video> GetDeletedVideos();

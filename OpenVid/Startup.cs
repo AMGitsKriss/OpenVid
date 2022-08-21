@@ -37,6 +37,7 @@ namespace OpenVid
             services.AddScoped<Videos, Videos>();
             services.AddScoped<PaginatedSearch, PaginatedSearch>();
             services.AddScoped<Save, Save>();
+            services.AddScoped<Delete>();
             services.AddScoped<UrlResolver, UrlResolver>();
 
             services
@@ -65,6 +66,12 @@ namespace OpenVid
                 app.UseExceptionHandler("/Home/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
+
+                using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
+                {
+                    var context = serviceScope.ServiceProvider.GetRequiredService<OpenVidContext>();
+                    context.Database.EnsureCreated();
+                }
             }
             app.UseHttpsRedirection();
             app.UseStaticFiles();

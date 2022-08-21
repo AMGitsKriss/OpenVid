@@ -9,6 +9,6 @@ namespace OpenVid.Models.Upload
     {
         public string Icon { get; set; }
         public string Name { get; set; }
-        public string MD5 { get; set; }
+        public int Id { get; set; }
     }
 }

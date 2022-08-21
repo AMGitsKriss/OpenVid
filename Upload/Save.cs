@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Security.Cryptography;
@@ -58,13 +59,19 @@ namespace Upload
                 var meta = GetMetadata(filePath);
                 toSave = new Video()
                 {
-                    Md5 = hash,
                     Name = originalName,
-                    Extension = ext,
-                    Width = meta.Width,
-                    Height = meta.Height,
                     Length = meta.Duration,
-                    Size = request.File.Length
+                    VideoSource = new List<VideoSource>()
+                    {
+                        new VideoSource()
+                        {
+                            Md5 = hash,
+                            Extension = ext,
+                            Width = meta.Width,
+                            Height = meta.Height,
+                            Size = request.File.Length,
+                        }
+                    }
                 };
                 try
                 {
@@ -87,7 +94,8 @@ namespace Upload
 
         public void UpdateMeta(string md5)
         {
-            Video toSave = GetVideo(md5);
+            //Video toSave = GetVideo(md5);
+            VideoSource toSave = GetVideoSource(md5);
 
             string hash = toSave.Md5;
             string subFolder = hash.Substring(0, 2);
@@ -97,10 +105,10 @@ namespace Upload
 
             toSave.Width = meta.Width;
             toSave.Height = meta.Height;
-            toSave.Length = meta.Duration;
+            toSave.Video.Length = meta.Duration;
             toSave.Size = new FileInfo(filePath).Length;
 
-            SaveVideo(toSave);
+            SaveVideoSource(toSave);
 
         }
         public async Task<SaveVideoResponse> ImportVideoAsync(ImportVideoRequest request)
@@ -128,13 +136,19 @@ namespace Upload
             FileInfo fileInfo = new FileInfo(request.FileNameFull);
             var newVideo = new Video()
             {
-                Md5 = md5,
                 Name = Path.GetFileNameWithoutExtension(request.FileName),
-                Extension = ext,
-                Width = metaData.Width,
-                Height = metaData.Height,
-                Length = metaData.Duration,
-                Size = fileInfo.Length
+                Length = metaData.Duration,               
+                VideoSource = new List<VideoSource>()
+                    {
+                        new VideoSource()
+                        {
+                            Md5 = md5,
+                            Extension = ext,
+                            Width = metaData.Width,
+                            Height = metaData.Height,
+                            Size = fileInfo.Length,
+                        }
+                    }
             };
 
             // DATABASE
@@ -219,7 +233,7 @@ namespace Upload
             var startInfo = new ProcessStartInfo
             {
                 WindowStyle = ProcessWindowStyle.Normal,
-                FileName = @"c:\ffmpeg\ffmpeg.exe",
+                FileName = @"c:\ffmpeg\ffmpeg.exe", // TODO - Make configurable
                 Arguments = cmd
             };
 

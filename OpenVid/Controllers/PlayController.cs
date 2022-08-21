@@ -27,18 +27,21 @@ namespace OpenVid.Controllers
             _tagManager = tagManager;
         }
 
-        [Route("[controller]/{md5}")]
-        public IActionResult Index(string md5)
+        [Route("[controller]/{id}")]
+        public IActionResult Index(int id)
         {
-            var video = _service.GetVideo(md5);
+            var video = _service.GetVideo(id);
+
+            if (video == null)
+                return NotFound();
 
             PlayViewModel viewModel = new PlayViewModel()
             {
-                VideoUrl = _urlResolver.GetVideoUrl(video),
+                VideoSources = _urlResolver.GetVideoUrl(video),
                 FileBaseUrl = _configuration["FileBaseUrl"]
             };
 
-            if (string.IsNullOrWhiteSpace(viewModel.VideoUrl)) return NotFound();
+            if (!viewModel.VideoSources.Any()) return NotFound();
 
             var tagCollection = video.VideoTag.Select(x => x.Tag.Name);
             var tagSuggestions = new List<SuggestedTagViewModel>();
@@ -59,20 +62,24 @@ namespace OpenVid.Controllers
 
             viewModel.Update = new UpdateFormViewModel()
             {
-                Md5 = video.Md5,
+                Id = video.Id,
                 Name = video.Name,
-                Extension = video.Extension,
-                Width = video.Width,
-                Height = video.Height,
-                Size = video.Size,
                 Description = video.Description,
-                Meta = video.MetaText,
                 Tags = string.Join(" ", tagCollection) + " ",
                 IsFlaggedForDeletion = video.IsDeleted,
                 RatingId = video.RatingId ?? 0,
                 PossibleRatings = _service.GetRatings(),
                 FileBaseUrl = _configuration["FileBaseUrl"],
-                SuggestedTags = tagSuggestions
+                SuggestedTags = tagSuggestions,
+                Metadata = video.VideoSource.Select(s => new MetadataViewModel()
+                {
+                    Md5 = s.Md5,
+                    Extension = s.Extension,
+                    Width = s.Width,
+                    Height = s.Height,
+                    Size = s.Size,
+
+                }).ToList()
             };
 
             return View(viewModel);

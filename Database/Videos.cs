@@ -25,22 +25,27 @@ namespace Database
 
         public IQueryable<Video> GetAllVideos()
         {
-            return _context.Video.Include(x => x.VideoTag).ThenInclude(x => x.Video).ThenInclude(x => x.Rating).Where(v => !v.IsDeleted).OrderByDescending(x => x.Id);
+            return _context.Video.Include(v => v.VideoSource).Include(x => x.VideoTag).ThenInclude(x => x.Video).ThenInclude(x => x.Rating).Where(v => !v.IsDeleted).OrderByDescending(x => x.Id);
         }
 
         public IQueryable<Video> GetSoftDeletedVideos()
         {
-            return _context.Video.Where(v => v.IsDeleted).OrderByDescending(x => x.Id);
+            return _context.Video.Include(v => v.VideoSource).Where(v => v.IsDeleted).OrderByDescending(x => x.Id);
         }
 
         public Video GetVideo(string md5)
         {
-            return _context.Video.Include(x => x.VideoTag).ThenInclude(x => x.Tag).FirstOrDefault(x => x.Md5 == md5);
+            return _context.Video.Include(v => v.VideoSource).Include(x => x.VideoTag).ThenInclude(x => x.Tag).FirstOrDefault(x => x.VideoSource.Any(v => v.Md5 == md5));
+        }
+
+        public VideoSource GetVideoSource(string md5)
+        {
+            return _context.VideoSource.Include(v => v.Video).FirstOrDefault(x => x.Md5 == md5);
         }
 
         public Video GetVideo(int id)
         {
-            return _context.Video.FirstOrDefault(x => x.Id == id);
+            return _context.Video.Include(v => v.VideoSource).Include(x => x.VideoTag).ThenInclude(x => x.Tag).FirstOrDefault(x => x.Id == id);
         }
 
         public IQueryable<Tag> GetAllTags()
@@ -96,20 +101,59 @@ namespace Database
             }
         }
 
-        public bool DeleteVideo(string md5)
-        {
-            Video video = GetVideo(md5);
 
-            if (video.IsDeleted)
+        public VideoSource SaveVideoSource(VideoSource videoSource)
+        {
+            try
             {
-                // TODO - Hard Delete baby!
+                if (videoSource.Id == 0)
+                {
+                    _context.VideoSource.Add(videoSource);
+                }
+                else
+                {
+                    _context.VideoSource.Update(videoSource);
+                }
+
+                _context.SaveChanges();
+
+                return videoSource;
             }
-            else
+            catch (Exception ex)
             {
-                video.IsDeleted = true;
+                throw ex;
             }
+        }
+
+        public bool SoftDelete(int id)
+        {
+            Video video = GetVideo(id);
+
+            video.IsDeleted = !video.IsDeleted;
 
             SaveVideo(video);
+
+            return true;
+        }
+
+        public bool DeleteSource(string md5)
+        {
+            VideoSource video = GetVideoSource(md5);
+
+            _context.VideoSource.Remove(video);
+
+            _context.SaveChanges();
+
+            return true;
+        }
+
+        public virtual bool DeleteVideo(int id)
+        {
+            Video video = GetVideo(id);
+
+            _context.Video.Remove(video);
+
+            _context.SaveChanges();
 
             return true;
         }

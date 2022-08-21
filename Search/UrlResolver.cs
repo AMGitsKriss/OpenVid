@@ -1,7 +1,9 @@
 ﻿using Database.Models;
 using Microsoft.Extensions.Configuration;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace Search
 {
@@ -14,34 +16,41 @@ namespace Search
             _configuration = configuration;
         }
 
-        public string GetVideoUrl(Video video)
+        public List<string> GetVideoUrl(Video video)
         {
-            var bucketDirectory = $"{_configuration["Urls:BucketDirectory"]}\\video\\{video.Md5.Substring(0, 2)}\\";
-            var internalDirectory = $"{_configuration["Urls:InternalDirectory"]}\\video\\";
-            var fileName = $"{video.Md5}.{video.Extension}";
+            var sources = new List<string>();
 
-            if (!File.Exists(bucketDirectory + fileName))
+            foreach (var src in video.VideoSource)
             {
-                if (!TryMove(internalDirectory, bucketDirectory, fileName))
-                    return $"{_configuration["Urls:InternalUrl"]}/video/{video.Md5}.{video.Extension}";
-            }
+                var bucketDirectory = $"{_configuration["Urls:BucketDirectory"]}\\video\\{src.Md5.Substring(0, 2)}\\";
+                var internalDirectory = $"{_configuration["Urls:InternalDirectory"]}\\video\\";
+                var fileName = $"{src.Md5}.{src.Extension}";
 
-            return $"{_configuration["Urls:BucketUrl"]}/video/{video.Md5.Substring(0, 2)}/{video.Md5}.{video.Extension}";
+                if (!File.Exists(bucketDirectory + fileName))
+                {
+                    if (!TryMove(internalDirectory, bucketDirectory, fileName))
+                        sources.Add($"{_configuration["Urls:InternalUrl"]}/video/{src.Md5}.{src.Extension}");
+                }
+
+                sources.Add($"{_configuration["Urls:BucketUrl"]}/video/{src.Md5.Substring(0, 2)}/{src.Md5}.{src.Extension}");
+            }
+            return sources;
         }
 
         public string GetThumbnailUrl(Video video)
         {
-            var bucketDirectory = $"{_configuration["Urls:BucketDirectory"]}\\thumbnail\\{video.Md5.Substring(0, 2)}\\";
+            var md5 = video.VideoSource.FirstOrDefault()?.Md5 ?? "aaaaaaa";
+            var bucketDirectory = $"{_configuration["Urls:BucketDirectory"]}\\thumbnail\\{md5.Substring(0, 2)}\\";
             var internalDirectory = $"{_configuration["Urls:InternalDirectory"]}\\thumbnail\\";
-            var fileName = $"{video.Md5}.jpg";
+            var fileName = $"{md5}.jpg";
 
             if (!File.Exists(bucketDirectory + fileName))
             {
                 if(!TryMove(internalDirectory, bucketDirectory, fileName))
-                    return $"{_configuration["Urls:InternalUrl"]}/thumbnail/{video.Md5}.jpg";
+                    return $"{_configuration["Urls:InternalUrl"]}/thumbnail/{md5}.jpg";
             }
 
-            return $"{_configuration["Urls:BucketUrl"]}/thumbnail/{video.Md5.Substring(0, 2)}/{video.Md5}.jpg";
+            return $"{_configuration["Urls:BucketUrl"]}/thumbnail/{md5.Substring(0, 2)}/{md5}.jpg";
         }
 
         private bool TryMove(string internalDirectory, string bucketDirectory, string fileName)

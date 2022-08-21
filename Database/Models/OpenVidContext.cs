@@ -17,6 +17,7 @@ namespace Database.Models
         public virtual DbSet<Ratings> Ratings { get; set; }
         public virtual DbSet<Tag> Tag { get; set; }
         public virtual DbSet<Video> Video { get; set; }
+        public virtual DbSet<VideoSource> VideoSource { get; set; }
         public virtual DbSet<VideoTag> VideoTag { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -53,28 +54,18 @@ namespace Database.Models
 
             modelBuilder.Entity<Video>(entity =>
             {
-                entity.HasIndex(e => e.Md5)
-                    .HasName("IX_Video_Unique_MD5")
-                    .IsUnique();
-
+                
                 entity.Property(e => e.Id).HasColumnName("ID");
 
                 entity.Property(e => e.Description)
                     .HasMaxLength(500)
                     .IsUnicode(false);
 
-                entity.Property(e => e.Extension)
-                    .IsRequired()
-                    .HasMaxLength(4)
-                    .IsUnicode(false);
+                
 
                 entity.Property(e => e.Length).HasColumnType("time(0)");
 
-                entity.Property(e => e.Md5)
-                    .IsRequired()
-                    .HasColumnName("MD5")
-                    .HasMaxLength(32)
-                    .IsUnicode(false);
+                
 
                 entity.Property(e => e.MetaText).IsUnicode(false);
 
@@ -88,7 +79,30 @@ namespace Database.Models
                 entity.HasOne(d => d.Rating)
                     .WithMany(p => p.Video)
                     .HasForeignKey(d => d.RatingId)
-                    .HasConstraintName("FK__Video__Rating__49C3F6B7");
+                    .HasConstraintName("FK__Video__RatingID__5CD6CB2B");
+            });
+
+            modelBuilder.Entity<VideoSource>(entity =>
+            {
+                entity.Property(e => e.Id).HasColumnName("ID");
+
+                entity.Property(e => e.Extension)
+                    .IsRequired()
+                    .HasMaxLength(4)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Md5)
+                    .IsRequired()
+                    .HasColumnName("MD5")
+                    .HasMaxLength(32)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.VideoId).HasColumnName("VideoID");
+
+                entity.HasOne(d => d.Video)
+                    .WithMany(p => p.VideoSource)
+                    .HasForeignKey(d => d.VideoId)
+                    .HasConstraintName("FK_VideoSource_Video");
             });
 
             modelBuilder.Entity<VideoTag>(entity =>

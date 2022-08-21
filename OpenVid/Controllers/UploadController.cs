@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Upload;
 using Upload.Models;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace OpenVid.Controllers
 {
@@ -50,27 +51,41 @@ namespace OpenVid.Controllers
         [HttpPost]
         public IActionResult Update(UpdateFormViewModel viewModel)
         {
-            Video toSave = _save.GetVideo(viewModel.Md5);
+            Video toSave = _save.GetVideo(viewModel.Id);
             if (toSave == null)
                 return RedirectToAction("Index");
 
             toSave.Name = viewModel.Name;
-            toSave.MetaText = viewModel.Meta;
             toSave.Description = viewModel.Description;
             toSave.RatingId = viewModel.RatingId == 0 ? null : viewModel.RatingId;
-            var vid = _save.SaveVideo(toSave);
-            var tagList = _save.DefineTags((viewModel.Tags?.Trim() ?? string.Empty).Split(new char[] { ' ', '\n' }, StringSplitOptions.RemoveEmptyEntries).ToList());
-            var tag = _save.SaveTagsForVideo(toSave, tagList);
 
-            return RedirectToAction("Index", "Play", new { md5 = toSave.Md5 });
+            _save.SaveVideo(toSave);
+            var tagList = _save.DefineTags((viewModel.Tags?.Trim() ?? string.Empty).Split(new char[] { ' ', '\n' }, StringSplitOptions.RemoveEmptyEntries).ToList());
+            _save.SaveTagsForVideo(toSave, tagList);
+
+            return RedirectToAction("Index", "Play", new { Id = toSave.Id });
         }
 
         [HttpPost]
         public IActionResult Delete(UpdateFormViewModel viewModel)
         {
-            _save.DeleteVideo(viewModel.Md5);
+            _save.SoftDelete(viewModel.Id);
 
-            return RedirectToAction("Index", "Play", new { md5 = viewModel.Md5 });
+            return RedirectToAction("Index", "Play", new { md5 = viewModel.Id });
+        }
+
+        [HttpGet]
+        public IActionResult UpdateAllMeta()
+        {
+            var allMds5 = _save.GetAllVideos().OrderBy(v => v.Id).SelectMany(v => v.VideoSource.Select(s => s.Md5)).ToList();
+            int count = 0;
+            int total = allMds5.Count();
+            foreach (var md5 in allMds5)
+            {
+                _save.UpdateMeta(md5);
+                count++;
+            }
+            return PartialView(200);
         }
 
         private async Task<IActionResult> SingleUpload(IFormFile file)
@@ -88,16 +103,21 @@ namespace OpenVid.Controllers
 
                 UpdateFormViewModel viewModel = new UpdateFormViewModel()
                 {
-                    Md5 = response.Video.Md5,
+                    Id = response.Video.Id,
                     Name = response.Video.Name,
-                    Extension = response.Video.Extension,
-                    Width = response.Video.Width,
-                    Height = response.Video.Height,
-                    Size = response.Video.Size,
                     Tags = string.Join(" ", response.Video.VideoTag.Select(x => x.Tag.Name)),
                     RatingId = response.Video.RatingId ?? 0,
                     PossibleRatings = _save.GetRatings(),
-                    SuggestedTags = new List<SuggestedTagViewModel>()
+                    SuggestedTags = new List<SuggestedTagViewModel>(),
+                    Metadata = response.Video.VideoSource.Select(s => new MetadataViewModel()
+                    {
+                        Md5 = s.Md5,
+                        Extension = s.Extension,
+                        Width = s.Width,
+                        Height = s.Height,
+                        Size = s.Size,
+
+                    }).ToList()
                 };
 
                 return PartialView("_UpdateForm", viewModel);
@@ -128,7 +148,7 @@ namespace OpenVid.Controllers
                 viewModel = new UploadResultViewModel()
                 {
                     Name = response.Video.Name,
-                    MD5 = response.Video.Md5
+                    Id = response.Video.Id
                 };
             }
             return PartialView("_UploadResult", viewModel);
