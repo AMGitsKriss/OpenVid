@@ -31,31 +31,28 @@ namespace OpenVid.Controllers
         public IActionResult Index(string searchString)
         {
             SearchViewModel viewModel = new SearchViewModel();
-            viewModel.Videos = new VideoListViewModel()
+
+            viewModel.SearchString = searchString;
+
+            // TODO - Search results now? Nono remove
+            var searchResults = _search.PaginatedQuery(searchString, 1, out var hasNext).Select(v => new VideoViewModel()
             {
-                Videos = _search.PaginatedQuery(searchString, 1, out var hasNext).Select(v => new VideoViewModel()
-                {
-                    Id = v.Id,
-                    Name = v.Name,
-                    ThumbnailUrl = _urlResolver.GetThumbnailUrl(v),
-                    Length = string.Format("{0:00}:{1:00}", (int)v.Length.TotalMinutes, v.Length.Seconds)
-                }).ToList(),
-                NextPageNumber = 2,
-                HasNextPage = hasNext,
-                SearchQuery = searchString,
-                FileBaseUrl = _configuration["FileBaseUrl"]
-            };
-            var videoIDs = viewModel.Videos.Videos.Select(x => x.Id).ToList();
+                Id = v.Id,
+                Name = v.Name,
+                ThumbnailUrl = _urlResolver.GetThumbnailUrl(v),
+                Length = string.Format("{0:00}:{1:00}", (int)v.Length.TotalMinutes, v.Length.Seconds)
+            }).ToList();
+
+            var videoIDs = searchResults.Select(x => x.Id).ToList();
             var selectedVideos = _repo.GetAllVideos().Where(x => videoIDs.Contains(x.Id));
             var tags = selectedVideos.SelectMany(x => x.VideoTag);
             var tagIDs = tags.Select(x => x.TagId).ToList();
             viewModel.Tags = _repo.GetAllTags().Where(x => tagIDs.Contains(x.Id)).ToList();
-            viewModel.SearchString = searchString;
 
             return View(viewModel);
         }
 
-        public IActionResult Page(int pageNo, string searchString = "")
+        public IActionResult Page(int pageNo = 0, string searchString = "")
         {
             VideoListViewModel viewModel = new VideoListViewModel()
             {

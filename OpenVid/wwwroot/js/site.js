@@ -4,9 +4,13 @@
 // Write your JavaScript code.
 
 $(document).on('click', '#loadMore', function () {
+    loadMore($('#loadMore').attr('data-page'), $('#loadMore').attr('data-search-query'));
+});
+
+function loadMore(page, searchQuery) {
     $.ajax({
         type: 'GET',
-        url: '/search/page?searchString=' + $('#loadMore').attr('data-search-query')+'&pageNo=' + $('#loadMore').attr('data-page'),
+        url: '/search/page?searchString=' + searchQuery + '&pageNo=' + page,
         success: function (data) {
             $('#loadMore').replaceWith(data);
         },
@@ -14,4 +18,4 @@ $(document).on('click', '#loadMore', function () {
             $('#loadMore').replaceWith("<p>There was an error.</p>");
         }
     });
-});
+}

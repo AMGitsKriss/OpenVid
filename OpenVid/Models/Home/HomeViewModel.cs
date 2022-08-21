@@ -9,7 +9,6 @@ namespace OpenVid.Models.Home
 {
     public class HomeViewModel : BaseViewModel
     {
-        public VideoListViewModel Videos { get; set; }
         public List<Tag> Tags { get; set; }
     }
 }
