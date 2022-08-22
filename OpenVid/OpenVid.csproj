@@ -33,6 +33,9 @@
 
   <ItemGroup>
     <Folder Include="Areas\Playback\Data\" />
+    <Folder Include="wwwroot\import\01_pending\" />
+    <Folder Include="wwwroot\import\02_queued\" />
+    <Folder Include="wwwroot\import\03_awaiting_move\" />
   </ItemGroup>
 
 </Project>

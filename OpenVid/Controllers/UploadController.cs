@@ -8,10 +8,11 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using VideoHandler;
 using VideoHandler.Models;
+using OpenVid.Extensions;
 
 namespace OpenVid.Controllers
 {
-    public class UploadController : Controller
+    public class UploadController : OpenVidController
     {
         private IVideoManager _videoManager;
 
@@ -62,7 +63,8 @@ namespace OpenVid.Controllers
             var tagList = _videoManager.DefineTags((viewModel.Tags?.Trim() ?? string.Empty).Split(new char[] { ' ', '\n' }, StringSplitOptions.RemoveEmptyEntries).ToList());
             _videoManager.SaveTagsForVideo(toSave, tagList);
 
-            return RedirectToAction("Index", "Play", new { Id = toSave.Id });
+            return RedirectToAction(SiteMap.PlaybackPlay, new {  Id = toSave.Id });
+            //return RedirectToAction("Index", "Play", new { Area = "Playback", Id = toSave.Id });
         }
 
         [HttpPost]

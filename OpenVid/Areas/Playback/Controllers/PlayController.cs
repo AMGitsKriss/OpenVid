@@ -11,15 +11,15 @@ using VideoHandler;
 namespace OpenVid.Areas.Playback.Controllers
 {
     [Area("playback")]
-    public class Play : Controller
+    public class PlayController : Controller
     {
 
         private IVideoManager _videoService;
-        private UrlResolver _urlResolver;
+        private IUrlResolver _urlResolver;
         private IConfiguration _configuration;
         private TagManager _tagManager;
 
-        public Play(IVideoManager videoService, UrlResolver urlResolver, TagManager tagManager, IConfiguration configuration)
+        public PlayController(IVideoManager videoService, IUrlResolver urlResolver, TagManager tagManager, IConfiguration configuration)
         {
             _videoService = videoService;
             _urlResolver = urlResolver;

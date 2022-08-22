@@ -1,5 +1,6 @@
 ﻿@model OpenVid.Models.Upload.UpdateFormViewModel
-<form class="col-6" method="post" action="@Url.Action("Update", "Upload")">
+
+<form class="col-6" method="post" action="@Url.Action(SiteMap.UploadUpdate)">
     @if (Model.IsFlaggedForDeletion)
     {
         <div class="form-group">
