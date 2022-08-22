@@ -1,8 +1,9 @@
 ﻿using Database.Models;
 using OpenVid.Models;
+using OpenVid.Models.Upload;
 using System.Collections.Generic;
 
-namespace OpenVid.Models.Upload
+namespace OpenVid.Areas.Playback.Models.Update
 {
     public class UpdateFormViewModel : BaseViewModel
     {
@@ -15,14 +16,5 @@ namespace OpenVid.Models.Upload
         public List<MetadataViewModel> Metadata { get; set; }
         public List<Ratings> PossibleRatings { get; set; }
         public List<SuggestedTagViewModel> SuggestedTags { get; set; }
-    }
-
-    public class MetadataViewModel
-    {
-        public string Md5 { get; set; }
-        public int Width { get; set; }
-        public int Height { get; set; }
-        public decimal Size { get; set; }
-        public string Extension { get; set; }
     }
 }

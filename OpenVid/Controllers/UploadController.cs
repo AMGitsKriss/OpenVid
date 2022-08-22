@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using VideoHandler;
 using VideoHandler.Models;
 using OpenVid.Extensions;
+using OpenVid.Areas.Playback.Models.Update;
 
 namespace OpenVid.Controllers
 {
@@ -46,25 +47,6 @@ namespace OpenVid.Controllers
             {
                 return PartialView("_UploadError", ex.Message);
             }
-        }
-
-        [HttpPost]
-        public IActionResult Update(UpdateFormViewModel viewModel)
-        {
-            Video toSave = _videoManager.GetVideo(viewModel.Id);
-            if (toSave == null)
-                return RedirectToAction("Index");
-
-            toSave.Name = viewModel.Name;
-            toSave.Description = viewModel.Description;
-            toSave.RatingId = viewModel.RatingId == 0 ? null : viewModel.RatingId;
-
-            _videoManager.SaveVideo(toSave);
-            var tagList = _videoManager.DefineTags((viewModel.Tags?.Trim() ?? string.Empty).Split(new char[] { ' ', '\n' }, StringSplitOptions.RemoveEmptyEntries).ToList());
-            _videoManager.SaveTagsForVideo(toSave, tagList);
-
-            return RedirectToAction(SiteMap.PlaybackPlay, new {  Id = toSave.Id });
-            //return RedirectToAction("Index", "Play", new { Area = "Playback", Id = toSave.Id });
         }
 
         [HttpPost]

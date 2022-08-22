@@ -1,5 +1,5 @@
-﻿using OpenVid.Models;
-using OpenVid.Models.Upload;
+﻿using OpenVid.Areas.Playback.Models.Update;
+using OpenVid.Models;
 using System.Collections.Generic;
 
 namespace OpenVid.Areas.Playback.Models.Play

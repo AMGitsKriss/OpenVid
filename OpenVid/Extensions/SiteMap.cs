@@ -7,8 +7,8 @@ namespace OpenVid.Extensions
     public static class SiteMap
     {
         public static PageLocation PlaybackPlay { get; set; } = new PageLocation("Playback", "Play", "Index");
+        public static PageLocation PlaybackUpdate { get; set; } = new PageLocation("Playback", "Update", "Index");
         public static PageLocation PlaybackVideoList { get; set; } = new PageLocation("Playback", "VideoList", "Index");
-        public static PageLocation UploadUpdate { get; set; } = new PageLocation(null, "Upload", "Update");
 
         public static string Action(this IUrlHelper urlHelper, PageLocation page)
         {

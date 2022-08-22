@@ -4,6 +4,8 @@ using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using OpenVid.Areas.Playback.Models.Play;
+using OpenVid.Areas.Playback.Models.Update;
+using OpenVid.Extensions;
 using OpenVid.Models.Upload;
 using TagCache;
 using VideoHandler;
@@ -11,7 +13,7 @@ using VideoHandler;
 namespace OpenVid.Areas.Playback.Controllers
 {
     [Area("playback")]
-    public class PlayController : Controller
+    public class PlayController : OpenVidController
     {
 
         private IVideoManager _videoService;
