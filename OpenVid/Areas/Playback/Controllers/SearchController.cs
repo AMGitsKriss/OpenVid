@@ -1,11 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using OpenVid.Models.Search;
+using OpenVid.Areas.Playback.Models.Search;
+using OpenVid.Extensions;
 using System.Linq;
 using VideoHandler;
 
-namespace OpenVid.Controllers
+namespace OpenVid.Areas.Playback.Controllers
 {
-    public class SearchController : Controller
+    [Area("playback")]
+    public class SearchController : OpenVidController
     {
         private IVideoManager _videoManager;
         private ISearchManager _search;

@@ -1,4 +1,4 @@
-﻿@model OpenVid.Models.BaseViewModel 
+﻿@model OpenVid.Models.BaseViewModel
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -20,33 +20,41 @@
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
                     <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Upload" asp-action="Index">Upload</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Import" asp-action="Index">Import</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Curation" asp-action="Index">Curation</a>
-                        </li>
-                        <li class="nav-item">
-                            <form id="searchBar" class="nav-link" onsubmit="submitSearch()">
-                                @Html.TextBoxFor(s => s.SearchString)
-                                <input type="submit" value="&#x1f50d;" />
-                            </form>
-                            <script>
+                        @using Microsoft.Extensions.Configuration
+                        @inject IConfiguration Configuration
+                        @{
+                            var configExists = bool.TryParse(Configuration["ShowUpload"], out var showUpload);
+                        }
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            </li>
+                            @if (configExists && showUpload)
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Upload" asp-action="Index">Upload</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Import" asp-action="Index">Import</a>
+                                </li>
+                            }
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="@SiteMap.VideoManagement_Curation.Area" asp-controller="@SiteMap.VideoManagement_Curation.Controller" asp-action="@SiteMap.VideoManagement_Curation.Action">Curation</a>
+                            </li>
+                            <li class="nav-item">
+                                <form id="searchBar" class="nav-link" onsubmit="submitSearch()">
+                                    @Html.TextBoxFor(s => s.SearchString)
+                                    <input type="submit" value="&#x1f50d;" />
+                                </form>
+                                <script>
                                 $(document).on('submit', '#searchBar', function (e) {
                                     e.preventDefault();
                                     searchString = $('#SearchString').val();
                                     if (searchString != "")
-                                        window.location.href = "/search/" + searchString;
+                                        window.location.href = '@Url.Action(SiteMap.Playback_Search, new { SearchString = " " })' + searchString;
                                 });
-                            </script>
-                        </li>
-                    </ul>
+                                </script>
+                            </li>
+                        </ul>
                 </div>
             </div>
         </nav>

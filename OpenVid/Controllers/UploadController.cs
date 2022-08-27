@@ -49,14 +49,6 @@ namespace OpenVid.Controllers
             }
         }
 
-        [HttpPost]
-        public IActionResult Delete(UpdateFormViewModel viewModel)
-        {
-            _videoManager.SoftDelete(viewModel.Id);
-
-            return RedirectToAction("Index", "Play", new { Id = viewModel.Id });
-        }
-
         [HttpGet]
         public IActionResult UpdateAllMeta()
         {

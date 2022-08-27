@@ -1,18 +1,19 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using OpenVid.Models.Curation;
-using OpenVid.Models.Shared;
-using System;
 using System.Linq;
+using OpenVid.Models.Shared;
 using VideoHandler;
+using OpenVid.Areas.VideoManagement.Models.Curation;
+using OpenVid.Extensions;
 
-namespace OpenVid.Controllers
+namespace OpenVid.Areas.VideoManagement.Controllers
 {
-    public class CurationController : Controller
+    [Area("VideoManagement")]
+    public class CurationController : OpenVidController
     {
         private IVideoManager _videoManager;
-        private UrlResolver _urlResolver;
+        private IUrlResolver _urlResolver;
 
-        public CurationController(IVideoManager videoManager, UrlResolver urlResolver)
+        public CurationController(IVideoManager videoManager, IUrlResolver urlResolver)
         {
             _videoManager = videoManager;
             _urlResolver = urlResolver;
@@ -32,20 +33,6 @@ namespace OpenVid.Controllers
             };
 
             return View(model);
-        }
-
-        [HttpPost]
-        public IActionResult Delete(int id)
-        {
-            try
-            {
-                _videoManager.HardDeleteVideo(id);
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500);
-            }
         }
     }
 }

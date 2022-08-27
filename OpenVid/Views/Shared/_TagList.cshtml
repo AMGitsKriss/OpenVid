@@ -4,7 +4,7 @@
 <ul>
     @foreach (var tag in Model.Where(t => t.Type == 0))
     {
-        <li>@tag.VideoTag.Count() - @Html.ActionLink(@tag.Name, "Index", "Search", new { SearchString = $"tag:{tag.Name}" })</li>
+        <li>@tag.VideoTag.Count() - @Html.ActionLink(@tag.Name, SiteMap.Playback_Search, new { SearchString = $"tag:{tag.Name}" })</li>
     }
 </ul>
 
@@ -14,6 +14,6 @@
 <ul>
     @foreach (var tag in Model.Where(t => t.Type == (byte)1))
     {
-        <li>@tag.VideoTag.Count() - @Html.ActionLink(@tag.Name, "Index", "Search", new { SearchString = $"tag:{tag.Name}" })</li>
+        <li>@tag.VideoTag.Count() - @Html.ActionLink(@tag.Name, SiteMap.Playback_Search, new { SearchString = $"tag:{tag.Name}" })</li>
     }
 </ul>

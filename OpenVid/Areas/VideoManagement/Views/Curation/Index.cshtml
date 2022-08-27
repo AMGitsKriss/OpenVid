@@ -1,4 +1,4 @@
-﻿@model OpenVid.Models.Curation.CurationViewModel
+﻿@model OpenVid.Areas.VideoManagement.Models.Curation.CurationViewModel
 
 <div class="container">
     <div class="row">
@@ -28,7 +28,7 @@
                     </div>
 
                     <div class="col-6">
-                        <a href="@Url.Action("Index", "Play", new { md5 = video.Id })" data-toggle="tooltip" title="@video.Name"><div class="tile"><b>@video.Name</b></div></a>
+                        <a href="@Url.Action(SiteMap.Playback_Play, new { Id = video.Id })" data-toggle="tooltip" title="@video.Name"><div class="tile"><b>@video.Name</b></div></a>
                     </div>
                     <div class="col-2">
                         Size: @video.SizeMb MB <br />
@@ -55,7 +55,7 @@
 
         $.ajax({
             type: 'POST',
-            url: '@Url.Action("Delete", "Curation")',
+            url: '@Url.Action(SiteMap.VideoManagement_Destroy)',
             data: { id: id},
             success: function (data) {
                 $('#' + id).remove();

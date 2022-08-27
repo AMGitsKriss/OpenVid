@@ -33,7 +33,7 @@ namespace OpenVid.Areas.Playback.Controllers
             var tagList = _videoManager.DefineTags((viewModel.Tags?.Trim() ?? string.Empty).Split(new char[] { ' ', '\n' }, StringSplitOptions.RemoveEmptyEntries).ToList());
             _videoManager.SaveTagsForVideo(toSave, tagList);
 
-            return RedirectToAction(SiteMap.PlaybackPlay, new { Id = toSave.Id });
+            return RedirectToAction(SiteMap.Playback_Play, new { Id = toSave.Id });
         }
     }
 }

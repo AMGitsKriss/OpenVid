@@ -1,6 +1,6 @@
 ﻿@model OpenVid.Areas.Playback.Models.Update.UpdateFormViewModel
 
-<form class="col-6" method="post" action="@Url.Action(SiteMap.PlaybackUpdate)">
+<form class="col-6" method="post" action="@Url.Action(SiteMap.Playback_Update)">
     @if (Model.IsFlaggedForDeletion)
     {
         <div class="form-group">
@@ -50,7 +50,7 @@
         @Html.DropDownListFor(n => n.RatingId, new SelectList(Model.PossibleRatings, "Id", "Name"), "Unrated", new { @class = "form-control", style = "word-break: break-word;" })
     </div>
     <input type="submit" />
-    <input type="submit" value="Delete" formaction="@Url.Action("Delete", "Upload")" />
+    <input type="submit" value="Delete" formaction="@Url.Action(SiteMap.FlagDelete)" />
 </form>
 
 
