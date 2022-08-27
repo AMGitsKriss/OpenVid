@@ -12,8 +12,13 @@ namespace OpenVid.Extensions
         public static PageLocation Playback_Search { get; set; } = new PageLocation("Playback", "Search", "Index");
         public static PageLocation Playback_Update { get; set; } = new PageLocation("Playback", "Update", "Index");
         public static PageLocation Playback_VideoList { get; set; } = new PageLocation("Playback", "VideoList", "Index");
+        public static PageLocation Playback_TagGetTags { get; set; } = new PageLocation("Playback", "Tag", "GetTags");
+        public static PageLocation VideoManagement_Import { get; set; } = new PageLocation("VideoManagement", "Import", "Index");
+        public static PageLocation VideoManagement_ImportSave { get; set; } = new PageLocation("VideoManagement", "Import", "Save");
         public static PageLocation VideoManagement_Curation { get; set; } = new PageLocation("VideoManagement", "Curation", "Index");
         public static PageLocation VideoManagement_Destroy { get; set; } = new PageLocation("VideoManagement", "Destroy", "Index");
+        public static PageLocation VideoManagement_UploadUI { get; set; } = new PageLocation("VideoManagement", "Upload", "Index");
+        public static PageLocation VideoManagement_Upload { get; set; } = new PageLocation("VideoManagement", "Upload", "Upload");
         public static PageLocation FlagDelete { get; set; } = new PageLocation("VideoManagement", "FlagDelete", "Index");
 
         public static string Action(this IUrlHelper urlHelper, PageLocation page)

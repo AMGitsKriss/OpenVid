@@ -1,5 +1,4 @@
-﻿@model OpenVid.Models.Import.ImportViewModel
-
+﻿@model OpenVid.Areas.VideoManagement.Models.Import.ImportViewModel
 
 <div class="container">
     <div class="row">
@@ -31,19 +30,19 @@
 
                         $.ajax({
                             type: 'POST',
-                            url: '@Url.Action("Save", "Import")',
+                            url: '@Url.Action(SiteMap.VideoManagement_ImportSave)',
                             data: formData,
                             processData: false,
                             contentType: false,
                             success: function (data) {
-                                $('[data-file-name="' + fileName + '"] .status').html(data);
+                                $('[data-file-name="' + fileName + '"] .status').html(data.message);
                                 $('[data-file-name="' + fileName + '"]').attr('data-uploaded', "true");
                                 if ($('[data-uploaded="false"]').length > 0) {
                                     importVideo(getNextVideo());
                                 }
                             },
                             error: function (error) {
-                                $('[data-file-name="' + fileName + '"] .status').html(error.responseText);
+                                $('[data-file-name="' + fileName + '"] .status').html('Internal server error.');
                                 $('[data-file-name="' + fileName + '"]').attr('data-uploaded', "error");
                                 if ($('[data-uploaded="false"]').length > 0) {
                                     importVideo(getNextVideo());

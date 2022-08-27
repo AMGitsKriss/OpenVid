@@ -1,13 +1,14 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TagCache;
 
-namespace OpenVid.Controllers
+namespace OpenVid.Areas.Playback.Controllers
 {
-    public class PlayController : Controller
+    [Area("playback")]
+    public class TagController : Controller
     {
         private TagManager _tagManager;
 
-        public PlayController(TagManager tagManager)
+        public TagController(TagManager tagManager)
         {
             _tagManager = tagManager;
         }

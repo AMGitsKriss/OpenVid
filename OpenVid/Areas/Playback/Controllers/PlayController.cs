@@ -5,8 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using OpenVid.Areas.Playback.Models.Play;
 using OpenVid.Areas.Playback.Models.Update;
+using OpenVid.Areas.VideoManagement.Models.Upload;
 using OpenVid.Extensions;
-using OpenVid.Models.Upload;
 using TagCache;
 using VideoHandler;
 
@@ -42,7 +42,7 @@ namespace OpenVid.Areas.Playback.Controllers
                 FileBaseUrl = _configuration["FileBaseUrl"]
             };
 
-            if (!viewModel.VideoSources.Any()) return NotFound();
+            //if (!viewModel.VideoSources.Any()) return NotFound();
 
             var tagCollection = video.VideoTag.Select(x => x.Tag.Name);
             var tagSuggestions = new List<SuggestedTagViewModel>();

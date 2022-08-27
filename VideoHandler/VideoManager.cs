@@ -158,14 +158,15 @@ namespace VideoHandler
             string md5 = GenerateHash(request.FileNameFull);
             string subFolder = md5.Substring(0, 2);
             string ext = Path.GetExtension(request.FileName).Replace(".", "");
-            bool videoExists = _repository.GetVideo(md5) != null;
+            Video video = _repository.GetVideo(md5);
 
             string videoDirectory = $"{_configuration["Urls:BucketDirectory"]}\\video\\{subFolder}\\";
             string thumbnailDirectory = $"{_configuration["Urls:BucketDirectory"]}\\thumbnail\\{subFolder}\\";
 
-            if (videoExists)
+            if (video != null)
                 return new SaveVideoResponse()
                 {
+                    Video = video,
                     AlreadyExists = true,
                     Message = $"Video with the hash {md5} already exists. Skipping."
                 };
@@ -203,7 +204,7 @@ namespace VideoHandler
                 return new SaveVideoResponse()
                 {
                     AlreadyExists = false,
-                    Message = $"Video named {request.FileName} couldn't be added to the database. Skipping."
+                    Message = $"Video named {request.FileName} couldn't be added to the database. {ex.Message}"
                 };
             }
 

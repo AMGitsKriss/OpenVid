@@ -1,6 +1,6 @@
 ﻿using Database.Models;
+using OpenVid.Areas.VideoManagement.Models.Upload;
 using OpenVid.Models;
-using OpenVid.Models.Upload;
 using System.Collections.Generic;
 
 namespace OpenVid.Areas.Playback.Models.Update

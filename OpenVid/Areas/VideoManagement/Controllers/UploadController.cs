@@ -1,7 +1,5 @@
-﻿using OpenVid.Models.Upload;
-using System;
+﻿using System;
 using System.Linq;
-using Database.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
@@ -10,16 +8,18 @@ using VideoHandler;
 using VideoHandler.Models;
 using OpenVid.Extensions;
 using OpenVid.Areas.Playback.Models.Update;
+using OpenVid.Areas.VideoManagement.Models.Upload;
 
-namespace OpenVid.Controllers
+namespace OpenVid.Areas.VideoManagement.Controllers
 {
+    [Area("VideoManagement")]
     public class UploadController : OpenVidController
     {
         private IVideoManager _videoManager;
 
-        public UploadController(IVideoManager save)
+        public UploadController(IVideoManager videoManager)
         {
-            _videoManager = save;
+            _videoManager = videoManager;
         }
 
         public IActionResult Index()
@@ -76,7 +76,7 @@ namespace OpenVid.Controllers
                 };
                 SaveVideoResponse response = await _videoManager.SaveVideoAsync(request);
 
-                if(!string.IsNullOrWhiteSpace(response.Message))
+                if (!string.IsNullOrWhiteSpace(response.Message))
                     return PartialView("_UploadError", response.Message);
 
                 UpdateFormViewModel viewModel = new UpdateFormViewModel()

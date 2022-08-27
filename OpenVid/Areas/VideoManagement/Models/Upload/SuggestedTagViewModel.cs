@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace OpenVid.Models.Upload
+namespace OpenVid.Areas.VideoManagement.Models.Upload
 {
     public class SuggestedTagViewModel
     {

@@ -1,4 +1,4 @@
-﻿@model OpenVid.Models.Upload.UploadViewModel
+﻿@model OpenVid.Areas.VideoManagement.Models.Upload.UploadViewModel
 
 
 <div class="container">
@@ -24,7 +24,7 @@
 
                         $.ajax({
                             type: 'POST',
-                            url: '@Url.Action("Upload", "Upload")',
+                            url: '@Url.Action(SiteMap.VideoManagement_Upload)',
                             data: formData,
                             processData: false,
                             contentType: false,

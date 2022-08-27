@@ -16,7 +16,7 @@
     {
 
         <div class="form-group">
-            MD5: @metadata.Md5 <a href="@Url.Action("Index", "Play", new { Id = Model.Id })">[View]</a>
+            MD5: @metadata.Md5 <a href="@Url.Action(SiteMap.Playback_Play, new { Id = Model.Id })">[View]</a>
             <br />
             Dimensions: @(metadata.Width)x@(metadata.Height)
             <br />
@@ -80,7 +80,7 @@
 
         $.ajax({
             type: 'GET',
-            url: '/play/gettags',
+            url: '@Url.Action(SiteMap.Playback_TagGetTags)',
             success: function (data) {
                 availableTags = data;
             },

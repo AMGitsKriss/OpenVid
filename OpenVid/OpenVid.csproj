@@ -25,14 +25,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Update="Views\Upload\Index.cshtml">
+    <Content Update="Areas\VideoManagement\Views\Upload\Index.cshtml">
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Areas\Playback\Data\" />
     <Folder Include="wwwroot\import\01_pending\" />
     <Folder Include="wwwroot\import\02_queued\" />
     <Folder Include="wwwroot\import\03_awaiting_move\" />

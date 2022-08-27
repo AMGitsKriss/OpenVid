@@ -31,10 +31,10 @@
                             @if (configExists && showUpload)
                             {
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="Upload" asp-action="Index">Upload</a>
+                                    <a class="nav-link text-dark" asp-area="@SiteMap.VideoManagement_UploadUI.Area" asp-controller="@SiteMap.VideoManagement_UploadUI.Controller" asp-action="@SiteMap.VideoManagement_UploadUI.Action">Upload</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="Import" asp-action="Index">Import</a>
+                                    <a class="nav-link text-dark" asp-area="@SiteMap.VideoManagement_Import.Area" asp-controller="@SiteMap.VideoManagement_Import.Controller" asp-action="@SiteMap.VideoManagement_Import.Action">Import</a>
                                 </li>
                             }
                             <li class="nav-item">

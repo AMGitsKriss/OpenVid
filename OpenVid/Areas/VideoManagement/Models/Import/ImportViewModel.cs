@@ -1,9 +1,7 @@
-﻿using System;
+﻿using OpenVid.Models;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace OpenVid.Models.Import
+namespace OpenVid.Areas.VideoManagement.Models.Import
 {
     public class ImportViewModel : BaseViewModel
     {

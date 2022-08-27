@@ -108,6 +108,7 @@ namespace Database
             }
             catch (Exception ex)
             {
+                var test = ex.Message;
                 throw ex;
             }
         }
