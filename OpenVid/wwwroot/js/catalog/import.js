@@ -64,8 +64,6 @@
         $.ajax({
             type: 'POST',
             url: startEncodeUrl,
-            processData: false,
-            contentType: false,
             success: function (data) {
                 $('#startEncodeBtn').hide();
                 $('#stopEncodeBtn').show();
@@ -80,8 +78,6 @@
         $.ajax({
             type: 'POST',
             url: startEncodeUrl,
-            processData: false,
-            contentType: false,
             success: function (data) {
                 $('#stopEncodeBtn').attr('disabled', true);
             },

@@ -13,7 +13,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TagCache", "TagCache\TagCac
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VideoHandler", "VideoHandler\VideoHandler.csproj", "{0B33BE17-5599-4FA2-A00F-65B16B97D069}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CatalogManager", "CatalogManager\CatalogManager.csproj", "{E297B027-0992-44F0-A6A0-3767C44C7414}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CatalogManager", "CatalogManager\CatalogManager.csproj", "{E297B027-0992-44F0-A6A0-3767C44C7414}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenVid.BackgroundEncoder", "OpenVid.BackgroundEncoder\OpenVid.BackgroundEncoder.csproj", "{96BDA14F-19E6-48C9-BF3F-930E173FBE83}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +47,10 @@ Global
 		{E297B027-0992-44F0-A6A0-3767C44C7414}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E297B027-0992-44F0-A6A0-3767C44C7414}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E297B027-0992-44F0-A6A0-3767C44C7414}.Release|Any CPU.Build.0 = Release|Any CPU
+		{96BDA14F-19E6-48C9-BF3F-930E173FBE83}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{96BDA14F-19E6-48C9-BF3F-930E173FBE83}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{96BDA14F-19E6-48C9-BF3F-930E173FBE83}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{96BDA14F-19E6-48C9-BF3F-930E173FBE83}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

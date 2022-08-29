@@ -54,23 +54,5 @@ namespace OpenVid.Areas.Catalog.Controllers
             _importService.QueueFiles();
             return Ok();
         }
-
-        /// <summary>
-        /// Start (or restart) a thread to encode videos listed in VideoEncodeQueue table one at a time.
-        /// </summary>
-        public IActionResult StartEncode()
-        {
-            _importService.StartEncode();
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// Instruct the encode thread to stop when the current job is completed. 
-        /// </summary>
-        public IActionResult StopEncode()
-        {
-            _importService.StopEncode();
-            throw new NotImplementedException();
-        }
     }
 }

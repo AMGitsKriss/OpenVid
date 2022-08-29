@@ -1,11 +1,11 @@
-﻿using CatalogManager.Models;
+﻿using CatalogManager.Metadata;
+using CatalogManager.Models;
 using Database;
 using Database.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -16,11 +16,13 @@ namespace CatalogManager
     {
         private readonly CatalogImportOptions _configuration;
         private readonly IVideoRepository _repository;
+        private readonly IMetadataStrategy _metadata;
 
-        public ImportService(IOptions<CatalogImportOptions> configuration, IVideoRepository repository)
+        public ImportService(IOptions<CatalogImportOptions> configuration, IVideoRepository repository, IMetadataStrategy metadata)
         {
             _configuration = configuration.Value;
             _repository = repository;
+            _metadata = metadata;
         }
         public List<FoundVideo> FindFiles()
         {
@@ -78,21 +80,11 @@ namespace CatalogManager
             }
         }
 
-        public void StopEncode()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void StartEncode()
-        {
-            throw new NotImplementedException();
-        }
-
         public async Task<bool> UploadFile(IFormFile file)
         {
             string targetFolder = Path.Combine(_configuration.ImportDirectory, "01_pending");
 
-            TouchDirectory(targetFolder);
+            Helpers.FileHelpers.TouchDirectory(targetFolder);
 
             string targetPath = Path.Combine(targetFolder, file.FileName);
             using Stream fileStream = new FileStream(targetPath, FileMode.Create);
@@ -137,7 +129,7 @@ namespace CatalogManager
             var queuedFullName = Path.Combine(queuedDirectory, pending.FileName);
             var completeFullName = Path.Combine(completeDirectory, pending.FileName);
 
-            var meta = GetMetadata(pending.FullName);
+            var meta = _metadata.GetMetadata(pending.FullName);
             var toSave = new Video()
             {
                 Name = Path.GetFileNameWithoutExtension(pending.FileName),
@@ -188,41 +180,6 @@ namespace CatalogManager
                 return false;
             }
             return true;
-        }
-
-        private void TouchDirectory(string directory)
-        {
-            if (!Directory.Exists(directory))
-                Directory.CreateDirectory(directory);
-        }
-
-        private MediaProperties GetMetadata(string location)
-        {
-            // TODO - Try catch. The path can be wrong and we don't want to it fall over vaguely.
-            string cmd = $"-v error -select_streams v:0 -show_entries stream=width,height,duration -show_entries format=duration -of csv=s=x:p=0 \"{location}\"";
-            Process proc = new Process();
-            proc.StartInfo.FileName = @"c:\ffmpeg\ffprobe.exe";
-            proc.StartInfo.Arguments = cmd;
-            proc.StartInfo.CreateNoWindow = true;
-            proc.StartInfo.RedirectStandardOutput = true;
-            proc.StartInfo.RedirectStandardError = true;
-            proc.StartInfo.UseShellExecute = false;
-            if (!proc.Start())
-            {
-                Console.WriteLine("Error starting");
-            }
-            string outputString = proc.StandardOutput.ReadToEnd();
-            string[] metaData = outputString.Trim().Split(new char[] { 'x', '\n' });
-            // Remove the milliseconds
-            MediaProperties properties = new MediaProperties()
-            {
-                Width = int.Parse(metaData[0]),
-                Height = int.Parse(metaData[1]),
-                Duration = TimeSpan.FromSeconds(double.Parse(metaData.Length > 3 ? metaData[3].Trim() : metaData[2].Trim()))
-            };
-            proc.WaitForExit();
-            proc.Close();
-            return properties;
         }
     }
 }

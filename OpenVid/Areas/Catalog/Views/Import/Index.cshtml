@@ -6,8 +6,8 @@
         <button id="uploadBtn" type="submit" class="btn btn-dark m-l-10" data-toggle="tooltip" title="Manually upload files into the unqueued folder. You can also copy files here directly if you have disk access.">Manual Upload</button>
     </span>
     <button id="queueBtn" class="btn btn-dark m-l-10" data-toggle="tooltip" title="Scan the import/upload directory for videos that have yet to be queued for encoding.">Queue Unqueued Files</button>
-    <button class="btn btn-dark m-l-10" data-toggle="tooltip" title="Runs queued jobs one at a time in the background.">Start Encode</button>
-    <button disabled class="btn btn-dark m-l-10 hide" data-toggle="tooltip" title="Halts the encoding queue. Allows the current job to finish if possible.">Stop Encode</button>
+    <button id="startEncodeBtn" class="btn btn-dark m-l-10" data-toggle="tooltip" title="Runs queued jobs one at a time in the background.">Start Encode</button>
+    <button id="stopEncodeBtn" disabled class="btn btn-dark m-l-10 hide" data-toggle="tooltip" title="Halts the encoding queue. Allows the current job to finish if possible.">Stop Encode</button>
 </div>
 
 <h1 class="page-header">Import New Content</h1>
@@ -25,6 +25,8 @@
     <script>
         var uploadUrl = '@Url.Action(SiteMap.Catalog_Import_Upload)';
         var queueUrl = '@Url.Action(SiteMap.Catalog_Import_Queue)';
+        var startEncodeUrl = '@Url.Action(SiteMap.Catalog_Import_StartEncode)';
+        var stopEncodeUrl = '@Url.Action(SiteMap.Catalog_Import_StopEncode)';
         importVideo.init();
     </script>
 }
