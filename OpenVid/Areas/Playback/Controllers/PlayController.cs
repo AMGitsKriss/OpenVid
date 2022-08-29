@@ -28,6 +28,7 @@ namespace OpenVid.Areas.Playback.Controllers
             _configuration = configuration;
             _tagManager = tagManager;
         }
+
         [Route("{id}")]
         public IActionResult Index(int id)
         {

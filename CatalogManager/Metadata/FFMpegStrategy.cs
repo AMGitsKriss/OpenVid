@@ -37,7 +37,7 @@ namespace CatalogManager.Metadata
 
         public void CreateThumbnail(string videoPath, string thumbPath)
         {
-            var cmd = $" -y -itsoffset -1 -i \"{videoPath}\" -vcodec mjpeg -vframes 60 -filter:v \"scale='-1:min(168\\,iw)', pad=w=300:h=168:x=(ow-iw)/2:y=(oh-ih)/2:color=black\" \"{thumbPath}\"";
+            var cmd = $" -y -itsoffset -1 -i \"{videoPath}\" -vcodec mjpeg -vframes 60 -filter:v \"scale=300:168:force_original_aspect_ratio=decrease,pad=300:168:-1:-1:color=black\" \"{thumbPath}\"";
 
             var startInfo = new ProcessStartInfo
             {

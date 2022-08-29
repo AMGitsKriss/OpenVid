@@ -69,12 +69,12 @@ namespace OpenVid.BackgroundEncoder
                 File.Move(queueItem.OutputDirectory, videoBucketDirectory);
 
                 // Generate the thumbnail
-                string thumbSubFolder = queueItem.VideoId.ToString().Substring(0, 2);
+                string thumbSubFolder = queueItem.VideoId.ToString().PadLeft(2, '0').Substring(0, 2);
                 string thumbDirectory = Path.Combine(_configuration.BucketDirectory, "thumbnail", thumbSubFolder);
 
                 FileHelpers.TouchDirectory(thumbDirectory);
 
-                string thumbPath = Path.Combine(thumbDirectory, $"{queueItem.VideoId}.jpg");
+                string thumbPath = Path.Combine(thumbDirectory, $"{queueItem.VideoId.ToString().PadLeft(2, '0')}.jpg");
                 if (!File.Exists(thumbPath))
                     _metadata.CreateThumbnail(videoBucketDirectory, thumbPath);
 

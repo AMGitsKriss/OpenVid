@@ -14,6 +14,7 @@ namespace OpenVid.Extensions
         public static PageLocation Playback_Update { get; set; } = new PageLocation("Playback", "Update", "Index");
         public static PageLocation Playback_VideoList { get; set; } = new PageLocation("Playback", "VideoList", "Index");
         public static PageLocation Playback_TagGetTags { get; set; } = new PageLocation("Playback", "Tag", "GetTags");
+        public static PageLocation Playback_Thumbnail { get; set; } = new PageLocation("Playback", "Thumbnail", "Index");
         public static PageLocation VideoManagement_Import { get; set; } = new PageLocation("VideoManagement", "Import", "Index");
         public static PageLocation VideoManagement_ImportSave { get; set; } = new PageLocation("VideoManagement", "Import", "Save");
         public static PageLocation VideoManagement_Curation { get; set; } = new PageLocation("VideoManagement", "Curation", "Index");

@@ -12,6 +12,7 @@ namespace CatalogManager
             services.Configure<CatalogImportOptions>(configuration.GetSection("Catalog"));
 
             services.AddScoped<ImportService>();
+            services.AddScoped<PlaybackService>();
             services.AddScoped<IMetadataStrategy, FFMpegStrategy>();
             services.AddScoped<IEncoderStrategy, HandbrakeStrategy>();
 
