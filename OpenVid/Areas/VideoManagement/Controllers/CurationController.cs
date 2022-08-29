@@ -26,7 +26,7 @@ namespace OpenVid.Areas.VideoManagement.Controllers
                 {
                     Id = v.Id,
                     Name = v.Name,
-                    SizeMb = (int)((v.VideoSource.First().Size / 1024) / 1024),
+                    SizeMb = (int)((v.VideoSource.Sum(s => s.Size) / 1024) / 1024),
                     Length = v.Length.ToString(),
                     ThumbnailUrl = _urlResolver.GetThumbnailUrl(v)
                 }).ToList()
