@@ -97,7 +97,7 @@ body {
     background: white;
 }
 
-#header, .btn-primary, .btn-primary:not(:disabled):not(.disabled).active, .btn-primary:not(:disabled):not(.disabled):active, .show > .btn-primary.dropdown-toggle {
+#header, .btn-success, .btn-primary, .btn-primary:not(:disabled):not(.disabled).active, .btn-primary:not(:disabled):not(.disabled):active, .show > .btn-primary.dropdown-toggle {
     background-color: #673147;
     border-color: #673147;
 }

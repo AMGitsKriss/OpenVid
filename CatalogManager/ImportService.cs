@@ -145,7 +145,8 @@ namespace CatalogManager
                         RenderSpeed = preset.RenderSpeed,
                         Format = preset.Format,
                         Quality = preset.Quality,
-                        MaxHeight = preset.MaxHeight
+                        MaxHeight = preset.MaxHeight,
+                        IsVertical = meta.Height > meta.Width
                     }
                 }
             };

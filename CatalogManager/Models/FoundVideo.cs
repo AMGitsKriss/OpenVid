@@ -8,6 +8,7 @@ namespace CatalogManager.Models
         public string FullName { get; set; }
         public string FileLocation { get; set; }
         public string Resolution { get; set; }
+        public bool IsVertical { get; set; }
         public List<string> SuggestedTags { get; set; }
         public long Size { get; set; }
     }
