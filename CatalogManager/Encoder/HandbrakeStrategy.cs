@@ -13,7 +13,8 @@ namespace CatalogManager.Encoder
             // TODO - FileName should be configurable.
             // TODO - CreateNoWindow should be configurable.
             string exe = @"C:\handbrakecli\HandBrakeCLI.exe";
-            string args = $@" -i ""{queueItem.InputDirectory}"" -o ""{queueItem.OutputDirectory}"" -e {queueItem.Encoder} --encoder-preset {queueItem.RenderSpeed} -f {queueItem.Format} --optimize -q {queueItem.Quality} --maxHeight {queueItem.MaxHeight}";
+            string dimensionArgs = queueItem.IsVertical ? $" --maxWidth {queueItem.MaxHeight}" : $" --maxHeight {queueItem.MaxHeight}";
+            string args = $@" -i ""{queueItem.InputDirectory}"" -o ""{queueItem.OutputDirectory}"" -e {queueItem.Encoder} --encoder-preset {queueItem.RenderSpeed} -f {queueItem.Format} --optimize -q {queueItem.Quality} {dimensionArgs}";
             
             Process proc = new Process();
             proc.StartInfo.FileName = exe;
