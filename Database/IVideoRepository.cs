@@ -23,5 +23,7 @@ namespace Database
         IQueryable<Video> GetSoftDeletedVideos();
         void RemoveTagsFromVideo(IEnumerable<VideoTag> removeTags);
         void AddTagsToVideo(IEnumerable<VideoTag> removeTags);
+        bool SaveEncodeJob(VideoEncodeQueue encodeJob);
+        IQueryable<VideoEncodeQueue> GetEncodeQueue();
     }
 }

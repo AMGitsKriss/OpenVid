@@ -292,7 +292,6 @@ namespace VideoHandler
                     return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
                 }
             }
-
         }
 
         private void SaveThumb(string videoPath, string thumbPath)

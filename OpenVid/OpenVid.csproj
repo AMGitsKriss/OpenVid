@@ -19,6 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\CatalogManager\CatalogManager.csproj" />
     <ProjectReference Include="..\Database\Database.csproj" />
     <ProjectReference Include="..\TagCache\TagCache.csproj" />
     <ProjectReference Include="..\VideoHandler\VideoHandler.csproj" />
@@ -28,6 +29,9 @@
     <Content Update="Areas\VideoManagement\Views\Upload\Index.cshtml">
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="wwwroot\import\01_pending\BlackBlackFalcon-mobile.mp4">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
 

@@ -25,36 +25,39 @@
                         @{
                             var configExists = bool.TryParse(Configuration["ShowUpload"], out var showUpload);
                         }
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                        </li>
+                        @if (configExists && showUpload)
+                        {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                            </li>
-                            @if (configExists && showUpload)
-                            {
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="@SiteMap.VideoManagement_UploadUI.Area" asp-controller="@SiteMap.VideoManagement_UploadUI.Controller" asp-action="@SiteMap.VideoManagement_UploadUI.Action">Upload</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="@SiteMap.VideoManagement_Import.Area" asp-controller="@SiteMap.VideoManagement_Import.Controller" asp-action="@SiteMap.VideoManagement_Import.Action">Import</a>
-                                </li>
-                            }
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="@SiteMap.VideoManagement_Curation.Area" asp-controller="@SiteMap.VideoManagement_Curation.Controller" asp-action="@SiteMap.VideoManagement_Curation.Action">Curation</a>
+                                <a class="nav-link text-dark" asp-area="@SiteMap.VideoManagement_UploadUI.Area" asp-controller="@SiteMap.VideoManagement_UploadUI.Controller" asp-action="@SiteMap.VideoManagement_UploadUI.Action">Upload</a>
                             </li>
                             <li class="nav-item">
-                                <form id="searchBar" class="nav-link" onsubmit="submitSearch()">
-                                    @Html.TextBoxFor(s => s.SearchString)
-                                    <input type="submit" value="&#x1f50d;" />
-                                </form>
-                                <script>
+                                <a class="nav-link text-dark" asp-area="@SiteMap.VideoManagement_Import.Area" asp-controller="@SiteMap.VideoManagement_Import.Controller" asp-action="@SiteMap.VideoManagement_Import.Action">Import</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="@SiteMap.Catalog_Import.Area" asp-controller="@SiteMap.Catalog_Import.Controller" asp-action="@SiteMap.Catalog_Import.Action">Admin</a>
+                            </li>
+                        }
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="@SiteMap.VideoManagement_Curation.Area" asp-controller="@SiteMap.VideoManagement_Curation.Controller" asp-action="@SiteMap.VideoManagement_Curation.Action">Curation</a>
+                        </li>
+                        <li class="nav-item">
+                            <form id="searchBar" class="nav-link" onsubmit="submitSearch()">
+                                @Html.TextBoxFor(s => s.SearchString)
+                                <input type="submit" value="&#x1f50d;" />
+                            </form>
+                            <script>
                                 $(document).on('submit', '#searchBar', function (e) {
                                     e.preventDefault();
                                     searchString = $('#SearchString').val();
                                     if (searchString != "")
                                         window.location.href = '@Url.Action(SiteMap.Playback_Search, new { SearchString = " " })' + searchString;
                                 });
-                                </script>
-                            </li>
-                        </ul>
+                            </script>
+                        </li>
+                    </ul>
                 </div>
             </div>
         </nav>
