@@ -18,6 +18,7 @@ namespace Database.Models
         public string Format { get; set; }
         public double Quality { get; set; }
         public int MaxHeight { get; set; }
+        public bool IsDone { get; set; }
 
         public virtual Video Video { get; set; }
     }

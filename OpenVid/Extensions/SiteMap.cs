@@ -8,6 +8,7 @@ namespace OpenVid.Extensions
 {
     public static class SiteMap
     {
+        public static PageLocation Home { get; set; } = new PageLocation("Home", "Index");
         public static PageLocation Playback_Play { get; set; } = new PageLocation("Playback", "Play", "Index");
         public static PageLocation Playback_Search { get; set; } = new PageLocation("Playback", "Search", "Index");
         public static PageLocation Playback_Update { get; set; } = new PageLocation("Playback", "Update", "Index");
@@ -19,7 +20,17 @@ namespace OpenVid.Extensions
         public static PageLocation VideoManagement_Destroy { get; set; } = new PageLocation("VideoManagement", "Destroy", "Index");
         public static PageLocation VideoManagement_UploadUI { get; set; } = new PageLocation("VideoManagement", "Upload", "Index");
         public static PageLocation VideoManagement_Upload { get; set; } = new PageLocation("VideoManagement", "Upload", "Upload");
-        public static PageLocation FlagDelete { get; set; } = new PageLocation("VideoManagement", "FlagDelete", "Index");
+        public static PageLocation FlagDelete { get; set; } = new PageLocation("VideoManagement", "FlagDelete", "Index"); 
+        public static PageLocation Catalog_Import { get; set; } = new PageLocation("Catalog", "Import", "Index");
+        public static PageLocation Catalog_Import_Upload { get; set; } = new PageLocation("Catalog", "Import", "Upload");
+        public static PageLocation Catalog_Import_Queue { get; set; } = new PageLocation("Catalog", "Import", "Queue");
+
+
+        public static List<PageLocation> AdminMenu = new List<PageLocation>()
+        {
+            Home,
+            Catalog_Import
+        };
 
         public static string Action(this IUrlHelper urlHelper, PageLocation page)
         {

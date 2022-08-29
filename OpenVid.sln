@@ -11,7 +11,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests", "Tests\Tests.csproj
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TagCache", "TagCache\TagCache.csproj", "{B5EF9DC2-B3EC-4975-A758-720CDF54CFBD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VideoHandler", "VideoHandler\VideoHandler.csproj", "{0B33BE17-5599-4FA2-A00F-65B16B97D069}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VideoHandler", "VideoHandler\VideoHandler.csproj", "{0B33BE17-5599-4FA2-A00F-65B16B97D069}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CatalogManager", "CatalogManager\CatalogManager.csproj", "{E297B027-0992-44F0-A6A0-3767C44C7414}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{0B33BE17-5599-4FA2-A00F-65B16B97D069}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0B33BE17-5599-4FA2-A00F-65B16B97D069}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0B33BE17-5599-4FA2-A00F-65B16B97D069}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E297B027-0992-44F0-A6A0-3767C44C7414}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E297B027-0992-44F0-A6A0-3767C44C7414}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E297B027-0992-44F0-A6A0-3767C44C7414}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E297B027-0992-44F0-A6A0-3767C44C7414}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
