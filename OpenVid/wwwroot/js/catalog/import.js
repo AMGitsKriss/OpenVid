@@ -13,9 +13,6 @@
         });
 
         $(document).on('click', '#queueBtn', queueVideos);
-
-        $(document).on('click', '#startEncodeBtn', encodeVideosStart);
-        $(document).on('click', '#stopEncodeBtn', encodeVideosStop);
     }
 
     function uploadVideos(files, multipleFiles, i) {
@@ -60,39 +57,9 @@
         });
     }
 
-    function encodeVideosStart() {
-        $.ajax({
-            type: 'POST',
-            url: startEncodeUrl,
-            success: function (data) {
-                $('#startEncodeBtn').hide();
-                $('#stopEncodeBtn').show();
-            },
-            error: function (error) {
-                alert(error.responseText);
-            }
-        });
-    }
-
-    function encodeVideosStop() {
-        $.ajax({
-            type: 'POST',
-            url: startEncodeUrl,
-            success: function (data) {
-                $('#stopEncodeBtn').attr('disabled', true);
-            },
-            error: function (error) {
-                alert(error.responseText);
-            }
-        });
-    }
-
     return {
         init: function () {
             bindEvents();
-        },
-        initClusteringConfig: function () {
-            initClusteringConfig();
         }
     };
 }();

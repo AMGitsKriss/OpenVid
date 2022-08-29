@@ -111,23 +111,23 @@ namespace CatalogManager
 
             foreach (var pending in pendingFiles)
             {
+                var fileNameWithResolution = $"{Path.GetFileNameWithoutExtension(pending.FileName)}_{preset.MaxHeight}{Path.GetExtension(pending.FileName)}";
+
                 // DATABASE
-                var videoId = CreateVideoInDatabase(pending, preset, queuedDirectory, completeDirectory);
+                var videoId = CreateVideoInDatabase(pending, preset, queuedDirectory, completeDirectory, fileNameWithResolution);
                 if (videoId == 0)
                     continue;
 
-
-
-                if (!MoveFileToDirectory(preset, pending.FileName, pending.FullName, queuedDirectory, completeDirectory))
+                if (!MoveFileToDirectory(pending.FullName, queuedDirectory, fileNameWithResolution))
                     _repository.DeleteVideo(videoId);
             }
         }
 
-        private int CreateVideoInDatabase(FoundVideo pending, EncoderPresetOptions preset, string queuedDirectory, string completeDirectory)
+        private int CreateVideoInDatabase(FoundVideo pending, EncoderPresetOptions preset, string queuedDirectory, string completeDirectory, string fileNameWithResolution)
         {
             // TODO - Suggested tags should get made here
-            var queuedFullName = Path.Combine(queuedDirectory, pending.FileName);
-            var completeFullName = Path.Combine(completeDirectory, pending.FileName);
+            var queuedFullName = Path.Combine(queuedDirectory, fileNameWithResolution);
+            var completeFullName = Path.Combine(completeDirectory, fileNameWithResolution);
 
             var meta = _metadata.GetMetadata(pending.FullName);
             var toSave = new Video()
@@ -161,10 +161,9 @@ namespace CatalogManager
             return toSave.Id;
         }
 
-        private bool MoveFileToDirectory(EncoderPresetOptions preset, string pendingFileName, string pendingFullName, string queuedDirectory, string completeDirectory)
+        private bool MoveFileToDirectory(string pendingFullName, string queuedDirectory, string fileNameWithResolution)
         {
-            var queuedFileName = $"{Path.GetFileNameWithoutExtension(pendingFileName)}_{preset.MaxHeight}.mp4";
-            var queuedFullName = Path.Combine(queuedDirectory, queuedFileName);
+            var queuedFullName = Path.Combine(queuedDirectory, fileNameWithResolution);
 
             try
             {
