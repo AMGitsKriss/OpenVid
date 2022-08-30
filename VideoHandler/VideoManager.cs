@@ -1,4 +1,5 @@
-﻿using Database;
+﻿using CatalogManager.Metadata;
+using Database;
 using Database.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
@@ -17,11 +18,13 @@ namespace VideoHandler
     {
         private readonly IConfiguration _configuration;
         private readonly IVideoRepository _repository;
+        private readonly IMetadataStrategy _ffmpeg;
 
-        public VideoManager(IVideoRepository repository, IConfiguration configuration)
+        public VideoManager(IVideoRepository repository, IConfiguration configuration, IMetadataStrategy ffmpeg)
         {
             _configuration = configuration;
             _repository = repository;
+            _ffmpeg = ffmpeg;
         }
 
         public async Task<SaveVideoResponse> SaveVideoAsync(SaveVideoRequest request)
@@ -54,7 +57,7 @@ namespace VideoHandler
                         throw new Exception("Failed to write file");
                     }
                 }
-                SaveThumb(filePath, thumbPath);
+                _ffmpeg.CreateThumbnail(filePath, thumbPath);
 
                 var meta = GetMetadata(filePath);
                 toSave = new Video()
@@ -173,7 +176,7 @@ namespace VideoHandler
 
             //THUMBNAIL
             string thumbPath = Path.Combine(thumbnailDirectory, $"{md5}.jpg");
-            SaveThumb(request.FileNameFull, thumbPath);
+            _ffmpeg.CreateThumbnail(request.FileNameFull, thumbPath);
 
             var metaData = GetMetadata(request.FileNameFull);
             FileInfo fileInfo = new FileInfo(request.FileNameFull);
@@ -292,26 +295,6 @@ namespace VideoHandler
                     return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
                 }
             }
-        }
-
-        private void SaveThumb(string videoPath, string thumbPath)
-        {
-            var cmd = $" -y -itsoffset -1 -i \"{videoPath}\" -vcodec mjpeg -vframes 60 -filter:v \"scale='-1:min(168\\,iw)', pad=w=300:h=168:x=(ow-iw)/2:y=(oh-ih)/2:color=black\" \"{thumbPath}\"";
-
-            var startInfo = new ProcessStartInfo
-            {
-                WindowStyle = ProcessWindowStyle.Normal,
-                FileName = @"c:\ffmpeg\ffmpeg.exe", // TODO - Make configurable
-                Arguments = cmd
-            };
-
-            var process = new Process
-            {
-                StartInfo = startInfo
-            };
-
-            process.Start();
-            process.WaitForExit(5000);
         }
 
         private MediaProperties GetMetadata(string location)
