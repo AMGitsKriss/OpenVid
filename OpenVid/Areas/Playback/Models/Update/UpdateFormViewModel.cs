@@ -1,5 +1,5 @@
 ﻿using Database.Models;
-using OpenVid.Areas.VideoManagement.Models.Upload;
+using OpenVid.Areas.Playback.Models.Shared;
 using OpenVid.Models;
 using System.Collections.Generic;
 

@@ -29,7 +29,6 @@ namespace OpenVid.Areas.Playback.Controllers
                 {
                     Id = v.Id,
                     Name = v.Name,
-                    ThumbnailUrl = _urlResolver.GetThumbnailUrl(v),
                     Length = string.Format("{0:00}:{1:00}", (int)v.Length.TotalMinutes, v.Length.Seconds)
                 }).ToList(),
                 HasNextPage = hasMore,

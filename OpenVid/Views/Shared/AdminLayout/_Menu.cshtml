@@ -1,4 +1,4 @@
-﻿@{ 
+﻿@{
     string currentArea = this.ViewContext.RouteData.Values["area"]?.ToString() ?? string.Empty;
     string currentController = this.ViewContext.RouteData.Values["controller"].ToString();
 }
@@ -38,34 +38,25 @@
         <ul class="nav">
             <li class="nav-header">Navigation</li>
 
-            @foreach (var item in SiteMap.AdminMenu)
-            {
-                <li class="@((item.Controller == currentController && item.Area == currentArea) ? "active" : string.Empty)">
-
-                    <a href="@Url.Action(item.Action, item.Controller, new { area = item.Area })">
-                        <i class="material-icons">arrow_right_alt</i>
-                        <span>@item.Controller</span>
-                    </a>
-                </li>
-            }
-
             @foreach (var area in SiteMap.AdminMenu.GroupBy(g => g.Area))
             {
-                @if(area.Count() > 1)
+                @if (area.Count() > 1)
                 {
-                    <li class="has-sub">
-                         <a>
-                             <b class="caret"></b>
-                             <i class="material-icons">arrow_alt_right</i>
-                             <span>@area.First().Area</span>
-                         </a>   
-                         <ul class="sub-menu">
-                        @foreach (var item in area)
-                        {
-                            <li class="@(currentController == item.Controller && currentArea == item.Area) ? "active" : string.Empty)">
-                                @Html.ActionLink(item.Controller, item.Action, item.Controller, new { area = item.Area })
+                    var isSelected = area.Select(c => c.Controller).Contains(currentController) && currentArea == area.First().Area;
+
+                    <li class="has-sub @((isSelected) ? "expand" : string.Empty)">
+                        <a>
+                            <b class="caret"></b>
+                            <i class="material-icons">arrow_right_alt</i>
+                            <span>@area.First().Area</span>
+                        </a>
+                        <ul class="sub-menu" @((isSelected) ? @"style=display:block;" : string.Empty)>
+                            @foreach (var item in area)
+                            {
+                                <li class="@((currentController == item.Controller && currentArea == item.Area) ? "active" : string.Empty)">
+                                    @Html.ActionLink(item.Controller, item.Action, item.Controller, new { area = item.Area })
                                 </li>
-                        }
+                            }
                         </ul>
                     </li>
                 }
@@ -78,19 +69,19 @@
                         </a>
                     </li>
                 }
-                
-                    @*<li class="@(item.HasChildren ? "has-sub" : string.Empty) @(item.IsActive(currentController, currentArea) ? "active" : string.Empty)">
-                        @if (item.HasChildren)
-                            {
-                            }
-                            else if (!item.RequiresSignIn || isSignedIn == item.RequiresSignIn)
-                            {
-                                <a href="@Url.Action(item.Action, item.Controller, new { area = item.Area })">
-                                    <i class="material-icons">@item.Icon</i>
-                                    <span>@item.Name</span>
-                                </a>
-                            }
-                        </li>*@
+
+                @*<li class="@(item.HasChildren ? "has-sub" : string.Empty) @(item.IsActive(currentController, currentArea) ? "active" : string.Empty)">
+                    @if (item.HasChildren)
+                        {
+                        }
+                        else if (!item.RequiresSignIn || isSignedIn == item.RequiresSignIn)
+                        {
+                            <a href="@Url.Action(item.Action, item.Controller, new { area = item.Area })">
+                                <i class="material-icons">@item.Icon</i>
+                                <span>@item.Name</span>
+                            </a>
+                        }
+                    </li>*@
             }
             @*
                 <hr />

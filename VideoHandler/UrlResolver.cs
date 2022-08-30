@@ -3,7 +3,6 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 
 namespace VideoHandler
 {
@@ -35,22 +34,6 @@ namespace VideoHandler
                 sources.Add($"{_configuration["Urls:BucketUrl"]}/video/{src.Md5.Substring(0, 2)}/{src.Md5}.{src.Extension}");
             }
             return sources;
-        }
-
-        public string GetThumbnailUrl(Video video)
-        {
-            var md5 = video.VideoSource.FirstOrDefault()?.Md5 ?? "aaaaaaa";
-            var bucketDirectory = $"{_configuration["Urls:BucketDirectory"]}\\thumbnail\\{md5.Substring(0, 2)}\\";
-            var internalDirectory = $"{_configuration["Urls:InternalDirectory"]}\\thumbnail\\";
-            var fileName = $"{md5}.jpg";
-
-            if (!File.Exists(bucketDirectory + fileName))
-            {
-                if (!TryMove(internalDirectory, bucketDirectory, fileName))
-                    return $"{_configuration["Urls:InternalUrl"]}/thumbnail/{md5}.jpg";
-            }
-
-            return $"{_configuration["Urls:BucketUrl"]}/thumbnail/{md5.Substring(0, 2)}/{md5}.jpg";
         }
 
         private bool TryMove(string internalDirectory, string bucketDirectory, string fileName)

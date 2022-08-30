@@ -1,44 +1,43 @@
 ﻿@model OpenVid.Areas.VideoManagement.Models.Curation.CurationViewModel
 
-<div class="container">
+    <div class="breadcrumb float-right">
+        <button disabled class="btn btn-danger">Delete All</button>
+    </div>
+
+    <h3 class="page-header">
+        Curation
+        <small>Total recoverable space: @Model.VideosForDeletion.Sum(v => v.SizeMb) MB</small>
+    </h3>
+
+
     <div class="row">
-        <h3 class="row">Search Results</h3>
+        <div class="col-md-12">
+            @using (Html.BeginPanel("Flagged for Deletion", true))
+            {
+                @foreach (var video in Model.VideosForDeletion)
+                {
+                    <div class="row border-right mb-2" id="@video.Id">
+                        <div class="col-2">
+                            <img src="@Url.Action(SiteMap.Playback_Thumbnail, new { Id = video.Id })" style="max-width:100%;" />
+                        </div>
 
-        <div class="row border-right mb-2">
-            <div class="col-10">
-                Total recoverable space: @Model.VideosForDeletion.Sum(v => v.SizeMb) MB
-            </div>
-
-            <div class="col-2">
-                <button disabled class="btn btn-danger">Delete All</button>
-            </div>
+                        <div class="col-6">
+                            <a href="@Url.Action(SiteMap.Playback_Play, new { Id = video.Id })" data-toggle="tooltip" title="@video.Name"><div class="tile"><b>@video.Name</b></div></a>
+                        </div>
+                        <div class="col-2">
+                            Size: @video.SizeMb MB <br />
+                            Length: @video.Length
+                        </div>
+                        <div class="col-2">
+                            <button class="btn btn-danger delete-btn" data-id="@video.Id">Delete</button>
+                        </div>
+                    </div>
+                }
+            }
         </div>
+    </div>
 
-        <hr />
-
-        @foreach (var video in Model.VideosForDeletion)
-        {
-            <div class="row border-right mb-2" id="@video.Id">
-                    <div class="col-2">
-                        <img src="@video.ThumbnailUrl" onerror="this.onerror = null; this.src = '/img/thumb.png';" style="max-width:100%;" />
-                    </div>
-
-                    <div class="col-6">
-                        <a href="@Url.Action(SiteMap.Playback_Play, new { Id = video.Id })" data-toggle="tooltip" title="@video.Name"><div class="tile"><b>@video.Name</b></div></a>
-                    </div>
-                    <div class="col-2">
-                        Size: @video.SizeMb MB <br />
-                        Length: @video.Length
-                    </div>
-                    <div class="col-2">
-                        <button class="btn btn-danger delete-btn" data-id="@video.Id">Delete</button>
-                    </div>
-                </div>
-                    }
-                </div>
-            </div>
-
-            <script>
+    <script>
                 $(document).on('click', '.delete-btn', function(e) {
                     if (confirm("Are you sure you want to permanently delete this video?"))
                         deleteVideo($(this).attr('data-id'));
@@ -60,4 +59,4 @@
                         }
                     });
                 }
-            </script>
+    </script>

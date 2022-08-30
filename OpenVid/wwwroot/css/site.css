@@ -6,7 +6,7 @@
     background-color: #000;
     display: flex;
     margin: -30px;
-    margin-bottom: 30px;
+    margin-bottom: 0px;
 }
 
     .video-container > video {
@@ -31,11 +31,3 @@
         color: white;
         background-color: #007bff;
     }
-
-body {
-    font-size: 1rem;
-}
-
-.form-control {
-    font-size: 1rem;
-}
