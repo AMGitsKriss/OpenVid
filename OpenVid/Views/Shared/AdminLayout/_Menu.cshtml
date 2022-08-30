@@ -41,22 +41,47 @@
             @foreach (var item in SiteMap.AdminMenu)
             {
                 <li class="@((item.Controller == currentController && item.Area == currentArea) ? "active" : string.Empty)">
+
+                    <a href="@Url.Action(item.Action, item.Controller, new { area = item.Area })">
+                        <i class="material-icons">arrow_right_alt</i>
+                        <span>@item.Controller</span>
+                    </a>
+                </li>
+            }
+
+            @foreach (var area in SiteMap.AdminMenu.GroupBy(g => g.Area))
+            {
+                @if(area.Count() > 1)
+                {
+                    <li class="has-sub">
+                         <a>
+                             <b class="caret"></b>
+                             <i class="material-icons">arrow_alt_right</i>
+                             <span>@area.First().Area</span>
+                         </a>   
+                         <ul class="sub-menu">
+                        @foreach (var item in area)
+                        {
+                            <li class="@(currentController == item.Controller && currentArea == item.Area) ? "active" : string.Empty)">
+                                @Html.ActionLink(item.Controller, item.Action, item.Controller, new { area = item.Area })
+                                </li>
+                        }
+                        </ul>
+                    </li>
+                }
+                else
+                {
+                    <li class="@((area.First().Controller == currentController && area.First().Area == currentArea) ? "active" : string.Empty)">
+                        <a href="@Url.Action(area.First().Action, area.First().Controller, new { area = area.First().Area })">
+                            <i class="material-icons">arrow_right_alt</i>
+                            <span>@area.First().Controller</span>
+                        </a>
+                    </li>
+                }
+                
                     @*<li class="@(item.HasChildren ? "has-sub" : string.Empty) @(item.IsActive(currentController, currentArea) ? "active" : string.Empty)">
                         @if (item.HasChildren)
                             {
-                                <a>
-                                    <b class="caret"></b>
-                                    <i class="material-icons">@item.Icon</i>
-                                    <span>@item.Name</span>
-                                </a>
-                                <ul class="sub-menu">
-                                    @foreach (var childItem in item.Children)
-                                    {
-                                        <li class="@(childItem.IsActive(currentController, currentArea) ? "active" : string.Empty)">
-                                            @Html.ActionLink(childItem.Name, childItem.Action, childItem.Controller, new { area = childItem.Area })
-                                        </li>
-                                    }
-                                </ul>
                             }
                             else if (!item.RequiresSignIn || isSignedIn == item.RequiresSignIn)
                             {
@@ -66,11 +91,6 @@
                                 </a>
                             }
                         </li>*@
-                    <a href="@Url.Action(item.Action, item.Controller, new { area = item.Area })">
-                        <i class="material-icons">arrow_right_alt</i>
-                        <span>@item.Controller</span>
-                    </a>
-                </li>
             }
             @*
                 <hr />
