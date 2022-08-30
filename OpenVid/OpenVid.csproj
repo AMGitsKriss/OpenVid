@@ -49,8 +49,4 @@
     <Folder Include="wwwroot\import\03_awaiting_move\" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Include="compilerconfig.json" />
-  </ItemGroup>
-
 </Project>
