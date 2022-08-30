@@ -23,13 +23,15 @@ namespace OpenVid.Extensions
         public static PageLocation Catalog_Curation { get; set; } = new PageLocation("Catalog", "Curation", "Index");
         public static PageLocation Catalog_ImportPreprocessed { get; set; } = new PageLocation("Catalog", "ImportPreprocessed", "Index");
         public static PageLocation Catalog_ImportSave { get; set; } = new PageLocation("Catalog", "ImportPreprocessed", "Save");
+        public static PageLocation Tags_Management { get; set; } = new PageLocation("Tags", "Management", "Index");
 
 
         public static List<PageLocation> AdminMenu = new List<PageLocation>()
         {
             Catalog_Import,
             Catalog_ImportPreprocessed,
-            Catalog_Curation
+            Catalog_Curation,
+            Tags_Management
         };
 
         public static string Action(this IUrlHelper urlHelper, PageLocation page)

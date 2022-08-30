@@ -30,7 +30,7 @@
             <div class="navbar-item navbar-form">
                 <form id="searchBar" name="search" data-action="@Url.Action(SiteMap.Playback_Search, new { SearchString = " " })">
                     <div class="form-group">
-                        <input id="SearchString" type="text" class="form-control form-control-sm" placeholder="Enter keyword">
+                        <input id="SearchString" type="text" class="form-control form-control-sm" placeholder="Enter keyword" value="@ViewBag.SearchString">
                         <button type="submit" class="btn btn-search btn-sm"><i class="fa fa-search"></i></button>
                     </div>
                 </form>

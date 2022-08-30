@@ -53,9 +53,9 @@
                         <ul class="sub-menu" @((isSelected) ? @"style=display:block;" : string.Empty)>
                             @foreach (var item in area)
                             {
-                                <li class="@((currentController == item.Controller && currentArea == item.Area) ? "active" : string.Empty)">
-                                    @Html.ActionLink(item.Controller, item.Action, item.Controller, new { area = item.Area })
-                                </li>
+                            <li class="@((currentController == item.Controller && currentArea == item.Area) ? "active" : string.Empty)">
+                                @Html.ActionLink(item.Controller, item.Action, item.Controller, new { area = item.Area })
+                            </li>
                             }
                         </ul>
                     </li>

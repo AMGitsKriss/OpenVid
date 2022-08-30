@@ -126,6 +126,8 @@ namespace CatalogManager
         private int CreateVideoInDatabase(FoundVideo pending, EncoderPresetOptions preset, string queuedDirectory, string completeDirectory, string fileNameWithResolution)
         {
             // TODO - Suggested tags should get made here
+            var tags = _repository.DefineTags(pending.SuggestedTags);
+
             var queuedFullName = Path.Combine(queuedDirectory, fileNameWithResolution);
             var completeFullName = Path.Combine(completeDirectory, fileNameWithResolution);
 
@@ -148,7 +150,10 @@ namespace CatalogManager
                         MaxHeight = preset.MaxHeight,
                         IsVertical = meta.Height > meta.Width
                     }
-                }
+                },
+                VideoTag = tags.Select(t => new VideoTag() { 
+                    Tag = t
+                }).ToList()
             };
 
             try

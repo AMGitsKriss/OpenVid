@@ -1,5 +1,8 @@
 ﻿@model OpenVid.Areas.Playback.Models.Play.PlayViewModel
-
+@{
+    ViewBag.Title = Model.Update.Name;
+    ViewBag.SearchString = Model.SearchString;
+}
 <div class="video-container">
     <video height="720" controls>
         @foreach (var source in Model.VideoSources)

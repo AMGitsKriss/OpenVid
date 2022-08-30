@@ -49,7 +49,7 @@ namespace Database
 
         public IQueryable<Tag> GetAllTags()
         {
-            var result = _context.Tag.Include(x => x.VideoTag).ThenInclude(x => x.Video).ThenInclude(x => x.VideoSource).Where(x => x.VideoTag.Any(v => !v.Video.IsDeleted)).OrderByDescending(x => x.VideoTag.Count()).ThenBy(x => x.Name);
+            var result = _context.Tag.Include(x => x.VideoTag).ThenInclude(x => x.Video).ThenInclude(x => x.VideoSource).Where(x => x.VideoTag.Any(v => !v.Video.IsDeleted && v.Video.VideoSource.Any())).OrderByDescending(x => x.VideoTag.Count()).ThenBy(x => x.Name);
             return result;
         }
 
