@@ -1,9 +1,9 @@
 ﻿using OpenVid.Models;
 using System.Collections.Generic;
 
-namespace OpenVid.Areas.VideoManagement.Models.Import
+namespace OpenVid.Areas.Catalog.Models.ImportPreprocessed
 {
-    public class ImportViewModel : BaseViewModel
+    public class ImportPreprocessedViewModel : BaseViewModel
     {
         public List<FoundVideoViewModel> DiscoveredFiles { get; set; }
     }

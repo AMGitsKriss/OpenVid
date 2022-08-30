@@ -7,7 +7,7 @@ using OpenVid.Extensions;
 
 namespace OpenVid.Areas.Catalog.Controllers
 {
-    [Area("VideoManagement")]
+    [Area("Catalog")]
     public class CurationController : OpenVidController
     {
         private IVideoManager _videoManager;

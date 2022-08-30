@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using OpenVid.Areas.VideoManagement.Models.Import;
+using OpenVid.Areas.Catalog.Models.ImportPreprocessed;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -8,21 +8,21 @@ using System.Threading.Tasks;
 using VideoHandler;
 using VideoHandler.Models;
 
-namespace OpenVid.Areas.VideoManagement.Controllers
+namespace OpenVid.Areas.Catalog.Controllers
 {
-    [Area("VideoManagement")]
-    public class ImportController : Controller
+    [Area("Catalog")]
+    public class ImportPreprocessedController : Controller
     {
         private IVideoManager _save;
 
-        public ImportController(IVideoManager save)
+        public ImportPreprocessedController(IVideoManager save)
         {
             _save = save;
         }
 
         public IActionResult Index()
-        {   
-            var viewModel = new ImportViewModel()
+        {
+            var viewModel = new ImportPreprocessedViewModel()
             {
                 DiscoveredFiles = FindFiles()
             };
@@ -74,7 +74,8 @@ namespace OpenVid.Areas.VideoManagement.Controllers
                 };
             }
 
-            return Json(new ImportResultViewModel() { 
+            return Json(new ImportResultViewModel()
+            {
                 Message = response.Message
             });
         }

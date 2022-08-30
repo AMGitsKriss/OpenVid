@@ -1,4 +1,4 @@
-﻿namespace OpenVid.Areas.VideoManagement.Models.Import
+﻿namespace OpenVid.Areas.Catalog.Models.ImportPreprocessed
 {
     public class ImportResultViewModel
     {
