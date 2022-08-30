@@ -7,18 +7,16 @@ using System.Collections.Generic;
 
 namespace Database.Models
 {
-    public partial class Tag
+    public partial class TagType
     {
-        public Tag()
+        public TagType()
         {
-            VideoTag = new HashSet<VideoTag>();
+            Tag = new HashSet<Tag>();
         }
 
         public int Id { get; set; }
         public string Name { get; set; }
-        public int Type { get; set; }
 
-        public virtual TagType TypeNavigation { get; set; }
-        public virtual ICollection<VideoTag> VideoTag { get; set; }
+        public virtual ICollection<Tag> Tag { get; set; }
     }
 }

@@ -21,6 +21,7 @@ namespace Database.Models
 
         public virtual DbSet<Ratings> Ratings { get; set; }
         public virtual DbSet<Tag> Tag { get; set; }
+        public virtual DbSet<TagType> TagType { get; set; }
         public virtual DbSet<Video> Video { get; set; }
         public virtual DbSet<VideoEncodeQueue> VideoEncodeQueue { get; set; }
         public virtual DbSet<VideoSource> VideoSource { get; set; }
@@ -56,6 +57,19 @@ namespace Database.Models
                     .IsRequired()
                     .HasMaxLength(100)
                     .IsUnicode(false);
+
+                entity.HasOne(d => d.TypeNavigation)
+                    .WithMany(p => p.Tag)
+                    .HasForeignKey(d => d.Type)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Tag_TagType");
+            });
+
+            modelBuilder.Entity<TagType>(entity =>
+            {
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(128);
             });
 
             modelBuilder.Entity<Video>(entity =>
@@ -156,7 +170,8 @@ namespace Database.Models
                 entity.HasOne(d => d.Tag)
                     .WithMany(p => p.VideoTag)
                     .HasForeignKey(d => d.TagId)
-                    .HasConstraintName("FK_VideoTag_TagID");
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_VideoTag_Tag");
 
                 entity.HasOne(d => d.Video)
                     .WithMany(p => p.VideoTag)

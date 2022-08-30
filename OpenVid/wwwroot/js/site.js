@@ -19,3 +19,10 @@ function loadMore(page, searchQuery) {
         }
     });
 }
+
+$(document).on('submit', '#searchBar', function (e) {
+    e.preventDefault();
+    searchString = $('#SearchString').val();
+    if (searchString != "")
+        window.location.href = $(this).attr('data-action') + searchString;
+});
