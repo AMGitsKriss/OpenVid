@@ -1,77 +1,55 @@
-﻿@model OpenVid.Models.BaseViewModel
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - OpenVid</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" />
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <partial name="_Head" />
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">OpenVid</a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
-                    <ul class="navbar-nav flex-grow-1">
-                        @using Microsoft.Extensions.Configuration
-                        @inject IConfiguration Configuration
-                        @{
-                            var configExists = bool.TryParse(Configuration["ShowUpload"], out var showUpload);
-                        }
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        @if (configExists && showUpload)
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="@SiteMap.VideoManagement_UploadUI.Area" asp-controller="@SiteMap.VideoManagement_UploadUI.Controller" asp-action="@SiteMap.VideoManagement_UploadUI.Action">Upload</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="@SiteMap.VideoManagement_Import.Area" asp-controller="@SiteMap.VideoManagement_Import.Controller" asp-action="@SiteMap.VideoManagement_Import.Action">Import</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="@SiteMap.Catalog_Import.Area" asp-controller="@SiteMap.Catalog_Import.Controller" asp-action="@SiteMap.Catalog_Import.Action">Admin</a>
-                            </li>
-                        }
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="@SiteMap.VideoManagement_Curation.Area" asp-controller="@SiteMap.VideoManagement_Curation.Controller" asp-action="@SiteMap.VideoManagement_Curation.Action">Curation</a>
-                        </li>
-                        <li class="nav-item">
-                            <form id="searchBar" class="nav-link" onsubmit="submitSearch()">
-                                @Html.TextBoxFor(s => s.SearchString)
-                                <input type="submit" value="&#x1f50d;" />
-                            </form>
-                            <script>
-                                $(document).on('submit', '#searchBar', function (e) {
-                                    e.preventDefault();
-                                    searchString = $('#SearchString').val();
-                                    if (searchString != "")
-                                        window.location.href = '@Url.Action(SiteMap.Playback_Search, new { SearchString = " " })' + searchString;
-                                });
-                            </script>
-                        </li>
-                    </ul>
+    <!-- Modal -->
+    <div class="modal fade" id="myModal" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Modal Header</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p>Some text in the modal.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                 </div>
             </div>
-        </nav>
-    </header>
-    @RenderBody()
-
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2020 - OpenVid - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
-    </footer>
+    </div>
+    <!-- end Modal-->
+    <!-- begin #page-loader -->
+    <div id="page-loader" class="fade show">
+        <div class="material-loader">
+            <svg class="circular" viewBox="25 25 50 50">
+                <circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="2" stroke-miterlimit="10"></circle>
+            </svg>
+            <div class="message">Loading...</div>
+        </div>
+    </div>
+    <!-- end #page-loader -->
+    <!-- begin #page-container -->
+    <div id="page-container" class="fade page-sidebar-fixed page-header-fixed page-without-sidebar">
+
+        <partial name="_Header" />
+
+        <!-- begin #content -->
+        <div id="content" class="content">
+            @RenderBody()
+        </div>
+        <!-- end #content -->
+        <!-- begin scroll to top btn -->
+        <a href="javascript:;" class="btn btn-icon btn-circle btn-success btn-scroll-to-top fade" data-click="scroll-top"><i class="material-icons">keyboard_arrow_up</i></a>
+        <!-- end scroll to top btn -->
+    </div>
+    <!-- end page container -->
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    @RenderSection("Scripts", required: false)
+    @RenderSection("scripts", required: false)
     <script>
         $('[data-toggle="tooltip"]').tooltip();
     </script>

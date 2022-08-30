@@ -1,0 +1,81 @@
+﻿@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+@{
+    var SiteName = Configuration["SiteName"] ?? "OpenVid";
+}
+
+<!-- begin #header -->
+<div id="header" class="header navbar-default">
+    <!-- begin navbar-header -->
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed navbar-toggle-left" data-click="sidebar-minify">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+        <button type="button" class="navbar-toggle" data-click="sidebar-toggled">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+        <a href="/" class="navbar-brand">
+            @SiteName
+        </a>
+        <!-- begin header-nav -->
+        <div class="navbar-nav navbar-right">
+            <div class="navbar-item navbar-form">
+                <form id="searchBar" name="search" data-action="@Url.Action(SiteMap.Playback_Search, new { SearchString = " " })" >
+                    <div class="form-group">
+                        <input id="SearchString" type="text" class="form-control form-control-sm" placeholder="Enter keyword">
+                        <button type="submit" class="btn btn-search btn-sm"><i class="fa fa-search"></i></button>
+                    </div>
+                </form>
+            </div>
+            @*
+        <li class="dropdown">
+            <a href="#" data-toggle="dropdown" class="dropdown-toggle icon">
+                <i class="material-icons">inbox</i>
+                <span class="label">0</span>
+            </a>
+            <ul class="dropdown-menu media-list dropdown-menu-right">
+                <li class="dropdown-header">NOTIFICATIONS (0)</li>
+                <li class="text-center width-300 p-b-10 p-t-10">
+                    No notification found
+                </li>
+            </ul>
+        </li>
+        @if (SignInManager.IsSignedIn(User))
+        {
+            <li class="dropdown navbar-user">
+                <a class="dropdown-toggle" data-toggle="dropdown">
+                    <span class="d-none d-md-inline">@User.Identity.Name</span>
+                    <div class="image image-icon text-white-lighter">
+                        <img src="~/images/avatars/mc/AMGitsKriss.png" />
+                    </div>
+                </a>
+                <div class="dropdown-menu dropdown-menu-right">
+                    <a href="javascript:;" class="dropdown-item">Help</a>
+                    <a href="javascript:;" class="dropdown-item">Settings</a>
+                    <div class="dropdown-divider"></div>
+                    <a href="@Url.Action("Index", "Logout", new { area = "Account" })" class="dropdown-item">Log Out</a>
+                </div>
+            </li>
+        }
+        else
+        {
+            <li class="navbar-user">
+                <a asp-area="account" asp-controller="login" class="icon">
+                    <span class="d-none d-md-inline">Login</span>
+                    <div class="image image-icon text-white-lighter">
+                        <i class="material-icons">login</i>
+                    </div>
+                </a>
+            </li>
+        }
+            *@
+        </div>
+        <!-- end hea2der navigation right -->
+    </div>
+    <!-- end navbar-header -->
+</div>
+<!-- end #header -->

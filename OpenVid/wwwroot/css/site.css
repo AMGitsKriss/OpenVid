@@ -3,8 +3,10 @@
 }
 
 .video-container {
-    background-color: #111;
+    background-color: #000;
     display: flex;
+    margin: -30px;
+    margin-bottom: 30px;
 }
 
     .video-container > video {
@@ -24,7 +26,16 @@
     color: #007bff;
     cursor: pointer;
 }
+
     .tag-suggestion.selected {
         color: white;
         background-color: #007bff;
     }
+
+body {
+    font-size: 1rem;
+}
+
+.form-control {
+    font-size: 1rem;
+}

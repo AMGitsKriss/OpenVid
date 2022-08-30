@@ -65,13 +65,13 @@ namespace OpenVid.BackgroundEncoder
                 // Move the new file to the bucket
                 string vidSubFolder = md5.Substring(0, 2);
                 string videoDirectory = Path.Combine(_configuration.BucketDirectory, "video", vidSubFolder);
+                FileHelpers.TouchDirectory(videoDirectory);
                 string videoBucketDirectory = Path.Combine(videoDirectory, $"{md5}.mp4");
                 File.Move(queueItem.OutputDirectory, videoBucketDirectory);
 
                 // Generate the thumbnail
                 string thumbSubFolder = queueItem.VideoId.ToString().PadLeft(2, '0').Substring(0, 2);
                 string thumbDirectory = Path.Combine(_configuration.BucketDirectory, "thumbnail", thumbSubFolder);
-
                 FileHelpers.TouchDirectory(thumbDirectory);
 
                 string thumbPath = Path.Combine(thumbDirectory, $"{queueItem.VideoId.ToString().PadLeft(2, '0')}.jpg");

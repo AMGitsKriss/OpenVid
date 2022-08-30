@@ -1,64 +1,64 @@
 ﻿@model OpenVid.Areas.Playback.Models.Update.UpdateFormViewModel
-
-<form class="col-6" method="post" action="@Url.Action(SiteMap.Playback_Update)">
-    @if (Model.IsFlaggedForDeletion)
-    {
-        <div class="form-group">
-            <div class="alert alert-danger">FLAGGED FOR DELETION</div>
-        </div>
-    }
-    <div class="form-group">
-        <label>Video Name:</label>
-        @Html.TextBoxFor(m => m.Name, new { @class = "form-control" })
-    </div>
-    @Html.HiddenFor(m => m.Id)
-    @foreach (var metadata in Model.Metadata)
-    {
-
-        <div class="form-group">
-            MD5: @metadata.Md5 <a href="@Url.Action(SiteMap.Playback_Play, new { Id = Model.Id })">[View]</a>
-            <br />
-            Dimensions: @(metadata.Width)x@(metadata.Height)
-            <br />
-            Size:  @((int)(metadata.Size/1024)/1024) MB
-        </div>
-    }
-    <div class="form-group ui-widget">
-        <label>Tags:</label>
-        @Html.TextAreaFor(m => m.Tags, new { @class = "form-control", style = "word-break: break-word; height: 100px;" })
-        <br />
-        <div class="row">
-            @foreach (var item in Model.SuggestedTags)
+    <div class="panel col-6">
+        <form class="panel-body " method="post" action="@Url.Action(SiteMap.Playback_Update)">
+            @if (Model.IsFlaggedForDeletion)
             {
-                <div class="col-2 mb-4">
-                    <b>@item.TagName</b>
-                    @foreach (var tag in item.RelatedTags)
-                    {
-                        <br />
-                        <span class="tag-suggestion @(tag.AlreadyUsed? "selected" : "")" data-tag="@tag.TagName">@tag.TagName</span>
-                    }
+                <div class="form-group">
+                    <div class="alert alert-danger">FLAGGED FOR DELETION</div>
                 </div>
             }
-        </div>
+            <div class="form-group">
+                <label>Video Name:</label>
+                @Html.TextBoxFor(m => m.Name, new { @class = "form-control" })
+            </div>
+            @Html.HiddenFor(m => m.Id)
+            @foreach (var metadata in Model.Metadata)
+            {
+
+                <div class="form-group">
+                    MD5: @metadata.Md5 <a href="@Url.Action(SiteMap.Playback_Play, new { Id = Model.Id })">[View]</a>
+                    <br />
+                    Dimensions: @(metadata.Width)x@(metadata.Height)
+                    <br />
+                    Size:  @((int)(metadata.Size/1024)/1024) MB
+                </div>
+            }
+            <div class="form-group ui-widget">
+                <label>Tags:</label>
+                @Html.TextAreaFor(m => m.Tags, new { @class = "form-control", style = "word-break: break-word; height: 100px;" })
+                <br />
+                <div class="row">
+                    @foreach (var item in Model.SuggestedTags)
+                    {
+                        <div class="col-2 mb-4">
+                            <b>@item.TagName</b>
+                            @foreach (var tag in item.RelatedTags)
+                            {
+                                <br />
+                                <span class="tag-suggestion @(tag.AlreadyUsed? "selected" : "")" data-tag="@tag.TagName">@tag.TagName</span>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Description:</label>
+                @Html.TextBoxFor(m => m.Description, new { @class = "form-control", style = "word-break: break-word;" })
+            </div>
+            <div class="form-group">
+                <label>Rating:</label>
+                @Html.DropDownListFor(n => n.RatingId, new SelectList(Model.PossibleRatings, "Id", "Name"), "Unrated", new { @class = "form-control", style = "word-break: break-word;" })
+            </div>
+            <input type="submit" />
+            <input type="submit" value="Delete" formaction="@Url.Action(SiteMap.FlagDelete)" />
+        </form>
     </div>
-    <div class="form-group">
-        <label>Description:</label>
-        @Html.TextBoxFor(m => m.Description, new { @class = "form-control", style = "word-break: break-word;" })
-    </div>
-    <div class="form-group">
-        <label>Rating:</label>
-        @Html.DropDownListFor(n => n.RatingId, new SelectList(Model.PossibleRatings, "Id", "Name"), "Unrated", new { @class = "form-control", style = "word-break: break-word;" })
-    </div>
-    <input type="submit" />
-    <input type="submit" value="Delete" formaction="@Url.Action(SiteMap.FlagDelete)" />
-</form>
 
 
-
-<link rel="stylesheet" href="https://code.jquery.com/ui/1.13.1/themes/base/jquery-ui.css">
-<script src="https://code.jquery.com/jquery-3.6.0.js"></script>
-<script src="https://code.jquery.com/ui/1.13.1/jquery-ui.js"></script>
-<script>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.1/jquery-ui.js"></script>
+    <script>
     $("#Tags").keypress(function (e) {
         if (e.which === 13 && !e.shiftKey) {
             e.preventDefault();
@@ -136,4 +136,4 @@
             $('[data-tag=' + thisTag + ']').removeClass('selected');
         }
     });
-</script>
+    </script>
