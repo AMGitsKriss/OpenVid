@@ -7,6 +7,7 @@ using VideoHandler.Attributes;
 using VideoHandler.Models;
 using System.Reflection;
 using System.Diagnostics.CodeAnalysis;
+using System.Text.RegularExpressions;
 
 namespace VideoHandler.SearchFilters
 {
@@ -14,6 +15,7 @@ namespace VideoHandler.SearchFilters
     public class MetaFilter : IFilter
     {
         private IVideoRepository _repo;
+        private Regex _alphaNumericalOnly = new Regex("[^a-zA-Z0-9 -]");
         public MetaFilter(IVideoRepository repo)
         {
             _repo = repo;
@@ -47,6 +49,14 @@ namespace VideoHandler.SearchFilters
         private List<Video> SameLength()
         {
             var result = _repo.GetViewableVideos().ToList().GroupBy(m => m, new DurationComparer())
+                               .Where(a => a.Count() > 1)
+                               .SelectMany(a => a.ToList());
+            return result.ToList();
+        }
+
+        private List<Video> SameName()
+        {
+            var result = _repo.GetViewableVideos().ToList().GroupBy(m => _alphaNumericalOnly.Replace(m.Name, ""))
                                .Where(a => a.Count() > 1)
                                .SelectMany(a => a.ToList());
             return result.ToList();

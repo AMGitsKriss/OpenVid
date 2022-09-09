@@ -45,7 +45,7 @@ namespace OpenVid.Areas.Playback.Controllers
 
             //if (!viewModel.VideoSources.Any()) return NotFound();
 
-            var tagCollection = video.VideoTag.Select(x => x.Tag.Name);
+            var tagCollection = video.VideoTag.Select(x => x.Tag.Name).OrderBy(t => t);
             var tagSuggestions = new List<SuggestedTagViewModel>();
 
             // TODO - This can be cached
@@ -61,6 +61,7 @@ namespace OpenVid.Areas.Playback.Controllers
                     }).ToList()
                 });
             }
+            tagSuggestions.Add(SuggestTagsFromName(video.Name, tagCollection));
 
             viewModel.Update = new UpdateFormViewModel()
             {
@@ -85,6 +86,21 @@ namespace OpenVid.Areas.Playback.Controllers
             };
 
             return View(viewModel);
+        }
+
+
+
+        private SuggestedTagViewModel SuggestTagsFromName(string videoName, IEnumerable<string> tagsOnVideo)
+        {
+            return new SuggestedTagViewModel()
+            {
+                TagName = "Video Title",
+                RelatedTags = _tagManager.GetTagsInName(videoName).Select(t => new RelatedTagViewModel()
+                {
+                    TagName = t,
+                    AlreadyUsed = tagsOnVideo.Contains(t)
+                }).ToList()
+            };
         }
     }
 }

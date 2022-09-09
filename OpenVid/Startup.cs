@@ -25,7 +25,6 @@ namespace OpenVid
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllersWithViews();
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
 
             services.AddDbContext<OpenVidContext>(o => o.UseSqlServer(Configuration.GetConnectionString("DefaultDatabase")));
@@ -36,6 +35,7 @@ namespace OpenVid
 
             services
               .AddScoped<IFilter, GeneralFilter>()
+              .AddScoped<IFilter, HashFilter>()
               .AddScoped<IFilter, TagFilter>()
               .AddScoped<IFilter, MetaFilter>()
               .AddScoped<IFilter, ExtensionFilter>()

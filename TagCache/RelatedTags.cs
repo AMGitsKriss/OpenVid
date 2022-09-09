@@ -50,6 +50,18 @@ namespace TagCache
             return result ?? new List<string>();
         }
 
+        public List<string> GetTagsInName(string videoName)
+        {
+            var name = videoName.ToLower().Replace(" ", "_");
+
+            var tagsInTitle = _repository.GetAllTags()
+                .Where(t => name.Contains(t.Name))
+                .Select(t => t.Name)
+                .ToList();
+
+            return tagsInTitle;
+        }
+
         public void Refresh()
         {
             _relatedTags.RefreshValue(TimeSpan.MinValue);

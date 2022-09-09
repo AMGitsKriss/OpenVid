@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using System.Linq;
+using System.Text.RegularExpressions;
 using VideoHandler;
 
 namespace Tests
@@ -24,6 +25,42 @@ namespace Tests
             SearchManager service = new SearchManager(null, null);
             var searchParams = service.MapSearchQueryToParameters(searchString);
             Assert.AreEqual(expectedCount, searchParams.Count());
+        }
+
+        [TestCase(@"one ""another one"" (something else)", 3)]
+        [TestCase(@"one ""another one"" (something else) ""something bad)", 5)]
+        public void ExperimentalParsing(string query, int expected)
+        {
+            var test = Split.KeepWordsQuotesBrackets(query);
+            Assert.That(test.Length == expected);
+        }
+
+        private static string[] SplitOne(string query)
+        {
+            Regex regex = new Regex(@"[ ](?=(?:[^""]*""[^""]*"")*[^""]*$)", RegexOptions.Multiline);
+            string[] splits = regex.Split(query);
+            return splits;
+        }
+
+        private static string[] SplitTwo(string query)
+        {
+            var parts = Regex.Matches(query, @"[\""].+?[\""]|[^ ]+")
+            .Cast<Match>()
+            .Select(m => m.Value);
+
+            return parts.ToArray();
+        }
+    }
+
+    public static class Split
+    {
+        public static string[] KeepWordsQuotesBrackets(string query)
+        {
+            var parts = Regex.Matches(query, @"[\""].+?[\""]|[(].+?[)]|[^ ]+")
+            .Cast<Match>()
+            .Select(m => m.Value);
+
+            return parts.ToArray();
         }
     }
 }

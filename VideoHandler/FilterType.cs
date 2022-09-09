@@ -11,6 +11,7 @@
         Extension,
         Rating,
         RatingOrSafer,
-        RatingOrRiskier
+        RatingOrRiskier,
+        Hash
     }
 }

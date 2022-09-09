@@ -129,7 +129,7 @@ namespace CatalogManager
             var tags = _repository.DefineTags(pending.SuggestedTags);
 
             var queuedFullName = Path.Combine(queuedDirectory, fileNameWithResolution);
-            var completeFullName = Path.Combine(completeDirectory, fileNameWithResolution);
+            var completeFullName = Path.Combine(completeDirectory, $"{Path.GetFileNameWithoutExtension(fileNameWithResolution)}.mp4");
 
             var meta = _metadata.GetMetadata(pending.FullName);
             var toSave = new Video()

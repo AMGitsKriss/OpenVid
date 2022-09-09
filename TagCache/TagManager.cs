@@ -18,6 +18,11 @@ namespace TagCache
             return _related.Get(tag);
         }
 
+        public List<string> GetTagsInName(string videoName)
+        {
+            return _related.GetTagsInName(videoName);
+        }
+
         public List<string> GetAllUsedTags()
         {
             return _suggested.Get();

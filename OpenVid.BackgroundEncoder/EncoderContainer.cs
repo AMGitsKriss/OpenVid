@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using CatalogManager.Helpers;
+using System;
 
 namespace OpenVid.BackgroundEncoder
 {
@@ -47,7 +48,14 @@ namespace OpenVid.BackgroundEncoder
                 var metadata = _metadata.GetMetadata(queueItem.OutputDirectory);
 
                 // Remove the old file
-                File.Delete(queueItem.InputDirectory);
+                try
+                {
+                    File.Delete(queueItem.InputDirectory);
+                }
+                catch (Exception ex)
+                {
+                    var msg = ex.Message;
+                }
 
                 // Write the new source entry
                 var md5 = FileHelpers.GenerateHash(queueItem.OutputDirectory);
