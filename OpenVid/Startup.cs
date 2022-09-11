@@ -1,12 +1,15 @@
 using CatalogManager;
 using Database;
 using Database.Models;
+using Database.Users;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System;
 using TagCache;
 using VideoHandler;
 using VideoHandler.SearchFilters;
@@ -27,7 +30,17 @@ namespace OpenVid
         {
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
 
+            services.AddDistributedMemoryCache();
+            services.AddSession(options =>
+            {
+                options.Cookie.HttpOnly = false;
+                options.Cookie.IsEssential = true;
+            });
+
             services.AddDbContext<OpenVidContext>(o => o.UseSqlServer(Configuration.GetConnectionString("DefaultDatabase")));
+            services.AddDbContext<UserDbContext>(o => o.UseSqlServer(Configuration.GetConnectionString("DefaultDatabase")));
+            services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<UserDbContext>();
+
             services.AddScoped<IVideoRepository, VideoRepository>();
             services.AddScoped<ISearchManager, SearchManager>();
             services.AddScoped<IVideoManager, VideoManager>();
@@ -48,32 +61,77 @@ namespace OpenVid
             services.TagCacheInstaller();
 
             services.CatalogManagerInstaller(Configuration);
+
+            services.Configure<IdentityOptions>(options =>
+            {
+                // Password settings.
+                options.Password.RequireDigit = false;
+                options.Password.RequireLowercase = false;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireUppercase = false;
+                options.Password.RequiredLength = 8;
+                options.Password.RequiredUniqueChars = 1;
+
+                // Lockout settings.
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+                options.Lockout.MaxFailedAccessAttempts = 5;
+                options.Lockout.AllowedForNewUsers = true;
+
+                // User settings.
+                options.User.AllowedUserNameCharacters =
+                "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
+                options.User.RequireUniqueEmail = false;
+            });
+
+            services.ConfigureApplicationCookie(options =>
+            {
+                // Cookie settings
+                options.Cookie.HttpOnly = true;
+                options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
+
+                options.LoginPath = "/Login";
+                options.AccessDeniedPath = "/AccessDenied";
+                options.SlidingExpiration = true;
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             app.UseDeveloperExceptionPage();
-            if (env.IsDevelopment())
+            if (!env.IsProduction())
             {
+                using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
+                {
+                    var videoContext = serviceScope.ServiceProvider.GetRequiredService<OpenVidContext>();
+                    var videoSuccess = videoContext.Database.EnsureCreated();
+
+                    var userContext = serviceScope.ServiceProvider.GetRequiredService<UserDbContext>();
+                    var userSuccess = userContext.Database.EnsureCreated();
+                }
+                app.UseDeveloperExceptionPage();
             }
             else
             {
-                app.UseExceptionHandler("/Home/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
 
                 using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
                 {
-                    var context = serviceScope.ServiceProvider.GetRequiredService<OpenVidContext>();
-                    context.Database.EnsureCreated();
+                    var videoContext = serviceScope.ServiceProvider.GetRequiredService<OpenVidContext>();
+                    var videoSuccess = videoContext.Database.EnsureCreated();
+
+                    var userContext = serviceScope.ServiceProvider.GetRequiredService<UserDbContext>();
+                    var userSuccess = userContext.Database.EnsureCreated();
                 }
             }
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+            app.UseSession();
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

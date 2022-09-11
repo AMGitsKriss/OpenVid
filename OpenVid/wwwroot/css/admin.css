@@ -124,7 +124,7 @@ body {
 
 .pace .pace-progress {
     top: 50px;
-    display:none;
+    display: none;
 }
 
 .header .navbar-user .image, .header .navbar-user img,
@@ -164,4 +164,8 @@ body {
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
     -webkit-appearance: none;
+}
+
+.field-validation-error {
+    color: red;
 }

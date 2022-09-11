@@ -9,6 +9,8 @@ namespace OpenVid.Extensions
     public static class SiteMap
     {
         public static PageLocation Home { get; set; } = new PageLocation("Home", "Index");
+        public static PageLocation Login { get; set; } = new PageLocation("Login", "Index");
+        public static PageLocation Register { get; set; } = new PageLocation("Register", "Index");
         public static PageLocation Playback_Play { get; set; } = new PageLocation("Playback", "Play", "Index");
         public static PageLocation Playback_Search { get; set; } = new PageLocation("Playback", "Search", "Index");
         public static PageLocation Playback_Update { get; set; } = new PageLocation("Playback", "Update", "Index");
