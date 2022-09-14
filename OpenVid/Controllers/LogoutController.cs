@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Database.Users;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using OpenVid.Extensions;
 using System.Threading.Tasks;
@@ -7,8 +8,8 @@ namespace OpenVid.Controllers
 {
     public class LogoutController : OpenVidController
     {
-        private readonly SignInManager<IdentityUser> _signInManager;
-        public LogoutController(SignInManager<IdentityUser> signInManager)
+        private readonly SignInManager<ApplicationUser> _signInManager;
+        public LogoutController(SignInManager<ApplicationUser> signInManager)
         {
             _signInManager = signInManager;
         }

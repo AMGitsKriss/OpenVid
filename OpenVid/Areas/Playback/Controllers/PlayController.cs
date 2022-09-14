@@ -7,11 +7,13 @@ using OpenVid.Areas.Playback.Models.Play;
 using OpenVid.Areas.Playback.Models.Shared;
 using OpenVid.Areas.Playback.Models.Update;
 using OpenVid.Extensions;
+using OrionDashboard.Web.Attributes;
 using TagCache;
 using VideoHandler;
 
 namespace OpenVid.Areas.Playback.Controllers
 {
+    [RequireLogin]
     [Area("playback")]
     public class PlayController : OpenVidController
     {
@@ -29,7 +31,7 @@ namespace OpenVid.Areas.Playback.Controllers
             _tagManager = tagManager;
         }
 
-        [Route("{id}")]
+        [Route("{id:int}")]
         public IActionResult Index(int id)
         {
             var video = _videoService.GetVideo(id);

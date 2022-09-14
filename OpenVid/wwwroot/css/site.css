@@ -31,3 +31,21 @@
         color: white;
         background-color: #007bff;
     }
+
+div.error-container {
+    height: 10em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+div.message-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+div.error-container p,
+div.error-container h1 {
+    margin: 0;
+}

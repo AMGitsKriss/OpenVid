@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Database.Users;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using OpenVid.Extensions;
 using OpenVid.Models.Login;
@@ -9,22 +10,22 @@ namespace OpenVid.Controllers
 {
     public class LoginController : OpenVidController
     {
-        private readonly UserManager<IdentityUser> _userManager;
-        private readonly SignInManager<IdentityUser> _signInManager;
-        public LoginController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager)
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
+        public LoginController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
         }
 
-        [HttpGet("login")]
+        [HttpGet]
         public IActionResult Index()
         {
             return View(new LoginViewModel());
         }
 
 
-        [HttpPost("login")]
+        [HttpPost]
         public async Task<IActionResult> Index(LoginViewModel model)
         {
             if (ModelState.IsValid)

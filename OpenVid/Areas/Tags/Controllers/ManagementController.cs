@@ -2,7 +2,7 @@
 
 namespace OpenVid.Areas.Tags.Controllers
 {
-    [Area("Tags")]
+    [Area("tags")]
     public class ManagementController : Controller
     {
         public IActionResult Index()

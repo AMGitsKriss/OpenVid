@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Database.Users;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using OpenVid.Extensions;
 using OpenVid.Models.Register;
@@ -9,8 +10,8 @@ namespace OpenVid.Controllers
 {
     public class RegisterController : OpenVidController
     {
-        private readonly UserManager<IdentityUser> _userManager;
-        public RegisterController(UserManager<IdentityUser> userManager)
+        private readonly UserManager<ApplicationUser> _userManager;
+        public RegisterController(UserManager<ApplicationUser> userManager)
         {
             _userManager = userManager;
         }
@@ -29,12 +30,11 @@ namespace OpenVid.Controllers
                 var userCheck = await _userManager.FindByEmailAsync(request.Email);
                 if (userCheck == null)
                 {
-                    var user = new IdentityUser
+                    var user = new ApplicationUser
                     {
                         UserName = request.Username,
                         NormalizedUserName = request.Email,
-                        Email = request.Email,
-                        EmailConfirmed = true
+                        Email = request.Email
                     };
                     var result = await _userManager.CreateAsync(user, request.Password);
                     if (result.Succeeded)

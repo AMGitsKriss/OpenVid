@@ -5,19 +5,18 @@ using System.Collections.Generic;
 // If you have enabled NRTs for your project, then un-comment the following line:
 // #nullable disable
 
-namespace Database.Models
+namespace Database.Users
 {
-    public partial class TagType
+    public partial class PermissionGroup
     {
-        public TagType()
+        public PermissionGroup()
         {
-            Tag = new HashSet<Tag>();
+            Permission = new HashSet<Permission>();
         }
 
         public int Id { get; set; }
         public string Name { get; set; }
-        public bool ShowDescription { get; set; }
 
-        public virtual ICollection<Tag> Tag { get; set; }
+        public virtual ICollection<Permission> Permission { get; set; }
     }
 }

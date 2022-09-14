@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using OrionDashboard.Web.Attributes;
 using TagCache;
 
 namespace OpenVid.Areas.Playback.Controllers
 {
+    [RequireLogin]
     [Area("playback")]
     public class TagController : Controller
     {

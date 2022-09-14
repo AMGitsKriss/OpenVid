@@ -35,13 +35,24 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Update="Areas\Account\Views\Management\Index.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="Areas\Account\Views\_ViewImports.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="Areas\Account\Views\_ViewStart.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
     <Content Update="wwwroot\import\01_pending\BlackBlackFalcon-mobile.mp4">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Areas\VideoManagement\Models\" />
     <Folder Include="wwwroot\import\01_pending\" />
     <Folder Include="wwwroot\import\02_queued\" />
     <Folder Include="wwwroot\import\03_awaiting_move\" />

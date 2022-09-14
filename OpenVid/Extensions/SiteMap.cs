@@ -10,6 +10,7 @@ namespace OpenVid.Extensions
     {
         public static PageLocation Home { get; set; } = new PageLocation("Home", "Index");
         public static PageLocation Login { get; set; } = new PageLocation("Login", "Index");
+        public static PageLocation Logout { get; set; } = new PageLocation("Logout", "Index");
         public static PageLocation Register { get; set; } = new PageLocation("Register", "Index");
         public static PageLocation Playback_Play { get; set; } = new PageLocation("Playback", "Play", "Index");
         public static PageLocation Playback_Search { get; set; } = new PageLocation("Playback", "Search", "Index");
@@ -26,10 +27,14 @@ namespace OpenVid.Extensions
         public static PageLocation Catalog_ImportPreprocessed { get; set; } = new PageLocation("Catalog", "ImportPreprocessed", "Index");
         public static PageLocation Catalog_ImportSave { get; set; } = new PageLocation("Catalog", "ImportPreprocessed", "Save");
         public static PageLocation Tags_Management { get; set; } = new PageLocation("Tags", "Management", "Index");
+        public static PageLocation Account_MyAccount { get; set; } = new PageLocation("Account", "Management", "Index");
+        public static PageLocation Account_Management { get; set; } = new PageLocation("Account", "Management", "Index");
 
 
         public static List<PageLocation> AdminMenu = new List<PageLocation>()
         {
+            Account_MyAccount,
+            Account_Management,
             Catalog_Import,
             Catalog_ImportPreprocessed,
             Catalog_Curation,

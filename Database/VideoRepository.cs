@@ -8,6 +8,8 @@ using System.Linq;
 namespace Database
 {
     // Scaffold-DbContext "name=ConnectionStrings:DefaultDatabase" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Models -Force
+
+    //Scaffold-DbContext "name=ConnectionStrings:DefaultDatabase" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Models -Force -Tables"User","UserClaim","UserLogin","UserPermission","UserRole","UserToken","Role","RoleClaim","Permission","PermissionGroup"
     public class VideoRepository : IVideoRepository
     {
         OpenVidContext _context;

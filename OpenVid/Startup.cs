@@ -39,9 +39,10 @@ namespace OpenVid
 
             services.AddDbContext<OpenVidContext>(o => o.UseSqlServer(Configuration.GetConnectionString("DefaultDatabase")));
             services.AddDbContext<UserDbContext>(o => o.UseSqlServer(Configuration.GetConnectionString("DefaultDatabase")));
-            services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<UserDbContext>();
+            services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<UserDbContext>();
 
             services.AddScoped<IVideoRepository, VideoRepository>();
+            services.AddScoped<UserRepository>();
             services.AddScoped<ISearchManager, SearchManager>();
             services.AddScoped<IVideoManager, VideoManager>();
             services.AddScoped<IUrlResolver, UrlResolver>();
@@ -58,8 +59,8 @@ namespace OpenVid
               .AddScoped<IFilter, MinDurationFilter>()
               .AddScoped<IFilter, MaxDurationFilter>();
 
+            // Class Library Installers
             services.TagCacheInstaller();
-
             services.CatalogManagerInstaller(Configuration);
 
             services.Configure<IdentityOptions>(options =>
@@ -89,7 +90,7 @@ namespace OpenVid
                 options.Cookie.HttpOnly = true;
                 options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
 
-                options.LoginPath = "/Login";
+                //options.LoginPath = "/Login";
                 options.AccessDeniedPath = "/AccessDenied";
                 options.SlidingExpiration = true;
             });
@@ -99,7 +100,7 @@ namespace OpenVid
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             app.UseDeveloperExceptionPage();
-            if (!env.IsProduction())
+            if (env.IsDevelopment())
             {
                 using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
                 {
@@ -109,11 +110,10 @@ namespace OpenVid
                     var userContext = serviceScope.ServiceProvider.GetRequiredService<UserDbContext>();
                     var userSuccess = userContext.Database.EnsureCreated();
                 }
-                app.UseDeveloperExceptionPage();
+                //app.UseDeveloperExceptionPage();
             }
             else
             {
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
 
                 using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
@@ -125,6 +125,10 @@ namespace OpenVid
                     var userSuccess = userContext.Database.EnsureCreated();
                 }
             }
+
+            app.UseExceptionHandler("/Error"); 
+            app.UseStatusCodePagesWithReExecute("/Error/{0}");
+
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseSession();

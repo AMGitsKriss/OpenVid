@@ -1,10 +1,12 @@
 ﻿using CatalogManager;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using OrionDashboard.Web.Attributes;
 using System.IO;
 
 namespace OpenVid.Areas.Playback.Controllers
 {
+    [RequireLogin]
     [Area("playback")]
     public class ThumbnailController : Controller
     {

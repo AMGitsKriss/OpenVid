@@ -4,10 +4,12 @@ using Database.Models;
 using Microsoft.AspNetCore.Mvc;
 using OpenVid.Areas.Playback.Models.Update;
 using OpenVid.Extensions;
+using OrionDashboard.Web.Attributes;
 using VideoHandler;
 
 namespace OpenVid.Areas.Playback.Controllers
 {
+    [RequireLogin]
     [Area("playback")]
     public class UpdateController : OpenVidController
     {

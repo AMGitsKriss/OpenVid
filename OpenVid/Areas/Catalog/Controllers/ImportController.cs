@@ -9,7 +9,7 @@ using OpenVid.Areas.Catalog.Models.Import;
 
 namespace OpenVid.Areas.Catalog.Controllers
 {
-    [Area("Catalog")]
+    [Area("catalog")]
     public class ImportController : Controller
     {
         private readonly ImportService _importService;

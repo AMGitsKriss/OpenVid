@@ -10,7 +10,7 @@ using VideoHandler.Models;
 
 namespace OpenVid.Areas.Catalog.Controllers
 {
-    [Area("Catalog")]
+    [Area("catalog")]
     public class ImportPreprocessedController : Controller
     {
         private IVideoManager _save;

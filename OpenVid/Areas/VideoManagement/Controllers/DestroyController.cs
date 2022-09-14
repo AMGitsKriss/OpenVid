@@ -6,7 +6,7 @@ using VideoHandler;
 namespace OpenVid.Areas.VideoManagement.Controllers 
 { 
 
-    [Area("VideoManagement")]
+    [Area("videomanagement")]
     public class DestroyController : OpenVidController
     {
         private IVideoManager _videoManager;

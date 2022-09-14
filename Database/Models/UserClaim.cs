@@ -7,17 +7,13 @@ using System.Collections.Generic;
 
 namespace Database.Models
 {
-    public partial class TagType
+    public partial class UserClaim
     {
-        public TagType()
-        {
-            Tag = new HashSet<Tag>();
-        }
-
         public int Id { get; set; }
-        public string Name { get; set; }
-        public bool ShowDescription { get; set; }
+        public string UserId { get; set; }
+        public string ClaimType { get; set; }
+        public string ClaimValue { get; set; }
 
-        public virtual ICollection<Tag> Tag { get; set; }
+        public virtual User User { get; set; }
     }
 }

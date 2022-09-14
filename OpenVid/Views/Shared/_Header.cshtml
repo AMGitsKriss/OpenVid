@@ -1,5 +1,9 @@
 ﻿@using Microsoft.Extensions.Configuration
+@using Microsoft.AspNetCore.Identity
+@using Database.Users
 @inject IConfiguration Configuration
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
 @{
     var SiteName = Configuration["SiteName"] ?? "OpenVid";
     string currentArea = this.ViewContext.RouteData.Values["area"]?.ToString() ?? string.Empty;
@@ -82,28 +86,50 @@
     </div>
     <!-- end navbar-header -->
     <ul class="navbar-nav navbar-right">
-        <li class="navbar-user">
-            <a asp-controller="login" class="icon">
-                <span class="d-none d-md-inline">Login</span>
-                <div class="image image-icon text-white-lighter">
-                    <i class="material-icons">login</i>
-                </div>
-            </a>
-        </li>
-        @*<li class="dropdown navbar-user">
-                <a href="https://seantheme.com/color-admin/admin/html/page_blank.html#" class="dropdown-toggle" data-toggle="dropdown">
-                    <img src="./Color Admin _ Blank Page_files/user-13.jpg" alt="">
-                    <span class="d-none d-md-inline">Adam Schwartz</span> <b class="caret"></b>
+        @if (SignInManager.IsSignedIn(User))
+        {
+            <li class="navbar-user">
+                <a href="@Url.Action(SiteMap.Account_Management)" class="icon">
+                    <span class="d-none d-md-inline">Admin</span>
+                    <div class="image image-icon text-white-lighter">
+                        <i class="material-icons">settings</i>
+                    </div>
                 </a>
-                <div class="dropdown-menu dropdown-menu-right">
-                    <a href="javascript:;" class="dropdown-item">Edit Profile</a>
-                    <a href="javascript:;" class="dropdown-item"><span class="badge badge-danger pull-right">2</span> Inbox</a>
-                    <a href="javascript:;" class="dropdown-item">Calendar</a>
-                    <a href="javascript:;" class="dropdown-item">Setting</a>
-                    <div class="dropdown-divider"></div>
-                    <a href="javascript:;" class="dropdown-item">Log Out</a>
-                </div>
-            </li>*@
+            </li>
+            <li class="navbar-user">
+                <a href="@Url.Action(SiteMap.Logout)" class="icon">
+                    <span class="d-none d-md-inline">Logout</span>
+                    <div class="image image-icon text-white-lighter">
+                        <i class="material-icons">logout</i>
+                    </div>
+                </a>
+            </li>
+        }
+        else
+        {
+            <li class="navbar-user">
+                <a href="@Url.Action(SiteMap.Login)" class="icon">
+                    <span class="d-none d-md-inline">Login</span>
+                    <div class="image image-icon text-white-lighter">
+                        <i class="material-icons">login</i>
+                    </div>
+                </a>
+            </li>
+        }
+        @*<li class="dropdown navbar-user">
+            <a href="https://seantheme.com/color-admin/admin/html/page_blank.html#" class="dropdown-toggle" data-toggle="dropdown">
+                <img src="./Color Admin _ Blank Page_files/user-13.jpg" alt="">
+                <span class="d-none d-md-inline">Adam Schwartz</span> <b class="caret"></b>
+            </a>
+            <div class="dropdown-menu dropdown-menu-right">
+                <a href="javascript:;" class="dropdown-item">Edit Profile</a>
+                <a href="javascript:;" class="dropdown-item"><span class="badge badge-danger pull-right">2</span> Inbox</a>
+                <a href="javascript:;" class="dropdown-item">Calendar</a>
+                <a href="javascript:;" class="dropdown-item">Setting</a>
+                <div class="dropdown-divider"></div>
+                <a href="javascript:;" class="dropdown-item">Log Out</a>
+            </div>
+        </li>*@
     </ul>
 </div>
 <!-- end #header -->

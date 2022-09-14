@@ -7,17 +7,18 @@ using System.Collections.Generic;
 
 namespace Database.Models
 {
-    public partial class TagType
+    public partial class Permission
     {
-        public TagType()
+        public Permission()
         {
-            Tag = new HashSet<Tag>();
+            UserPermission = new HashSet<UserPermission>();
         }
 
         public int Id { get; set; }
+        public int PermissionGroupId { get; set; }
         public string Name { get; set; }
-        public bool ShowDescription { get; set; }
 
-        public virtual ICollection<Tag> Tag { get; set; }
+        public virtual PermissionGroup PermissionGroup { get; set; }
+        public virtual ICollection<UserPermission> UserPermission { get; set; }
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace Database.Users
+﻿using System.Linq;
+
+namespace Database.Users
 {
     public class UserRepository
     {
@@ -9,9 +11,17 @@
             _dbContext = dbContext;
         }
 
-        /*public User GetUser(string name)
+        public bool UserHasPermission(string userId, Permissions permission)
         {
-            return _dbContext.GetUser(name);
-        }*/
+            return _dbContext.UserPermission.Any(x => x.UserId == userId && x.PermissionId == (int)permission);
+        }
+    }
+
+    public enum Permissions
+    {
+        Account_Management = 1,
+        Catalog_Import = 2,
+        Catalog_Delete = 3,
+        Tag_Management = 4
     }
 }

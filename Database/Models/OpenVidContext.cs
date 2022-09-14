@@ -19,9 +19,19 @@ namespace Database.Models
         {
         }
 
+        public virtual DbSet<Permission> Permission { get; set; }
+        public virtual DbSet<PermissionGroup> PermissionGroup { get; set; }
         public virtual DbSet<Ratings> Ratings { get; set; }
+        public virtual DbSet<Role> Role { get; set; }
+        public virtual DbSet<RoleClaim> RoleClaim { get; set; }
         public virtual DbSet<Tag> Tag { get; set; }
         public virtual DbSet<TagType> TagType { get; set; }
+        public virtual DbSet<User> User { get; set; }
+        public virtual DbSet<UserClaim> UserClaim { get; set; }
+        public virtual DbSet<UserLogin> UserLogin { get; set; }
+        public virtual DbSet<UserPermission> UserPermission { get; set; }
+        public virtual DbSet<UserRole> UserRole { get; set; }
+        public virtual DbSet<UserToken> UserToken { get; set; }
         public virtual DbSet<Video> Video { get; set; }
         public virtual DbSet<VideoEncodeQueue> VideoEncodeQueue { get; set; }
         public virtual DbSet<VideoSource> VideoSource { get; set; }
@@ -37,6 +47,32 @@ namespace Database.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Permission>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.HasOne(d => d.PermissionGroup)
+                    .WithMany(p => p.Permission)
+                    .HasForeignKey(d => d.PermissionGroupId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Permission_PermissionGroup");
+            });
+
+            modelBuilder.Entity<PermissionGroup>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+            });
+
             modelBuilder.Entity<Ratings>(entity =>
             {
                 entity.Property(e => e.Id)
@@ -49,12 +85,46 @@ namespace Database.Models
                     .IsUnicode(false);
             });
 
+            modelBuilder.Entity<Role>(entity =>
+            {
+                entity.HasIndex(e => e.NormalizedName)
+                    .HasName("RoleNameIndex")
+                    .IsUnique()
+                    .HasFilter("([NormalizedName] IS NOT NULL)");
+
+                entity.Property(e => e.Id).HasMaxLength(100);
+
+                entity.Property(e => e.Name).HasMaxLength(256);
+
+                entity.Property(e => e.NormalizedName).HasMaxLength(256);
+            });
+
+            modelBuilder.Entity<RoleClaim>(entity =>
+            {
+                entity.HasIndex(e => e.RoleId)
+                    .HasName("IX_RoleClaims_RoleId");
+
+                entity.Property(e => e.RoleId)
+                    .IsRequired()
+                    .HasMaxLength(100);
+
+                entity.HasOne(d => d.Role)
+                    .WithMany(p => p.RoleClaim)
+                    .HasForeignKey(d => d.RoleId);
+            });
+
             modelBuilder.Entity<Tag>(entity =>
             {
                 entity.Property(e => e.Id).HasColumnName("ID");
 
+                entity.Property(e => e.Description).IsUnicode(false);
+
                 entity.Property(e => e.Name)
                     .IsRequired()
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ShortCode)
                     .HasMaxLength(100)
                     .IsUnicode(false);
 
@@ -70,6 +140,108 @@ namespace Database.Models
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(128);
+            });
+
+            modelBuilder.Entity<User>(entity =>
+            {
+                entity.HasIndex(e => e.NormalizedEmail)
+                    .HasName("EmailIndex");
+
+                entity.HasIndex(e => e.NormalizedUserName)
+                    .HasName("UserNameIndex")
+                    .IsUnique()
+                    .HasFilter("([NormalizedUserName] IS NOT NULL)");
+
+                entity.Property(e => e.Id).HasMaxLength(100);
+
+                entity.Property(e => e.Email).HasMaxLength(256);
+
+                entity.Property(e => e.NormalizedEmail).HasMaxLength(256);
+
+                entity.Property(e => e.NormalizedUserName).HasMaxLength(256);
+
+                entity.Property(e => e.UserName).HasMaxLength(256);
+            });
+
+            modelBuilder.Entity<UserClaim>(entity =>
+            {
+                entity.HasIndex(e => e.UserId)
+                    .HasName("IX_UserClaims_UserId");
+
+                entity.Property(e => e.UserId)
+                    .IsRequired()
+                    .HasMaxLength(100);
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.UserClaim)
+                    .HasForeignKey(d => d.UserId);
+            });
+
+            modelBuilder.Entity<UserLogin>(entity =>
+            {
+                entity.HasKey(e => new { e.LoginProvider, e.ProviderKey });
+
+                entity.HasIndex(e => e.UserId)
+                    .HasName("IX_UserLogins_UserId");
+
+                entity.Property(e => e.UserId)
+                    .IsRequired()
+                    .HasMaxLength(100);
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.UserLogin)
+                    .HasForeignKey(d => d.UserId);
+            });
+
+            modelBuilder.Entity<UserPermission>(entity =>
+            {
+                entity.HasKey(e => new { e.UserId, e.PermissionId });
+
+                entity.Property(e => e.UserId).HasMaxLength(100);
+
+                entity.HasOne(d => d.Permission)
+                    .WithMany(p => p.UserPermission)
+                    .HasForeignKey(d => d.PermissionId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_UserPermission_Permission");
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.UserPermission)
+                    .HasForeignKey(d => d.UserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_UserPermission_User");
+            });
+
+            modelBuilder.Entity<UserRole>(entity =>
+            {
+                entity.HasKey(e => new { e.UserId, e.RoleId })
+                    .HasName("PK_UserRoles");
+
+                entity.HasIndex(e => e.RoleId)
+                    .HasName("IX_UserRoles_RoleId");
+
+                entity.Property(e => e.UserId).HasMaxLength(100);
+
+                entity.Property(e => e.RoleId).HasMaxLength(100);
+
+                entity.HasOne(d => d.Role)
+                    .WithMany(p => p.UserRole)
+                    .HasForeignKey(d => d.RoleId);
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.UserRole)
+                    .HasForeignKey(d => d.UserId);
+            });
+
+            modelBuilder.Entity<UserToken>(entity =>
+            {
+                entity.HasKey(e => new { e.UserId, e.LoginProvider, e.Name });
+
+                entity.Property(e => e.UserId).HasMaxLength(100);
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.UserToken)
+                    .HasForeignKey(d => d.UserId);
             });
 
             modelBuilder.Entity<Video>(entity =>
@@ -170,7 +342,6 @@ namespace Database.Models
                 entity.HasOne(d => d.Tag)
                     .WithMany(p => p.VideoTag)
                     .HasForeignKey(d => d.TagId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_VideoTag_Tag");
 
                 entity.HasOne(d => d.Video)

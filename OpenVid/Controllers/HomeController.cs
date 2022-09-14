@@ -1,10 +1,12 @@
 ﻿using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using OpenVid.Models.Home;
+using OrionDashboard.Web.Attributes;
 using VideoHandler;
 
 namespace OpenVid.Controllers
 {
+    [RequireLogin]
     public class HomeController : Controller
     {
         private IVideoManager _manager;
@@ -23,11 +25,5 @@ namespace OpenVid.Controllers
 
             return View(viewModel);
         }
-
-        /*[ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }*/
     }
 }

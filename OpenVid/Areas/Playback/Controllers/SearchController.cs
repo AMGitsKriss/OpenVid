@@ -1,11 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using OpenVid.Areas.Playback.Models.Search;
 using OpenVid.Extensions;
+using OrionDashboard.Web.Attributes;
 using System.Linq;
 using VideoHandler;
 
 namespace OpenVid.Areas.Playback.Controllers
 {
+    [RequireLogin]
     [Area("playback")]
     public class SearchController : OpenVidController
     {
@@ -18,7 +20,7 @@ namespace OpenVid.Areas.Playback.Controllers
             _search = search;
         }
 
-        [Route("[Controller]/{searchString}")]
+        [Route("[controller]/{searchString}")]
         public IActionResult Index(string searchString)
         {
             SearchViewModel viewModel = new SearchViewModel();

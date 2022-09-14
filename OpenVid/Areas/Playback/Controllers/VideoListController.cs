@@ -2,11 +2,13 @@
 using Microsoft.Extensions.Configuration;
 using OpenVid.Areas.Playback.Models.VideoList;
 using OpenVid.Models.Shared;
+using OrionDashboard.Web.Attributes;
 using System.Linq;
 using VideoHandler;
 
 namespace OpenVid.Areas.Playback.Controllers
 {
+    [RequireLogin]
     [Area("Playback")]
     public class VideoListController : Controller
     {
