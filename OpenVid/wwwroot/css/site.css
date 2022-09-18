@@ -9,6 +9,7 @@
     margin-bottom: 0px;
 }
 
+    .video-container > .youtube-theme,
     .video-container > video {
         margin: 0 auto;
     }
