@@ -34,6 +34,9 @@ namespace OpenVid.Areas.Playback.Controllers
         [Route("{id:int}")]
         public IActionResult Index(int id)
         {
+            if (id < 0)
+                return View(DashVideo());
+
             var video = _videoService.GetVideo(id);
 
             if (video == null)
@@ -90,8 +93,6 @@ namespace OpenVid.Areas.Playback.Controllers
             return View(viewModel);
         }
 
-
-
         private SuggestedTagViewModel SuggestTagsFromName(string videoName, IEnumerable<string> tagsOnVideo)
         {
             return new SuggestedTagViewModel()
@@ -103,6 +104,35 @@ namespace OpenVid.Areas.Playback.Controllers
                     AlreadyUsed = tagsOnVideo.Contains(t)
                 }).ToList()
             };
+        }
+
+        private PlayViewModel DashVideo()
+        {
+            PlayViewModel viewModel = new PlayViewModel()
+            {
+                VideoSources = new List<string>() { "/test/h264.mpd" },
+                FileBaseUrl = _configuration["FileBaseUrl"],
+                Update = new UpdateFormViewModel()
+                {
+                    Id = 0,
+                    Name = "",
+                    Description = "",
+                    Tags = " ",
+                    RatingId = 0,
+                    PossibleRatings = _videoService.GetRatings(),
+                    FileBaseUrl = _configuration["FileBaseUrl"],
+                    SuggestedTags = new List<SuggestedTagViewModel>(),
+                    Metadata = new List<MetadataViewModel>(){ new MetadataViewModel()
+                    {
+                        Md5 = "",
+                        Extension = "",
+                        Width = 0,
+                        Height = 0,
+                        Size = 0
+                    } }
+                }
+        };
+            return viewModel;
         }
     }
 }

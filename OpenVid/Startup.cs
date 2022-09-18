@@ -110,7 +110,7 @@ namespace OpenVid
                     var userContext = serviceScope.ServiceProvider.GetRequiredService<UserDbContext>();
                     var userSuccess = userContext.Database.EnsureCreated();
                 }
-                //app.UseDeveloperExceptionPage();
+                app.UseDeveloperExceptionPage();
             }
             else
             {

@@ -4,7 +4,7 @@ using OrionDashboard.Web.Attributes;
 
 namespace OpenVid.Areas.Account.Controllers
 {
-    [RequireLogin(forceLogin:true)]
+    [RequirePermission(Database.Users.Permissions.Account_Management)]
     [Area("account")]
     public class ManagementController : OpenVidController
     {
@@ -14,6 +14,12 @@ namespace OpenVid.Areas.Account.Controllers
         }
 
         public IActionResult Index()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult SetAccountConfirmation(string userId, bool setIsConfirmed)
         {
             return View();
         }
