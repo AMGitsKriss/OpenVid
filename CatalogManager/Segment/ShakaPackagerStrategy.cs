@@ -1,31 +1,38 @@
 ﻿using Database;
+using Database.Models;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 
 namespace CatalogManager.Segment
 {
     public class ShakaPackagerStrategy : ISegmenterStrategy
     {
-        private readonly IVideoRepository _repository;
-
-        public ShakaPackagerStrategy(IVideoRepository repository)
+        public void Segment(List<VideoSegmentQueue> videosToSegment)
         {
-            _repository = repository;
-        }
-        public object Segment()
-        {
-            var command = @"
-./packager `
-  'in=""Z:\\inetpub\\wwwcdn\\520.mp4"",stream=audio,init_segment=audio/init.mp4,segment_template=audio/$Number$.m4s' `
-  'in=""Z:\\inetpub\\wwwcdn\\360.mp4"",stream=video,init_segment=h264_360p/init.mp4,segment_template=h264_360p/$Number$.m4s' `
-  'in=""Z:\\inetpub\\wwwcdn\\520.mp4"",stream=video,init_segment=h264_520p/init.mp4,segment_template=h264_520p/$Number$.m4s' `
-  --generate_static_live_mpd--mpd_output h264.mpd `
-  --hls_master_playlist_output h264_master.m3u8
-";
-            var inputFileName = "c:\\video\\example.mp4";
-            var fileResolution = "720p";
-            string fileToSegment = @$"'in=""{inputFileName}"",stream=video,init_segment=h264_{fileResolution}/init.mp4,segment_template=h264_{fileResolution}/$Number$.m4s' ";
+            var firstVideo = videosToSegment.First();
+            var exe = @"c:\shaka-packager\packager.exe";
+            var args = $@"'in=""{firstVideo.InputDirectory}"",stream=audio,init_segment=audio/init.mp4,segment_template=audio/$Number$.m4s' ";
 
-            var audioToSegment = $@"'in=""{inputFileName}"",stream=audio,init_segment=audio/init.mp4,segment_template=audio/$Number$.m4s' ";
-            return null;
+            foreach (var video in videosToSegment)
+            {
+                string fileToSegment = @$"'in=""{video.InputDirectory}"",stream=video,init_segment={video.Height}p/init.mp4,segment_template={video.Height}p/$Number$.m4s' ";
+                args += fileToSegment;
+            }
+            args += "--generate_static_live_mpd--mpd_output dash.mpd --hls_master_playlist_output hls.m3u8 ";
+
+            Process proc = new Process();
+            proc.StartInfo.FileName = exe;
+            proc.StartInfo.Arguments = args;
+            proc.StartInfo.CreateNoWindow = false; // Set to true if we want to hide output.
+            proc.StartInfo.UseShellExecute = false;
+            if (!proc.Start())
+            {
+                throw new Exception("Error starting the HandbrakeCLI process.");
+            }
+            proc.WaitForExit();
+            proc.Close();
         }
     }
 }

@@ -16,11 +16,14 @@ namespace OpenVid.BackgroundEncoder
             var serviceProvider = LoadServiceCollection();
 
             var encoder = serviceProvider.GetService<EncoderContainer>();
+            var segmenter = serviceProvider.GetService<SegmenterContainer>();
             //var sleepSeconds = 2 * 60 * 1000;
 
             //while (true)
             //{
             encoder.Start();
+
+            segmenter.Start();
 
             //Thread.Sleep(sleepSeconds);
             //}
@@ -31,6 +34,7 @@ namespace OpenVid.BackgroundEncoder
             return new ServiceCollection()
                 .AddOptions()
                 .AddSingleton<EncoderContainer>()
+                .AddSingleton<SegmenterContainer>()
                 .AddDbContext<OpenVidContext>(o => o.UseSqlServer(configuration.GetConnectionString("DefaultDatabase")))
                 .AddScoped<IVideoRepository, VideoRepository>()
                 .CatalogManagerInstaller(configuration)

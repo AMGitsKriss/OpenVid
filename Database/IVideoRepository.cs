@@ -29,5 +29,7 @@ namespace Database
         bool IsFileStillNeeded(int videoId);
         IQueryable<VideoEncodeQueue> GetIncompleteDashJobs(int videoId);
         IQueryable<VideoEncodeQueue> GetAllEncodeQueue();
+        IEnumerable<IEnumerable<VideoSegmentQueue>> GetPendingSegmentQueue();
+        void SetPendingSegmentingDone(int videoId);
     }
 }

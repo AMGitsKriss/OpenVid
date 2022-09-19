@@ -256,5 +256,30 @@ namespace Database
 
             return isAnyIncomplete;
         }
+
+        public IEnumerable<IEnumerable<VideoSegmentQueue>> GetPendingSegmentQueue()
+        {
+            // Return segments for videos that are done, but also for videos that are finished encoding. 
+            var pendingEncodes = _context.VideoEncodeQueue.Where(e => !e.IsDone).Select(e => e.VideoId).Distinct();
+            var result = _context.VideoSegmentQueue.Where(s => !pendingEncodes.Contains(s.VideoId) && !s.IsDone);
+
+            var firstBatch = result.ToList().GroupBy(r => r.VideoId).Select(g => g.Select(x => x));
+
+            return firstBatch;
+        }
+
+        public void SetPendingSegmentingDone(int videoId)
+        {
+            var segmentsForvideo = _context.VideoSegmentQueue.Where(s => s.VideoId == videoId).ToList();
+
+            foreach (var item in segmentsForvideo)
+            {
+                item.IsDone = true;
+            }
+
+            _context.UpdateRange(segmentsForvideo);
+
+            _context.SaveChanges();
+        }
     }
 }

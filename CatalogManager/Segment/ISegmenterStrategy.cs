@@ -1,7 +1,10 @@
-﻿namespace CatalogManager.Segment
+﻿using Database.Models;
+using System.Collections.Generic;
+
+namespace CatalogManager.Segment
 {
     public interface ISegmenterStrategy
     {
-        object Segment();
+        void Segment(List<VideoSegmentQueue> videosToSegment);
     }
 }
