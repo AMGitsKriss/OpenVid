@@ -24,6 +24,10 @@ namespace Database
         void RemoveTagsFromVideo(IEnumerable<VideoTag> removeTags);
         void AddTagsToVideo(IEnumerable<VideoTag> removeTags);
         bool SaveEncodeJob(VideoEncodeQueue encodeJob);
-        IQueryable<VideoEncodeQueue> GetEncodeQueue();
+        bool SaveSegmentJob(VideoSegmentQueue segmentJob);
+        IQueryable<VideoEncodeQueue> GetPendingEncodeQueue();
+        bool IsFileStillNeeded(int videoId);
+        IQueryable<VideoEncodeQueue> GetIncompleteDashJobs(int videoId);
+        IQueryable<VideoEncodeQueue> GetAllEncodeQueue();
     }
 }

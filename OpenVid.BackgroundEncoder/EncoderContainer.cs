@@ -6,9 +6,10 @@ using Database.Models;
 using Microsoft.Extensions.Options;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using CatalogManager.Helpers;
 using System;
+using CatalogManager.Models;
+using CatalogManager.Segment;
 
 namespace OpenVid.BackgroundEncoder
 {
@@ -17,14 +18,16 @@ namespace OpenVid.BackgroundEncoder
         private readonly IVideoRepository _repository;
         private readonly IEncoderStrategy _encoder;
         private readonly IMetadataStrategy _metadata;
+        private readonly ISegmenterStrategy _segmenter;
         private readonly CatalogImportOptions _configuration;
         private volatile bool _continueJob;
 
-        public EncoderContainer(IVideoRepository repository, IEncoderStrategy encoder, IMetadataStrategy metadata, IOptions<CatalogImportOptions> configuration)
+        public EncoderContainer(IVideoRepository repository, IEncoderStrategy encoder, IMetadataStrategy metadata, ISegmenterStrategy segmenter, IOptions<CatalogImportOptions> configuration)
         {
             _repository = repository;
             _encoder = encoder;
             _metadata = metadata;
+            _segmenter = segmenter;
             _configuration = configuration.Value;
         }
 
@@ -33,7 +36,7 @@ namespace OpenVid.BackgroundEncoder
             while (_continueJob)
             {
                 // Get the oldest valid job in the queue.
-                var queueItem = _repository.GetEncodeQueue().FirstOrDefault();
+                var queueItem = _repository.GetPendingEncodeQueue().FirstOrDefault();
 
                 // No more jobs to do!
                 if (queueItem == null)
@@ -48,50 +51,36 @@ namespace OpenVid.BackgroundEncoder
                 var metadata = _metadata.GetMetadata(queueItem.OutputDirectory);
 
                 // Remove the old file
-                try
+                if (!_repository.IsFileStillNeeded(queueItem.VideoId))
                 {
-                    File.Delete(queueItem.InputDirectory);
+                    try
+                    {
+                        File.Delete(queueItem.InputDirectory);
+                    }
+                    catch (Exception ex)
+                    {
+                        var msg = ex.Message;
+                    }
                 }
-                catch (Exception ex)
-                {
-                    var msg = ex.Message;
-                }
+
+                CreateThumbnail(queueItem);
 
                 // Write the new source entry
-                var md5 = FileHelpers.GenerateHash(queueItem.OutputDirectory);
-                var videoSource = new VideoSource()
+                if (queueItem.PlaybackFormat == "mp4")
                 {
-                    VideoId = queueItem.VideoId,
-                    Md5 = md5,
-                    Width = metadata.Width,
-                    Height = metadata.Height,
-                    Size = new FileInfo(queueItem.OutputDirectory).Length,
-                    Extension = "mp4"
-                };
-                _repository.SaveVideoSource(videoSource);
-
-                // Move the new file to the bucket
-                string vidSubFolder = md5.Substring(0, 2);
-                string videoDirectory = Path.Combine(_configuration.BucketDirectory, "video", vidSubFolder);
-                FileHelpers.TouchDirectory(videoDirectory);
-                string videoBucketDirectory = Path.Combine(videoDirectory, $"{md5}.mp4");
-                File.Move(queueItem.OutputDirectory, videoBucketDirectory);
-
-                // Generate the thumbnail
-                string thumbSubFolder = queueItem.VideoId.ToString().PadLeft(2, '0').Substring(0, 2);
-                string thumbDirectory = Path.Combine(_configuration.BucketDirectory, "thumbnail", thumbSubFolder);
-                FileHelpers.TouchDirectory(thumbDirectory);
-
-                string thumbPath = Path.Combine(thumbDirectory, $"{queueItem.VideoId.ToString().PadLeft(2, '0')}.jpg");
-                if (!File.Exists(thumbPath))
-                    _metadata.CreateThumbnail(videoBucketDirectory, thumbPath);
+                    SaveMp4Video(queueItem, metadata);
+                }
+                else if (queueItem.PlaybackFormat == "dash")
+                {
+                    MoveDashVideoAwaitingPackager(queueItem);
+                    AddToSegmentQueue(queueItem, metadata);
+                }
 
                 // Mark as done before looping
                 queueItem.IsDone = true;
                 _repository.SaveEncodeJob(queueItem);
             }
         }
-
         public void Stop()
         {
             _continueJob = false;
@@ -107,5 +96,62 @@ namespace OpenVid.BackgroundEncoder
         {
             return _continueJob;
         }
+
+        private void CreateThumbnail(VideoEncodeQueue queueItem)
+        {
+            string thumbSubFolder = queueItem.VideoId.ToString().PadLeft(2, '0').Substring(0, 2);
+            string thumbDirectory = Path.Combine(_configuration.BucketDirectory, "thumbnail", thumbSubFolder);
+            FileHelpers.TouchDirectory(thumbDirectory);
+
+            string thumbPath = Path.Combine(thumbDirectory, $"{queueItem.VideoId.ToString().PadLeft(2, '0')}.jpg");
+            if (!File.Exists(thumbPath))
+                _metadata.CreateThumbnail(queueItem.OutputDirectory, thumbPath, _configuration.ThumbnailFramesIntoVideo);
+        }
+
+        private void SaveMp4Video(VideoEncodeQueue queueItem, MediaProperties metadata)
+        {
+            var md5 = FileHelpers.GenerateHash(queueItem.OutputDirectory);
+            var videoSource = new VideoSource()
+            {
+                VideoId = queueItem.VideoId,
+                Md5 = md5,
+                Width = metadata.Width,
+                Height = metadata.Height,
+                Size = new FileInfo(queueItem.OutputDirectory).Length,
+                Extension = Path.GetExtension(queueItem.OutputDirectory)
+            };
+            _repository.SaveVideoSource(videoSource);
+
+            // Move the new file to the bucket
+            string vidSubFolder = md5.Substring(0, 2);
+            string videoDirectory = Path.Combine(_configuration.BucketDirectory, "video", vidSubFolder);
+            FileHelpers.TouchDirectory(videoDirectory);
+            string videoBucketDirectory = Path.Combine(videoDirectory, $"{md5}.{Path.GetExtension(queueItem.OutputDirectory)}");
+            File.Move(queueItem.OutputDirectory, videoBucketDirectory);
+        }
+
+        private void MoveDashVideoAwaitingPackager(VideoEncodeQueue queueItem)
+        {
+            var segmentedDirectory = Path.Combine(_configuration.ImportDirectory, "04_shaka_packager", Path.GetFileNameWithoutExtension(queueItem.OutputDirectory));
+            var segmentedFullName = Path.Combine(segmentedDirectory, Path.GetFileName(queueItem.OutputDirectory));
+            FileHelpers.TouchDirectory(segmentedDirectory);
+            File.Move(queueItem.OutputDirectory, segmentedFullName);
+        }
+
+        private void AddToSegmentQueue(VideoEncodeQueue queueItem, MediaProperties metadata)
+        {
+            var segmentedDirectory = Path.Combine(_configuration.ImportDirectory, "04_shaka_packager", Path.GetFileNameWithoutExtension(queueItem.OutputDirectory));
+            var segmentedFullName = Path.Combine(segmentedDirectory, Path.GetFileName(queueItem.OutputDirectory));
+
+            var job = new VideoSegmentQueue()
+            {
+                VideoId = queueItem.VideoId,
+                Height = queueItem.MaxHeight,
+                InputDirectory = segmentedFullName
+            };
+
+            _repository.SaveSegmentJob(job);
+        }
+
     }
 }

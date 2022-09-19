@@ -33,9 +33,10 @@ namespace CatalogManager
 
         public List<FoundVideo> GetQueuedFiles()
         {
-            var queue = _repository.GetEncodeQueue();
+            var queue = _repository.GetPendingEncodeQueue();
 
-            return queue.Select(q => new FoundVideo() { 
+            return queue.Select(q => new FoundVideo()
+            {
                 FileName = Path.GetFileNameWithoutExtension(q.InputDirectory),
                 Resolution = $"{q.MaxHeight}p",
                 FullName = q.InputDirectory
@@ -104,57 +105,61 @@ namespace CatalogManager
         public void QueueFiles()
         {
             var pendingFiles = FindFiles();
-            var preset = _configuration.EncoderPresets.First();
 
             var queuedDirectory = Path.Combine(_configuration.ImportDirectory, "02_queued");
             var completeDirectory = Path.Combine(_configuration.ImportDirectory, "03_awaiting_move");
 
             foreach (var pending in pendingFiles)
             {
-                var fileNameWithResolution = $"{Path.GetFileNameWithoutExtension(pending.FileName)}_{preset.MaxHeight}{Path.GetExtension(pending.FileName)}";
-
                 // DATABASE
-                var videoId = CreateVideoInDatabase(pending, preset, queuedDirectory, completeDirectory, fileNameWithResolution);
+                var videoId = CreateVideoInDatabase(pending, queuedDirectory, completeDirectory);
                 if (videoId == 0)
                     continue;
 
-                if (!MoveFileToDirectory(pending.FullName, queuedDirectory, fileNameWithResolution))
+                if (!MoveFileToDirectory(pending.FullName, queuedDirectory, pending.FileName))
                     _repository.DeleteVideo(videoId);
             }
         }
 
-        private int CreateVideoInDatabase(FoundVideo pending, EncoderPresetOptions preset, string queuedDirectory, string completeDirectory, string fileNameWithResolution)
+        private int CreateVideoInDatabase(FoundVideo pending, string queuedDirectory, string outputDirectory)
         {
-            // TODO - Suggested tags should get made here
             var tags = _repository.DefineTags(pending.SuggestedTags);
 
-            var queuedFullName = Path.Combine(queuedDirectory, fileNameWithResolution);
-            var completeFullName = Path.Combine(completeDirectory, $"{Path.GetFileNameWithoutExtension(fileNameWithResolution)}.mp4");
+            var inputFullName = Path.Combine(queuedDirectory, pending.FileName);
+            
 
             var meta = _metadata.GetMetadata(pending.FullName);
             var toSave = new Video()
             {
                 Name = Path.GetFileNameWithoutExtension(pending.FileName),
                 Length = meta.Duration,
-                VideoEncodeQueue = new List<VideoEncodeQueue>()
+                VideoEncodeQueue = new List<VideoEncodeQueue>(),
+                VideoTag = tags.Select(t => new VideoTag()
                 {
-                    new VideoEncodeQueue()
-                    {
-                        VideoId = 0,
-                        InputDirectory = queuedFullName,
-                        OutputDirectory = completeFullName,
-                        Encoder = preset.Encoder,
-                        RenderSpeed = preset.RenderSpeed,
-                        Format = preset.Format,
-                        Quality = preset.Quality,
-                        MaxHeight = preset.MaxHeight,
-                        IsVertical = meta.Height > meta.Width
-                    }
-                },
-                VideoTag = tags.Select(t => new VideoTag() { 
                     Tag = t
                 }).ToList()
             };
+
+            // If our source is 720p, don't bother trying to use the 1080p preset.
+            var presets = GetPresets(pending.FullName);
+
+            foreach (var preset in presets)
+            {
+                var outputFullName = Path.Combine(outputDirectory, $"{Path.GetFileNameWithoutExtension(pending.FileName)}_{preset.MaxHeight}.mp4");
+                toSave.VideoEncodeQueue.Add(new VideoEncodeQueue()
+                {
+                    VideoId = 0,
+                    InputDirectory = inputFullName,
+                    OutputDirectory = outputFullName,
+                    Encoder = preset.Encoder,
+                    RenderSpeed = preset.RenderSpeed,
+                    VideoFormat = preset.VideoFormat,
+                    PlaybackFormat = preset.PlaybackFormat,
+                    Quality = preset.Quality,
+                    MaxHeight = preset.MaxHeight,
+                    IsVertical = meta.Height > meta.Width
+                });
+            }
 
             try
             {
@@ -167,17 +172,38 @@ namespace CatalogManager
             return toSave.Id;
         }
 
-        private bool MoveFileToDirectory(string pendingFullName, string queuedDirectory, string fileNameWithResolution)
+        private List<EncoderPresetOptions> GetPresets(string fileFullName)
         {
-            var queuedFullName = Path.Combine(queuedDirectory, fileNameWithResolution);
+            // TODO - This is gnarly. Is there a nicer way to do it?
+            var results = new List<EncoderPresetOptions>();
+            var metadata = _metadata.GetMetadata(fileFullName);
 
+            var mp4Presets = _configuration.EncoderPresets.Where(v => v.MaxHeight >= metadata.Height && v.PlaybackFormat == "mp4").ToList();
+            var smalledmp4Preset = _configuration.EncoderPresets.Where(v => v.PlaybackFormat == "mp4").OrderByDescending(v => v.MaxHeight).FirstOrDefault();
+            if (!mp4Presets.Any() && smalledmp4Preset != null)
+                results.Add(smalledmp4Preset);
+            else
+                results.AddRange(mp4Presets);
+
+            var mpdPresets = _configuration.EncoderPresets.Where(v => v.MaxHeight >= metadata.Height && v.PlaybackFormat == "dash").ToList();
+            var smalledmpdPreset = _configuration.EncoderPresets.Where(v => v.PlaybackFormat == "dash").OrderByDescending(v => v.MaxHeight).FirstOrDefault();
+            if (!mpdPresets.Any() && smalledmpdPreset != null)
+                results.Add(smalledmpdPreset);
+            else
+                results.AddRange(mpdPresets);
+
+            return results;
+        }
+
+        private bool MoveFileToDirectory(string sourceFullName, string targetDirectory, string destinationFullNAme)
+        {
             try
             {
-                if (File.Exists(pendingFullName))
+                if (File.Exists(sourceFullName))
                 {
-                    if (!Directory.Exists(queuedDirectory))
-                        Directory.CreateDirectory(queuedDirectory);
-                    File.Move(pendingFullName, queuedFullName);
+                    if (!Directory.Exists(targetDirectory))
+                        Directory.CreateDirectory(targetDirectory);
+                    File.Move(sourceFullName, destinationFullNAme);
                 }
             }
             catch (Exception ex)

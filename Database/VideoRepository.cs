@@ -214,10 +214,47 @@ namespace Database
             return encodeJob.Id != 0;
         }
 
+        public bool SaveSegmentJob(VideoSegmentQueue segmentJob)
+        {
+            if (segmentJob.Id == 0)
+            {
+                _context.Add(segmentJob);
+            }
+            else
+            {
+                _context.Update(segmentJob);
+            }
 
-        public IQueryable<VideoEncodeQueue> GetEncodeQueue()
+            _context.SaveChanges();
+
+            return segmentJob.Id != 0;
+        }
+
+        public IQueryable<VideoEncodeQueue> GetPendingEncodeQueue()
         {
             return _context.VideoEncodeQueue.Where(v => !v.IsDone);
+        }
+
+        public IQueryable<VideoEncodeQueue> GetAllEncodeQueue()
+        {
+            return _context.VideoEncodeQueue;
+        }
+
+        public bool IsFileStillNeeded(int videoId)
+        {
+            return _context.VideoEncodeQueue.Any(v => 
+                v.VideoId== videoId && 
+                !v.IsDone);
+        }
+
+        public IQueryable<VideoEncodeQueue> GetIncompleteDashJobs(int videoId)
+        {
+            var isAnyIncomplete = _context.VideoEncodeQueue.Where(v =>
+                v.VideoId == videoId &&
+                v.PlaybackFormat == "dash"&&
+                !v.IsDone);
+
+            return isAnyIncomplete;
         }
     }
 }

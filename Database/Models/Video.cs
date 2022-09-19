@@ -12,6 +12,7 @@ namespace Database.Models
         public Video()
         {
             VideoEncodeQueue = new HashSet<VideoEncodeQueue>();
+            VideoSegmentQueue = new HashSet<VideoSegmentQueue>();
             VideoSource = new HashSet<VideoSource>();
             VideoTag = new HashSet<VideoTag>();
         }
@@ -26,6 +27,7 @@ namespace Database.Models
 
         public virtual Ratings Rating { get; set; }
         public virtual ICollection<VideoEncodeQueue> VideoEncodeQueue { get; set; }
+        public virtual ICollection<VideoSegmentQueue> VideoSegmentQueue { get; set; }
         public virtual ICollection<VideoSource> VideoSource { get; set; }
         public virtual ICollection<VideoTag> VideoTag { get; set; }
     }

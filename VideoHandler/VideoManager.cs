@@ -57,7 +57,7 @@ namespace VideoHandler
                         throw new Exception("Failed to write file");
                     }
                 }
-                _ffmpeg.CreateThumbnail(filePath, thumbPath);
+                _ffmpeg.CreateThumbnail(filePath, thumbPath, 60);
 
                 var meta = GetMetadata(filePath);
                 toSave = new Video()
@@ -176,7 +176,7 @@ namespace VideoHandler
 
             //THUMBNAIL
             string thumbPath = Path.Combine(thumbnailDirectory, $"{md5}.jpg");
-            _ffmpeg.CreateThumbnail(request.FileNameFull, thumbPath);
+            _ffmpeg.CreateThumbnail(request.FileNameFull, thumbPath, 60);
 
             var metaData = GetMetadata(request.FileNameFull);
             FileInfo fileInfo = new FileInfo(request.FileNameFull);

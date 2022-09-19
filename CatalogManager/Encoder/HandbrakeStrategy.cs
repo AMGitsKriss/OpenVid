@@ -14,7 +14,7 @@ namespace CatalogManager.Encoder
             // TODO - CreateNoWindow should be configurable.
             string exe = @"C:\handbrakecli\HandBrakeCLI.exe";
             string dimensionArgs = queueItem.IsVertical ? $" --maxWidth {queueItem.MaxHeight}" : $" --maxHeight {queueItem.MaxHeight}";
-            string args = $@" -i ""{queueItem.InputDirectory}"" -o ""{queueItem.OutputDirectory}"" -e {queueItem.Encoder} --encoder-preset {queueItem.RenderSpeed} -f {queueItem.Format} --optimize -q {queueItem.Quality} {dimensionArgs}";
+            string args = $@" -i ""{queueItem.InputDirectory}"" -o ""{queueItem.OutputDirectory}"" -e {queueItem.Encoder} --encoder-preset {queueItem.RenderSpeed} -f {queueItem.VideoFormat} --optimize -q {queueItem.Quality} {dimensionArgs}";
             
             Process proc = new Process();
             proc.StartInfo.FileName = exe;

@@ -36,7 +36,7 @@ namespace CatalogManager
             FileHelpers.TouchDirectory(Path.Combine(_configuration.BucketDirectory, "thumbnail"));
             FileHelpers.TouchDirectory(Path.Combine(_configuration.BucketDirectory, "thumbnail", idString.Substring(0, 2)));
 
-            _metadata.CreateThumbnail(videoPath, thumbnailTarget);
+            _metadata.CreateThumbnail(videoPath, thumbnailTarget, _configuration.ThumbnailFramesIntoVideo);
         }
     }
 }

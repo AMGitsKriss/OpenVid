@@ -7,19 +7,12 @@ using System.Collections.Generic;
 
 namespace Database.Models
 {
-    public partial class VideoEncodeQueue
+    public partial class VideoSegmentQueue
     {
         public int Id { get; set; }
         public int VideoId { get; set; }
         public string InputDirectory { get; set; }
-        public string OutputDirectory { get; set; }
-        public string Encoder { get; set; }
-        public string RenderSpeed { get; set; }
-        public string VideoFormat { get; set; }
-        public string PlaybackFormat { get; set; }
-        public double Quality { get; set; }
-        public int MaxHeight { get; set; }
-        public bool IsVertical { get; set; }
+        public int Height { get; set; }
         public bool IsDone { get; set; }
 
         public virtual Video Video { get; set; }

@@ -67,6 +67,7 @@
     <Folder Include="wwwroot\import\01_pending\" />
     <Folder Include="wwwroot\import\02_queued\" />
     <Folder Include="wwwroot\import\03_awaiting_move\" />
+    <Folder Include="wwwroot\import\04_shaka_packager\" />
     <Folder Include="wwwroot\lib\dashjs\akamai\" />
   </ItemGroup>
 

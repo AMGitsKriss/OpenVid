@@ -34,6 +34,7 @@ namespace Database.Models
         public virtual DbSet<UserToken> UserToken { get; set; }
         public virtual DbSet<Video> Video { get; set; }
         public virtual DbSet<VideoEncodeQueue> VideoEncodeQueue { get; set; }
+        public virtual DbSet<VideoSegmentQueue> VideoSegmentQueue { get; set; }
         public virtual DbSet<VideoSource> VideoSource { get; set; }
         public virtual DbSet<VideoTag> VideoTag { get; set; }
 
@@ -278,11 +279,6 @@ namespace Database.Models
                     .HasMaxLength(16)
                     .IsUnicode(false);
 
-                entity.Property(e => e.Format)
-                    .IsRequired()
-                    .HasMaxLength(8)
-                    .IsUnicode(false);
-
                 entity.Property(e => e.InputDirectory)
                     .IsRequired()
                     .IsUnicode(false);
@@ -291,9 +287,19 @@ namespace Database.Models
                     .IsRequired()
                     .IsUnicode(false);
 
+                entity.Property(e => e.PlaybackFormat)
+                    .IsRequired()
+                    .HasMaxLength(8)
+                    .IsUnicode(false);
+
                 entity.Property(e => e.RenderSpeed)
                     .IsRequired()
                     .HasMaxLength(16)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.VideoFormat)
+                    .IsRequired()
+                    .HasMaxLength(8)
                     .IsUnicode(false);
 
                 entity.Property(e => e.VideoId).HasColumnName("VideoID");
@@ -302,6 +308,23 @@ namespace Database.Models
                     .WithMany(p => p.VideoEncodeQueue)
                     .HasForeignKey(d => d.VideoId)
                     .HasConstraintName("FK_VideoEncodeQueue_Video");
+            });
+
+            modelBuilder.Entity<VideoSegmentQueue>(entity =>
+            {
+                entity.Property(e => e.Id).HasColumnName("ID");
+
+                entity.Property(e => e.InputDirectory)
+                    .IsRequired()
+                    .IsUnicode(false);
+
+                entity.Property(e => e.VideoId).HasColumnName("VideoID");
+
+                entity.HasOne(d => d.Video)
+                    .WithMany(p => p.VideoSegmentQueue)
+                    .HasForeignKey(d => d.VideoId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_VideoSegmentQueue_Video");
             });
 
             modelBuilder.Entity<VideoSource>(entity =>
