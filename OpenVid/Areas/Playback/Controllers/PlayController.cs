@@ -109,7 +109,7 @@ namespace OpenVid.Areas.Playback.Controllers
         {
             PlayViewModel viewModel = new PlayViewModel()
             {
-                VideoSources = new List<string>() { "/test/h264.mpd" },
+                VideoSources = new List<string>() { "http://cdn.qvvz.uk/test2/dash.mpd" },
                 FileBaseUrl = _configuration["FileBaseUrl"],
                 Update = new UpdateFormViewModel()
                 {
