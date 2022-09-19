@@ -27,74 +27,6 @@ namespace VideoHandler
             _ffmpeg = ffmpeg;
         }
 
-        public async Task<SaveVideoResponse> SaveVideoAsync(SaveVideoRequest request)
-        {
-            string hash = GenerateHash(request.File);
-            string subFolder = hash.Substring(0, 2);
-            Video toSave = _repository.GetVideo(hash);
-            string error = null;
-            bool exists = toSave != null;
-            if (!exists)
-            {
-                string videoDirectory = Path.Combine(_configuration["Urls:BucketDirectory"], "video", subFolder);
-                string thumbDirectory = Path.Combine(_configuration["Urls:BucketDirectory"], "thumbnail", subFolder);
-
-                TouchDirectory(videoDirectory);
-                TouchDirectory(thumbDirectory);
-
-                string ext = Path.GetExtension(request.File.FileName).Replace(".", "");
-                string originalName = Path.GetFileNameWithoutExtension(request.File.FileName);
-                string filePath = Path.Combine(videoDirectory, $"{hash}.{ext}");
-                string thumbPath = Path.Combine(thumbDirectory, $"{hash}.jpg");
-                using (Stream fileStream = new FileStream(filePath, FileMode.Create))
-                {
-                    try
-                    {
-                        await request.File.CopyToAsync(fileStream);
-                    }
-                    catch (Exception ex)
-                    {
-                        throw new Exception("Failed to write file");
-                    }
-                }
-                _ffmpeg.CreateThumbnail(filePath, thumbPath, 60);
-
-                var meta = GetMetadata(filePath);
-                toSave = new Video()
-                {
-                    Name = originalName,
-                    Length = meta.Duration,
-                    VideoSource = new List<VideoSource>()
-                    {
-                        new VideoSource()
-                        {
-                            Md5 = hash,
-                            Extension = ext,
-                            Width = meta.Width,
-                            Height = meta.Height,
-                            Size = request.File.Length,
-                        }
-                    }
-                };
-                try
-                {
-                    toSave = _repository.SaveVideo(toSave);
-                }
-                catch (Exception ex)
-                {
-                    error = ex.Message;
-                }
-            }
-            SaveVideoResponse response = new SaveVideoResponse()
-            {
-                Video = toSave,
-                AlreadyExists = exists,
-                Message = error
-            };
-
-            return response;
-        }
-
         public IEnumerable<Video> GetVideos()
         {
             return _repository.GetViewableVideos();
@@ -137,25 +69,6 @@ namespace VideoHandler
             return _repository.GetVideo(id);
         }
 
-        public void UpdateMeta(string md5)
-        {
-            //Video toSave = GetVideo(md5);
-            VideoSource toSave = _repository.GetVideoSource(md5);
-
-            string hash = toSave.Md5;
-            string subFolder = hash.Substring(0, 2);
-            string videoDirectory = Path.Combine(_configuration["Urls:BucketDirectory"], "video", subFolder);
-            string filePath = Path.Combine(videoDirectory, $"{toSave.Md5}.{toSave.Extension}");
-            var meta = GetMetadata(filePath);
-
-            toSave.Width = meta.Width;
-            toSave.Height = meta.Height;
-            toSave.Video.Length = meta.Duration;
-            toSave.Size = new FileInfo(filePath).Length;
-
-            _repository.SaveVideoSource(toSave);
-
-        }
         public async Task<SaveVideoResponse> ImportVideoAsync(ImportVideoRequest request)
         {
             string md5 = GenerateHash(request.FileNameFull);
@@ -266,23 +179,6 @@ namespace VideoHandler
             }
 
             return true;
-        }
-
-        private void TouchDirectory(string directory)
-        {
-            if (!Directory.Exists(directory))
-                Directory.CreateDirectory(directory);
-        }
-
-        private string GenerateHash(IFormFile file)
-        {
-            using (var md5 = MD5.Create())
-            using (var ms = new MemoryStream())
-            {
-                file.CopyTo(ms);
-                byte[] hash = md5.ComputeHash(ms.ToArray());
-                return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
-            }
         }
 
         private string GenerateHash(string filename)

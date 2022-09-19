@@ -10,8 +10,6 @@ namespace VideoHandler
         List<Ratings> GetRatings();
         Video GetVideo(int id);
         Task<SaveVideoResponse> ImportVideoAsync(ImportVideoRequest request);
-        Task<SaveVideoResponse> SaveVideoAsync(SaveVideoRequest request);
-        void UpdateMeta(string md5);
         IEnumerable<Video> GetSoftDeletedVideos();
         IEnumerable<Tag> GetAllTags();
         bool HardDeleteVideo(int id);

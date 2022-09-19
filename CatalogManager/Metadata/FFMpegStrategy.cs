@@ -8,7 +8,6 @@ namespace CatalogManager.Metadata
     {
         public MediaProperties GetMetadata(string location)
         {
-            // TODO - Try catch. The path can be wrong and we don't want to it fall over vaguely.
             string cmd = $"-v error -select_streams v:0 -show_entries stream=width,height,duration -show_entries format=duration -of csv=s=x:p=0 \"{location}\"";
             Process proc = new Process();
             proc.StartInfo.FileName = @"c:\ffmpeg\ffprobe.exe";
@@ -44,7 +43,7 @@ namespace CatalogManager.Metadata
             var startInfo = new ProcessStartInfo
             {
                 WindowStyle = ProcessWindowStyle.Normal,
-                FileName = @"c:\ffmpeg\ffmpeg.exe", // TODO - Make configurable
+                FileName = @"c:\ffmpeg\ffmpeg.exe", // TODO - [ffmpeg] Should be configurable.What if I want to install this elsewhere?
                 Arguments = cmd
             };
 

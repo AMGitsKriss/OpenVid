@@ -9,6 +9,7 @@ using VideoHandler.SearchFilters;
 
 namespace VideoHandler
 {
+    // TODO - This should be a project of it's own.
     public class SearchManager : ISearchManager
     {
         internal IVideoRepository _repo;

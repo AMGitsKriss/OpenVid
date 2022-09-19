@@ -23,7 +23,7 @@ namespace OpenVid.Areas.Playback.Controllers
         [HttpPost]
         public IActionResult Index(UpdateFormViewModel viewModel)
         {
-            Video toSave = _videoManager.GetVideo(viewModel.Id); // TODO - This is a Database reference and shouldn't be here.
+            Video toSave = _videoManager.GetVideo(viewModel.Id);
             if (toSave == null)
                 return RedirectToAction("Index");
 

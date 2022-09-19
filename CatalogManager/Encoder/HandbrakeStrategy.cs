@@ -10,18 +10,15 @@ namespace CatalogManager.Encoder
         public void Run(VideoEncodeQueue queueItem)
         {
             Console.WriteLine("Converting file {0}", Path.GetFileNameWithoutExtension(queueItem.InputDirectory));
-            // TODO - FileName should be configurable.
-            // TODO - CreateNoWindow should be configurable.
-            string exe = @"C:\handbrakecli\HandBrakeCLI.exe";
+            
+            string exe = @"C:\handbrakecli\HandBrakeCLI.exe"; // TODO - [HandbrakeCLI] Should be configurable.What if I want to install this elsewhere?
             string dimensionArgs = queueItem.IsVertical ? $" --maxWidth {queueItem.MaxHeight}" : $" --maxHeight {queueItem.MaxHeight}";
             string args = $@" -i ""{queueItem.InputDirectory}"" -o ""{queueItem.OutputDirectory}"" -e {queueItem.Encoder} --encoder-preset {queueItem.RenderSpeed} -f {queueItem.VideoFormat} --optimize -q {queueItem.Quality} {dimensionArgs}";
             
             Process proc = new Process();
             proc.StartInfo.FileName = exe;
-            proc.StartInfo.Arguments = args;
-            proc.StartInfo.CreateNoWindow = false;
-            //proc.StartInfo.RedirectStandardOutput = false;
-            //proc.StartInfo.RedirectStandardError = false;
+            proc.StartInfo.Arguments = args; 
+            proc.StartInfo.CreateNoWindow = false; // Set to true if we want to hide output.
             proc.StartInfo.UseShellExecute = false;
             if (!proc.Start())
             {

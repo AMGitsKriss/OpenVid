@@ -262,7 +262,6 @@ var ControlBar = function (dashjsMediaPlayer, displayUTCTimeCodes) {
     };
 
     var onSeeking = function (event) {
-        //TODO Add call to seek in trick-mode once implemented. Preview Frames.
         seeking = true;
         var mouseTime = calculateTimeByEvent(event);
         if (seekbarPlay) {
@@ -940,7 +939,7 @@ var ControlBar = function (dashjsMediaPlayer, displayUTCTimeCodes) {
                 inputEvent.initEvent('input', true, true);
                 e.target.dispatchEvent(inputEvent);
                 if (addChange) {
-                    e.target.removeEventListener('mouseup', fireChange);//TODO can not clean up this event on destroy. refactor needed!
+                    e.target.removeEventListener('mouseup', fireChange);
                     e.target.addEventListener('mouseup', fireChange);
                 }
             }

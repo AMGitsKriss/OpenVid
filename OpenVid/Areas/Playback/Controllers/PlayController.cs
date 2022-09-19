@@ -53,7 +53,6 @@ namespace OpenVid.Areas.Playback.Controllers
             var tagCollection = video.VideoTag.Select(x => x.Tag.Name).OrderBy(t => t);
             var tagSuggestions = new List<SuggestedTagViewModel>();
 
-            // TODO - This can be cached
             foreach (var item in tagCollection)
             {
                 tagSuggestions.Add(new SuggestedTagViewModel()
