@@ -46,7 +46,7 @@ namespace Database
 
         public Video GetVideo(int id)
         {
-            return GetAllVideos().Include(x => x.VideoTag).ThenInclude(x => x.Tag).FirstOrDefault(x => x.Id == id);
+            return GetAllVideos().Include(x => x.VideoSource).Include(x => x.VideoTag).ThenInclude(x => x.Tag).FirstOrDefault(x => x.Id == id);
         }
 
         public IQueryable<Tag> GetAllTags()
@@ -104,7 +104,7 @@ namespace Database
                     _context.Video.Update(video);
                 }
 
-                _context.SaveChanges();
+                var updateCount = _context.SaveChanges();
 
                 return video;
             }

@@ -39,7 +39,8 @@ namespace CatalogManager
             {
                 FileName = Path.GetFileNameWithoutExtension(q.InputDirectory),
                 Resolution = $"{q.MaxHeight}p",
-                FullName = q.InputDirectory
+                FullName = q.InputDirectory,
+                PlaybackFormat = q.PlaybackFormat
             }).ToList();
         }
 
@@ -116,7 +117,7 @@ namespace CatalogManager
                 if (videoId == 0)
                     continue;
 
-                if (!MoveFileToDirectory(pending.FullName, queuedDirectory, pending.FileName))
+                if (!MoveFileToDirectory(pending.FullName, queuedDirectory, Path.Combine(queuedDirectory, pending.FileName)))
                     _repository.DeleteVideo(videoId);
             }
         }
@@ -178,14 +179,14 @@ namespace CatalogManager
             var results = new List<EncoderPresetOptions>();
             var metadata = _metadata.GetMetadata(fileFullName);
 
-            var mp4Presets = _configuration.EncoderPresets.Where(v => v.MaxHeight >= metadata.Height && v.PlaybackFormat == "mp4").ToList();
+            var mp4Presets = _configuration.EncoderPresets.Where(v => v.MaxHeight <= metadata.Height && v.PlaybackFormat == "mp4").ToList();
             var smalledmp4Preset = _configuration.EncoderPresets.Where(v => v.PlaybackFormat == "mp4").OrderByDescending(v => v.MaxHeight).FirstOrDefault();
             if (!mp4Presets.Any() && smalledmp4Preset != null)
                 results.Add(smalledmp4Preset);
             else
                 results.AddRange(mp4Presets);
 
-            var mpdPresets = _configuration.EncoderPresets.Where(v => v.MaxHeight >= metadata.Height && v.PlaybackFormat == "dash").ToList();
+            var mpdPresets = _configuration.EncoderPresets.Where(v => v.MaxHeight <= metadata.Height && v.PlaybackFormat == "dash").ToList();
             var smalledmpdPreset = _configuration.EncoderPresets.Where(v => v.PlaybackFormat == "dash").OrderByDescending(v => v.MaxHeight).FirstOrDefault();
             if (!mpdPresets.Any() && smalledmpdPreset != null)
                 results.Add(smalledmpdPreset);
@@ -195,7 +196,7 @@ namespace CatalogManager
             return results;
         }
 
-        private bool MoveFileToDirectory(string sourceFullName, string targetDirectory, string destinationFullNAme)
+        private bool MoveFileToDirectory(string sourceFullName, string targetDirectory, string destinationFullName)
         {
             try
             {
@@ -203,7 +204,7 @@ namespace CatalogManager
                 {
                     if (!Directory.Exists(targetDirectory))
                         Directory.CreateDirectory(targetDirectory);
-                    File.Move(sourceFullName, destinationFullNAme);
+                    File.Move(sourceFullName, destinationFullName);
                 }
             }
             catch (Exception ex)

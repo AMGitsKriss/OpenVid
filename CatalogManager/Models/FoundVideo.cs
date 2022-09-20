@@ -11,5 +11,6 @@ namespace CatalogManager.Models
         public bool IsVertical { get; set; }
         public List<string> SuggestedTags { get; set; }
         public long Size { get; set; }
+        public string PlaybackFormat { get; set; }
     }
 }
