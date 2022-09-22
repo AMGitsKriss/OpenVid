@@ -73,7 +73,7 @@ namespace OpenVid.BackgroundEncoder
                 else if (queueItem.PlaybackFormat == "dash")
                 {
                     MoveDashVideoAwaitingPackager(queueItem);
-                    AddToSegmentQueue(queueItem, metadata);
+                    AddToSegmentQueue(queueItem);
                 }
 
                 // Mark as done before looping
@@ -132,15 +132,15 @@ namespace OpenVid.BackgroundEncoder
 
         private void MoveDashVideoAwaitingPackager(VideoEncodeQueue queueItem)
         {
-            var segmentedDirectory = Path.Combine(_configuration.ImportDirectory, "04_shaka_packager", Path.GetFileNameWithoutExtension(queueItem.OutputDirectory));
+            var segmentedDirectory = Path.Combine(_configuration.ImportDirectory, "04_shaka_packager", Path.GetFileNameWithoutExtension(queueItem.InputDirectory));
             var segmentedFullName = Path.Combine(segmentedDirectory, Path.GetFileName(queueItem.OutputDirectory));
             FileHelpers.TouchDirectory(segmentedDirectory);
             File.Move(queueItem.OutputDirectory, segmentedFullName);
         }
 
-        private void AddToSegmentQueue(VideoEncodeQueue queueItem, MediaProperties metadata)
+        private void AddToSegmentQueue(VideoEncodeQueue queueItem)
         {
-            var segmentedDirectory = Path.Combine(_configuration.ImportDirectory, "04_shaka_packager", Path.GetFileNameWithoutExtension(queueItem.OutputDirectory));
+            var segmentedDirectory = Path.Combine(_configuration.ImportDirectory, "04_shaka_packager", Path.GetFileNameWithoutExtension(queueItem.InputDirectory));
             var segmentedFullName = Path.Combine(segmentedDirectory, Path.GetFileName(queueItem.OutputDirectory));
 
             var job = new VideoSegmentQueue()
