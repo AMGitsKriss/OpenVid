@@ -47,6 +47,7 @@ namespace OpenVid.BackgroundEncoder
 
                 _segmenter.Segment(queueItems.ToList());
                 _repository.SetPendingSegmentingDone(videoId);
+                // TODO - Validate that the DASH and HLS files exist
 
                 foreach (var item in queueItems)
                 {

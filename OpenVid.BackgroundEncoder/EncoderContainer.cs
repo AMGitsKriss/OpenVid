@@ -45,6 +45,7 @@ namespace OpenVid.BackgroundEncoder
                     break;
                 }
 
+                // TODO - Kaichou wa Maid-sama fails quietly
                 _encoder.Run(queueItem);
 
                 // If getting metadata works, then we know the file exists

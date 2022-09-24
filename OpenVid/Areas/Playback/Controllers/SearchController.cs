@@ -28,7 +28,7 @@ namespace OpenVid.Areas.Playback.Controllers
             viewModel.SearchString = searchString;
 
             // TODO - Tag sidebar should be an ajax query. Then we can remove this.
-            var videoIDs = _search.PaginatedQuery(searchString, 1, out var hasNext).Select(v => v.Id).ToList();
+            var videoIDs = _search.PaginatedQuery(searchString, 1, out var totalPages).Select(v => v.Id).ToList();
 
             var selectedVideos = _videoManager.GetVideos().Where(x => videoIDs.Contains(x.Id));
             var tags = selectedVideos.SelectMany(x => x.VideoTag);

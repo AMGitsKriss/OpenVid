@@ -29,7 +29,7 @@ namespace CatalogManager.Segment
             }
             var dashFile = Path.Combine(inputFolder, "dash.mpd");
             var hlsFile = Path.Combine(inputFolder, "hls.m3u8");
-            args += @$"--generate_static_live_mpd--mpd_output ""{dashFile}"" --hls_master_playlist_output ""{hlsFile}"" ";
+            args += @$"--generate_static_live_mpd --mpd_output ""{dashFile}"" --hls_master_playlist_output ""{hlsFile}"" ";
 
             Process proc = new Process();
             proc.StartInfo.FileName = exe;
@@ -42,6 +42,9 @@ namespace CatalogManager.Segment
             }
             proc.WaitForExit();
             proc.Close();
+
+            if (!File.Exists(dashFile) || !File.Exists(hlsFile))
+                throw new FileNotFoundException($"The manifest files could not be created in {inputFolder}");
         }
     }
 }

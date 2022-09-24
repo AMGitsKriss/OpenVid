@@ -7,8 +7,9 @@ namespace OpenVid.Areas.Playback.Models.VideoList
     public class VideoListViewModel : BaseViewModel
     {
         public List<VideoViewModel> Videos { get; set; }
-        public int NextPageNumber { get; set; }
-        public string SearchQuery { get; internal set; }
-        public bool HasNextPage { get; internal set; }
+        public string SearchQuery { get; set; }
+        public bool HasNextPage { get; set; }
+        public int CurrentPage { get; set; }
+        public int TotalPages { get; set; }
     }
 }

@@ -1,5 +1,5 @@
 ﻿@model OpenVid.Areas.Playback.Models.Search.SearchViewModel
-@{ 
+@{
     ViewBag.Title = Model.SearchString;
     ViewBag.SearchString = Model.SearchString;
 }
@@ -10,10 +10,17 @@
         </div>
         <div class="col-md-10">
             <h3 class="row">Search Results</h3>
-            <a id="loadMore"></a>
+            <div class="newPage">
+                <a id="loadMore"></a>
+            </div>
             <script>
                 $(document).ready(function () {
-                    loadMore(1, '@Model.SearchString');
+                    var urlParams = new URLSearchParams(window.location.search);
+                    var page = 1;
+                    if(urlParams.has('page'))
+                        page = urlParams.get('page');
+
+                    loadMore(page, '@Model.SearchString');
                 });
             </script>
         </div>

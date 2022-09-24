@@ -21,10 +21,11 @@ namespace VideoHandler
             _filters = filters;
         }
 
-        public List<Video> PaginatedQuery(string searchQuery, int pageNumber, out bool hasMore)
+        public List<Video> PaginatedQuery(string searchQuery, int pageNumber, out int totalPages)
         {
-            var results = Query(searchQuery).Skip((pageNumber - 1) * 48);
-            hasMore = (results.Count() > 48);
+            var allVideos = Query(searchQuery);
+            var results = allVideos.Skip((pageNumber - 1) * 48);
+            totalPages = (int)Math.Ceiling((allVideos.Count() - 48d) / 48d) + 1;
 
             return results.Take(48).ToList();
         }
@@ -68,6 +69,10 @@ namespace VideoHandler
                 results = results.OrderByDescending(x => x.Name).ToList();
             else if (order?.Value == "id_asc")
                 results = results.OrderBy(x => x.Id).ToList();
+            else if (order?.Value == "size")
+                results = results.OrderByDescending(x => x.VideoSource.Sum(s => s.Size)).ToList();
+            else if (order?.Value == "size_asc")
+                results = results.OrderBy(x => x.VideoSource.Sum(s => s.Size)).ToList();
             else
                 results = results.OrderByDescending(x => x.Id).ToList();
 

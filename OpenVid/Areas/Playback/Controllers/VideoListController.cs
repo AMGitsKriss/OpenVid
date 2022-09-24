@@ -27,18 +27,20 @@ namespace OpenVid.Areas.Playback.Controllers
         {
             VideoListViewModel viewModel = new VideoListViewModel()
             {
-                Videos = _search.PaginatedQuery(searchString ?? "", pageNo, out var hasMore).Select(v => new VideoViewModel()
+                Videos = _search.PaginatedQuery(searchString ?? "", pageNo, out var totalPages).Select(v => new VideoViewModel()
                 {
                     Id = v.Id,
                     Name = v.Name,
                     Length = string.Format("{0:00}:{1:00}", (int)v.Length.TotalMinutes, v.Length.Seconds)
                 }).ToList(),
-                HasNextPage = hasMore,
-                NextPageNumber = pageNo + 1,
+                TotalPages = totalPages,
+                HasNextPage = pageNo < totalPages,
+                CurrentPage = pageNo,
                 SearchQuery = searchString,
                 FileBaseUrl = _configuration["FileBaseUrl"]
             };
-            return PartialView("_VideoList", viewModel);
+            //return PartialView("VideoListEndless", viewModel);
+            return PartialView("_VideoListPaginated", viewModel);
         }
     }
 }

@@ -3,8 +3,11 @@
 
 // Write your JavaScript code.
 
-$(document).on('click', '#loadMore', function () {
-    loadMore($('#loadMore').attr('data-page'), $('#loadMore').attr('data-search-query'));
+$(document).on('click', '.loadMore', function () {
+    loadMore($(this).attr('data-page'), $('#searchPages').attr('data-search-query'));
+    if ($('.pagination').length > 0) {
+        updateUrlWithPage($(this).attr('data-page'));
+    }
 });
 
 function loadMore(page, searchQuery) {
@@ -12,13 +15,32 @@ function loadMore(page, searchQuery) {
         type: 'GET',
         url: '/Playback/VideoList?searchString=' + searchQuery + '&pageNo=' + page,
         success: function (data) {
-            $('#loadMore').replaceWith(data);
+            $('.newPage').replaceWith(data);
         },
         error: function (error) {
-            $('#loadMore').replaceWith("<p>There was an error.</p>");
+            $('.newPage').replaceWith("<p>There was an error.</p> <p>"+error.responseText+"</p>");
         }
     });
 }
+
+function updateUrlWithPage(page) {
+    if (history.pushState) {
+        var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?page=' + page;
+        window.history.pushState({ path: newurl }, '', newurl);
+    }
+}
+
+// TODO - This will always reload on page 1. Not nice.
+$(window).on("popstate", function (e) {
+    if (e.originalEvent.state !== null) {
+        var urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('page'))
+            loadMore(urlParams.get('page'), $('#SearchString').val());
+    }
+    else {
+        location.reload();
+    }
+});
 
 $(document).on('submit', '#searchBar', function (e) {
     e.preventDefault();
