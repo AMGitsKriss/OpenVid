@@ -18,13 +18,13 @@ namespace CatalogManager.Segment
 
             var audioInit = Path.Combine(inputFolder, @"audio\init.mp4");
             var audioItems = Path.Combine(inputFolder, @"audio\$Number$.m4s");
-            var args = $@"'in=""{firstVideo.InputDirectory}"",stream=audio,init_segment=""{audioInit}"",segment_template=""{audioItems}""' ";
+            var args = $@"in=""{firstVideo.InputDirectory}"",stream=audio,init_segment=""{audioInit}"",segment_template=""{audioItems}"" ";
 
             foreach (var video in videosToSegment)
             {
                 var videoInit = Path.Combine(inputFolder, @$"{video.Height}p\init.mp4");
                 var videoItems = Path.Combine(inputFolder, @$"{video.Height}p\$Number$.m4s");
-                string fileToSegment = @$"'in=""{video.InputDirectory}"",stream=video,init_segment=""{videoInit}"",segment_template=""{videoItems}""' ";
+                string fileToSegment = @$"in=""{video.InputDirectory}"",stream=video,init_segment=""{videoInit}"",segment_template=""{videoItems}"" ";
                 args += fileToSegment;
             }
             var dashFile = Path.Combine(inputFolder, "dash.mpd");

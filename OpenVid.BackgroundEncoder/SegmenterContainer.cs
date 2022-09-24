@@ -36,7 +36,6 @@ namespace OpenVid.BackgroundEncoder
             {
                 // Get the oldest valid job in the queue.
                 var queueItems = _repository.GetPendingSegmentQueue().FirstOrDefault();
-                var videoId = queueItems.First().VideoId;
 
                 // No more jobs to do!
                 if (queueItems == null)
@@ -45,21 +44,9 @@ namespace OpenVid.BackgroundEncoder
                     break;
                 }
 
+                var videoId = queueItems.First().VideoId;
                 _segmenter.Segment(queueItems.ToList());
-                _repository.SetPendingSegmentingDone(videoId);
                 // TODO - Validate that the DASH and HLS files exist
-
-                foreach (var item in queueItems)
-                {
-                    try
-                    {
-                        File.Delete(item.InputDirectory);
-                    }
-                    catch (Exception ex)
-                    {
-                        string message = ex.Message;
-                    }
-                }
 
                 string md5;
                 var segmentedDirectory = Path.GetDirectoryName(queueItems.First().InputDirectory);
@@ -91,9 +78,23 @@ namespace OpenVid.BackgroundEncoder
                 _repository.SaveVideoSource(dashSource);
                 _repository.SaveVideoSource(hlsSource);
 
+                foreach (var item in queueItems)
+                {
+                    try
+                    {
+                        File.Delete(item.InputDirectory);
+                    }
+                    catch (Exception ex)
+                    {
+                        string message = ex.Message;
+                    }
+                }
+
                 string vidSubFolder = md5.Substring(0, 2);
                 string videoDirectory = Path.Combine(_configuration.BucketDirectory, "video", vidSubFolder, md5);
                 Directory.Move(segmentedDirectory, videoDirectory);
+
+                _repository.SetPendingSegmentingDone(videoId);
             }
 
         }
