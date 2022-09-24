@@ -4,41 +4,55 @@
     ViewBag.SearchString = Model.SearchString;
 }
 <div class="video-container">
-            <div class="youtube-theme">
-                <video id="youtube-theme" data-shaka-player height="720" autostart></video>
-            </div>
+    <div class="youtube-theme">
+        <video id="youtube-theme" data-shaka-player autostart></video>
+    </div>
 
-        <script>
-            async function init() {
-                const video = document.getElementById('youtube-theme');
-                const ui = video['ui'];
-                const config = {
-                    'seekBarColors': {
-                        base: 'rgba(255,255,255,.2)',
-                        buffered: 'rgba(255,255,255,.4)',
-                        played: 'rgb(255,0,0)',
-                    }
+    <script>
+        const support = await shaka.Player.probeSupport();
+        var url;
+        if (support.manifest.mpd && @Model.VideoSources.ContainsKey("mpd")) {
+            url = '@Model.VideoSources["mpd"]';
+        }
+        else if ((support.manifest.hls) && @Model.VideoSources.ContainsKey("m3u8")) {
+            url = '@Model.VideoSources["m3u8"]';
+        }
+        else if (@Model.VideoSources.ContainsKey("mp4")) {
+            url = '@Model.VideoSources["mp4"]';
+        }
+
+        async function init() {
+            const video = document.getElementById('youtube-theme');
+            const ui = video['ui'];
+            const config = {
+                'seekBarColors': {
+                    base: 'rgba(255,255,255,.2)',
+                    buffered: 'rgba(255,255,255,.4)',
+                    played: 'rgb(255,0,0)',
                 }
-                ui.configure(config);
-
-                const controls = ui.getControls();
-                const player = controls.getPlayer();
-
-                try {
-                    await player.load('@Model.VideoSources.First()');
-                } catch (error) {
-                }
-
-                $('.shaka-overflow-menu-button').html('settings');
-                $('.shaka-back-to-overflow-button .material-icons-round').html('arrow_back_ios_new');
             }
-            document.addEventListener('shaka-ui-loaded', init);
-        </script>
+            ui.configure(config);
+
+            const controls = ui.getControls();
+            const player = controls.getPlayer();
+
+            try {
+                await player.load(url);
+            } catch (error) {
+            }
+
+            $('.shaka-overflow-menu-button').html('settings');
+            $('.shaka-back-to-overflow-button .material-icons-round').html('arrow_back_ios_new');
+        }
+        document.addEventListener('shaka-ui-loaded', init);
+    </script>
 
 
 
 </div>
 
 <div class="container">
-    @{await Html.RenderPartialAsync("_UpdateForm", Model.Update);}
+    @{
+        await Html.RenderPartialAsync("_UpdateForm", Model.Update);
+    }
 </div>

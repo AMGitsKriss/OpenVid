@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace VideoHandler
 {
@@ -15,23 +16,27 @@ namespace VideoHandler
             _configuration = configuration;
         }
 
-        public List<string> GetVideoUrl(Video video)
+        public Dictionary<string, string> GetVideoUrls(Video video)
         {
-            var sources = new List<string>();
+            var sources = new Dictionary<string, string>();
 
-            foreach (var src in video.VideoSource)
+            // [D]ash -> [H]LS -> [M]P4
+            var sortedVideoSources = video.VideoSource.OrderBy(s => s.Extension).ToList();
+
+            foreach (var src in sortedVideoSources)
             {
                 var bucketDirectory = $"{_configuration["Urls:BucketDirectory"]}\\video\\{src.Md5.Substring(0, 2)}\\";
                 var internalDirectory = $"{_configuration["Urls:InternalDirectory"]}\\video\\";
                 var fileName = $"{src.Md5}.{src.Extension}";
 
+                // TODO - This might not be necessary anymore
                 if (!File.Exists(bucketDirectory + fileName))
                 {
                     if (!TryMove(internalDirectory, bucketDirectory, fileName))
-                        sources.Add($"{_configuration["Urls:InternalUrl"]}/video/{src.Md5}.{src.Extension}");
+                        sources.Add(src.Extension, $"{_configuration["Urls:InternalUrl"]}/video/{src.Md5}.{src.Extension}");
                 }
 
-                sources.Add($"{_configuration["Urls:BucketUrl"]}/video/{src.Md5.Substring(0, 2)}/{src.Md5}.{src.Extension}");
+                sources.Add(src.Extension, $"{_configuration["Urls:BucketUrl"]}/video/{src.Md5.Substring(0, 2)}/{src.Md5}.{src.Extension}");
             }
             return sources;
         }

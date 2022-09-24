@@ -5,6 +5,6 @@ namespace VideoHandler
 {
     public interface IUrlResolver
     {
-        List<string> GetVideoUrl(Video video);
+        Dictionary<string, string> GetVideoUrls(Video video);
     }
 }

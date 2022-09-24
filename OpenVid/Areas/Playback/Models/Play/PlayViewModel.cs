@@ -6,7 +6,7 @@ namespace OpenVid.Areas.Playback.Models.Play
 {
     public class PlayViewModel : BaseViewModel
     {
-        public List<string> VideoSources { get; set; }
+        public Dictionary<string, string> VideoSources { get; set; }
         public UpdateFormViewModel Update { get; set; }
     }
 }

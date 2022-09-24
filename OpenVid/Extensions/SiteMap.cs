@@ -27,13 +27,11 @@ namespace OpenVid.Extensions
         public static PageLocation Catalog_ImportPreprocessed { get; set; } = new PageLocation("Catalog", "ImportPreprocessed", "Index");
         public static PageLocation Catalog_ImportSave { get; set; } = new PageLocation("Catalog", "ImportPreprocessed", "Save");
         public static PageLocation Tags_Management { get; set; } = new PageLocation("Tags", "Management", "Index");
-        public static PageLocation Account_MyAccount { get; set; } = new PageLocation("Account", "Management", "Index");
         public static PageLocation Account_Management { get; set; } = new PageLocation("Account", "Management", "Index");
 
 
         public static List<PageLocation> AdminMenu = new List<PageLocation>()
         {
-            Account_MyAccount,
             Account_Management,
             Catalog_Import,
             Catalog_ImportPreprocessed,
