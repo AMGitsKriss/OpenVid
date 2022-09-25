@@ -100,16 +100,14 @@ namespace OpenVid
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             app.UseDeveloperExceptionPage();
+
+            using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
+            {
+                serviceScope.ServiceProvider.GetRequiredService<OpenVidContext>().Database.Migrate();
+            }
+
             if (env.IsDevelopment())
             {
-                using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
-                {
-                    var videoContext = serviceScope.ServiceProvider.GetRequiredService<OpenVidContext>();
-                    var videoSuccess = videoContext.Database.EnsureCreated();
-
-                    var userContext = serviceScope.ServiceProvider.GetRequiredService<UserDbContext>();
-                    var userSuccess = userContext.Database.EnsureCreated();
-                }
                 app.UseDeveloperExceptionPage();
             }
             else
