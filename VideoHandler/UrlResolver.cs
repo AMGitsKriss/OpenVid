@@ -20,23 +20,19 @@ namespace VideoHandler
         {
             var sources = new Dictionary<string, string>();
 
-            // [D]ash -> [H]LS -> [M]P4
-            var sortedVideoSources = video.VideoSource.OrderBy(s => s.Extension).ToList();
-
-            foreach (var src in sortedVideoSources)
+            foreach (var src in video.VideoSource)
             {
+                // TODO - REFACTOR: Use Configuration Options here
                 var bucketDirectory = $"{_configuration["Urls:BucketDirectory"]}\\video\\{src.Md5.Substring(0, 2)}\\";
                 var internalDirectory = $"{_configuration["Urls:InternalDirectory"]}\\video\\";
                 var fileName = $"{src.Md5}.{src.Extension}";
 
-                // TODO - This might not be necessary anymore
-                if (!File.Exists(bucketDirectory + fileName))
-                {
-                    if (!TryMove(internalDirectory, bucketDirectory, fileName))
-                        sources.Add(src.Extension, $"{_configuration["Urls:InternalUrl"]}/video/{src.Md5}.{src.Extension}");
-                }
-
-                sources.Add(src.Extension, $"{_configuration["Urls:BucketUrl"]}/video/{src.Md5.Substring(0, 2)}/{src.Md5}.{src.Extension}");
+                if (src.Extension == "mp4")
+                    sources.Add(src.Extension, $"{_configuration["Urls:BucketUrl"]}/video/{src.Md5.Substring(0, 2)}/{src.Md5}.{src.Extension}");
+                else if (src.Extension == "mpd")
+                    sources.Add(src.Extension, $"{_configuration["Urls:BucketUrl"]}/video/{src.Md5.Substring(0, 2)}/{src.Md5}/dash.{src.Extension}");
+                else if (src.Extension == "m3u8")
+                    sources.Add(src.Extension, $"{_configuration["Urls:BucketUrl"]}/video/{src.Md5.Substring(0, 2)}/{src.Md5}/hls.{src.Extension}");
             }
             return sources;
         }

@@ -44,7 +44,7 @@ namespace OpenVid.Areas.Playback.Controllers
 
             PlayViewModel viewModel = new PlayViewModel()
             {
-                VideoSources = _urlResolver.GetVideoUrl(video),
+                VideoSources = _urlResolver.GetVideoUrls(video),
                 FileBaseUrl = _configuration["FileBaseUrl"]
             };
 
@@ -109,7 +109,11 @@ namespace OpenVid.Areas.Playback.Controllers
         {
             PlayViewModel viewModel = new PlayViewModel()
             {
-                VideoSources = new List<string>() { "http://cdn.qvvz.uk/test2/dash.mpd" },
+                VideoSources = new Dictionary<string, string>() { 
+                    { "mpd", "http://cdn.qvvz.uk/test3/dash.mpd" },
+                    { "m3u8", "http://cdn.qvvz.uk/test3/tls.m3u8" },
+                    { "mp4", "http://cdn.qvvz.uk/520.mp4" }
+                },
                 FileBaseUrl = _configuration["FileBaseUrl"],
                 Update = new UpdateFormViewModel()
                 {
@@ -130,7 +134,7 @@ namespace OpenVid.Areas.Playback.Controllers
                         Size = 0
                     } }
                 }
-        };
+            };
             return viewModel;
         }
     }

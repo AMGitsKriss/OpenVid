@@ -119,7 +119,7 @@ namespace OpenVid.BackgroundEncoder
                 Width = metadata.Width,
                 Height = metadata.Height,
                 Size = new FileInfo(queueItem.OutputDirectory).Length,
-                Extension = Path.GetExtension(queueItem.OutputDirectory)
+                Extension = Path.GetExtension(queueItem.OutputDirectory).Replace(".", "")
             };
             _repository.SaveVideoSource(videoSource);
 

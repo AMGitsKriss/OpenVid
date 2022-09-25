@@ -152,10 +152,6 @@ body {
         margin: -8px 0;
     }
 
-.cursor-pointer {
-    cursor: pointer;
-}
-
 .v-center {
     margin-top: auto;
     margin-bottom: auto;
