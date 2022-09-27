@@ -1,0 +1,17 @@
+﻿@model List<CatalogManager.Models.FoundVideo>
+
+@using (Html.BeginPanel("Imports Queued for Encoding", true))
+{
+<p><strong>Step 3 -</strong> Queued Segmenter jobs. Thse will produce watchable videos in a variety of resolutions and will support multiple audio tracks and subtitles.</p>
+
+    <hr />
+
+    @foreach (var video in Model)
+    {
+        <div class="row alert alert-grey m-b-10 rounded-corner">
+            <div class="col-3 name">@video.FileName</div>
+            <div class="col-1 status">@video.Resolution</div>
+            <div class="col-1 status">@video.PlaybackFormat</div>
+        </div>
+    }
+}

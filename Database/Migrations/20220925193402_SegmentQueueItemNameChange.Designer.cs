@@ -4,14 +4,16 @@ using Database.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Database.Migrations
 {
     [DbContext(typeof(OpenVidContext))]
-    partial class OpenVidContextModelSnapshot : ModelSnapshot
+    [Migration("20220925193402_SegmentQueueItemNameChange")]
+    partial class SegmentQueueItemNameChange
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -462,10 +464,8 @@ namespace Database.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<bool>("IsDone")
-                        .HasColumnType("bit");
-
                     b.Property<bool>("IsReady")
+                        .HasColumnName("IsReady")
                         .HasColumnType("bit");
 
                     b.Property<int>("VideoId")
@@ -487,24 +487,13 @@ namespace Database.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("ArgInputFile")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("Height")
+                        .HasColumnType("int");
 
-                    b.Property<string>("ArgInputFolder")
+                    b.Property<string>("InputDirectory")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .IsUnicode(true);
-
-                    b.Property<string>("ArgStream")
-                        .IsRequired()
-                        .HasColumnType("varchar(32)")
-                        .HasMaxLength(32)
+                        .HasColumnType("varchar(max)")
                         .IsUnicode(false);
-
-                    b.Property<string>("ArgStreamFolder")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .IsUnicode(true);
 
                     b.Property<bool>("IsDone")
                         .HasColumnType("bit");

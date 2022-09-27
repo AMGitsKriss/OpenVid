@@ -1,6 +1,5 @@
 ﻿using CatalogManager.Encoder;
 using CatalogManager.Metadata;
-using CatalogManager.Segment;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -16,7 +15,6 @@ namespace CatalogManager
             services.AddScoped<PlaybackService>();
             services.AddScoped<IMetadataStrategy, FFMpegStrategy>();
             services.AddScoped<IEncoderStrategy, HandbrakeStrategy>();
-            services.AddScoped<ISegmenterStrategy, ShakaPackagerStrategy> ();
 
             return services;
         }

@@ -7,9 +7,8 @@ using System.Linq;
 
 namespace Database
 {
+    // Add-Migration MIGRATION_NAME -verbose -Context OpenVidContext
     // Scaffold-DbContext "name=ConnectionStrings:DefaultDatabase" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Models -Force
-
-    //Scaffold-DbContext "name=ConnectionStrings:DefaultDatabase" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Models -Force -Tables"User","UserClaim","UserLogin","UserPermission","UserRole","UserToken","Role","RoleClaim","Permission","PermissionGroup"
     public class VideoRepository : IVideoRepository
     {
         OpenVidContext _context;
@@ -230,6 +229,22 @@ namespace Database
             return segmentJob.Id != 0;
         }
 
+        public bool SaveSegmentItem(VideoSegmentQueueItem segmentJob)
+        {
+            if (segmentJob.Id == 0)
+            {
+                _context.Add(segmentJob);
+            }
+            else
+            {
+                _context.Update(segmentJob);
+            }
+
+            _context.SaveChanges();
+
+            return segmentJob.Id != 0;
+        }
+
         public IQueryable<VideoEncodeQueue> GetPendingEncodeQueue()
         {
             return _context.VideoEncodeQueue.Where(v => !v.IsDone);
@@ -257,11 +272,12 @@ namespace Database
             return isAnyIncomplete;
         }
 
-        public IEnumerable<IEnumerable<VideoSegmentQueue>> GetPendingSegmentQueue()
+        public IEnumerable<IEnumerable<VideoSegmentQueueItem>> GetPendingSegmentQueue()
         {
             // Return segments for videos that are done, but also for videos that are finished encoding. 
             var pendingEncodes = _context.VideoEncodeQueue.Where(e => !e.IsDone).Select(e => e.VideoId).Distinct();
-            var result = _context.VideoSegmentQueue.Where(s => !pendingEncodes.Contains(s.VideoId) && !s.IsDone);
+
+            var result = _context.VideoSegmentQueueItem.Where(s => !pendingEncodes.Contains(s.VideoId) && !s.IsDone);
 
             var firstBatch = result.ToList().GroupBy(r => r.VideoId).Select(g => g.Select(x => x));
 
@@ -270,7 +286,7 @@ namespace Database
 
         public void SetPendingSegmentingDone(int videoId)
         {
-            var segmentsForvideo = _context.VideoSegmentQueue.Where(s => s.VideoId == videoId).ToList();
+            var segmentsForvideo = _context.VideoSegmentQueueItem.Where(s => s.VideoId == videoId).ToList();
 
             foreach (var item in segmentsForvideo)
             {
@@ -280,6 +296,11 @@ namespace Database
             _context.UpdateRange(segmentsForvideo);
 
             _context.SaveChanges();
+        }
+
+        public IQueryable<VideoSegmentQueue> GetSegmentJobsForVideo(int videoId)
+        {
+            return _context.VideoSegmentQueue.Where(q => q.VideoId == videoId);
         }
     }
 }

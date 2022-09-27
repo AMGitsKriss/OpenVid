@@ -15,9 +15,11 @@
 
 <div class="row">
     <div class="col-md-12">
-        <partial name="_01_PendingFiles" model="Model.FilesPendingQueueing" />
+        <partial name="_01_PendingIngest" model="Model.FilesPendingQueueing" />
 
-        <partial name="_02_QueuedFiles" model="Model.FilesPendingEncode" />
+        <partial name="_02_QueuedEncode" model="Model.FilesPendingEncode" />
+
+        <partial name="_03_PendingSegmenting" model="Model.FilesPendingSegmenting" />
     </div>
 </div>
 

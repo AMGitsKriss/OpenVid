@@ -6,5 +6,6 @@ namespace CatalogManager.Metadata
     {
         MediaProperties GetMetadata(string location);
         void CreateThumbnail(string videoPath, string thumbPath, int framesIntoVideo);
+        void FindSubtitles(string source, string outputFolder);
     }
 }

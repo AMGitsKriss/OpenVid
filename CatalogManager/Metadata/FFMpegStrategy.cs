@@ -1,6 +1,9 @@
 ﻿using CatalogManager.Models;
 using System;
 using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace CatalogManager.Metadata
 {
@@ -55,6 +58,62 @@ namespace CatalogManager.Metadata
             process.Start();
             process.WaitForExit();
             process.Close();
+        }
+
+        public void FindSubtitles(string source, string outputFolder)
+        {
+            string args = $"-i \"{source}\"";
+            Process proc = new Process();
+            proc.StartInfo.FileName = @"c:\ffmpeg\ffmpeg.exe";
+            proc.StartInfo.Arguments = args;
+            proc.StartInfo.CreateNoWindow = true;
+            proc.StartInfo.RedirectStandardOutput = true;
+            proc.StartInfo.RedirectStandardError = true;
+            proc.StartInfo.UseShellExecute = false;
+            if (!proc.Start())
+            {
+                Console.WriteLine("Error starting");
+            }
+
+            // EXPECTING WHOLE BLOCK
+            string outputString = proc.StandardError.ReadToEnd();
+
+            // EXPECTING EACH LINE OF THE OUTPUT
+            string[] outpuyByLine = outputString.Trim().Split(new char[] { '\n' });
+
+            // 
+            var outputFiltered = outpuyByLine.Where(s => s.Contains("Stream #0") && s.Contains("Subtitle: "));
+
+            var regexPattern = @"^(.*?)#(0:\d+)\(([a-zA-Z]+)\): Subtitle: ([a-zA-Z]+)";
+            var languages = outputFiltered.Select(s => Regex.Match(s, regexPattern));
+
+            foreach (var match in languages)
+            {
+                var stream = match.Groups[2].Value;
+                var language = match.Groups[3].Value;
+                var format = match.Groups[4].Value;
+                ExtractSubtitles(source, outputFolder, stream, language);
+            }
+
+            proc.WaitForExit();
+            proc.Close();
+        }
+
+        public void ExtractSubtitles(string source, string outputFolder, string stream, string language)
+        {
+            var outputFile = Path.Combine(outputFolder, $"{stream.Replace("0:", "")}_{language}.vtt");
+
+            string args = $"-y -i \"{source}\" -map {stream} \"{outputFile}\"";
+            Process proc = new Process();
+            proc.StartInfo.FileName = @"c:\ffmpeg\ffmpeg.exe";
+            proc.StartInfo.Arguments = args;
+            proc.StartInfo.WindowStyle = ProcessWindowStyle.Normal;
+            if (!proc.Start())
+            {
+                Console.WriteLine("Error starting");
+            }
+            proc.WaitForExit();
+            proc.Close();
         }
     }
 }

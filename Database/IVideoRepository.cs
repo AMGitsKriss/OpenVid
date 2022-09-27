@@ -25,11 +25,13 @@ namespace Database
         void AddTagsToVideo(IEnumerable<VideoTag> removeTags);
         bool SaveEncodeJob(VideoEncodeQueue encodeJob);
         bool SaveSegmentJob(VideoSegmentQueue segmentJob);
+        bool SaveSegmentItem(VideoSegmentQueueItem segmentJob);
         IQueryable<VideoEncodeQueue> GetPendingEncodeQueue();
         bool IsFileStillNeeded(int videoId);
         IQueryable<VideoEncodeQueue> GetIncompleteDashJobs(int videoId);
         IQueryable<VideoEncodeQueue> GetAllEncodeQueue();
-        IEnumerable<IEnumerable<VideoSegmentQueue>> GetPendingSegmentQueue();
+        IEnumerable<IEnumerable<VideoSegmentQueueItem>> GetPendingSegmentQueue();
         void SetPendingSegmentingDone(int videoId);
+        IQueryable<VideoSegmentQueue> GetSegmentJobsForVideo(int videoId);
     }
 }

@@ -24,9 +24,10 @@ namespace CatalogManager
             _repository = repository;
             _metadata = metadata;
         }
+
         public List<FoundVideo> FindFiles()
         {
-            var importDir = Path.Combine(_configuration.ImportDirectory, "01_pending");
+            var importDir = Path.Combine(_configuration.ImportDirectory, "01_ingest");
             Directory.CreateDirectory(importDir);
             return FindFiles(importDir, importDir);
         }
@@ -42,6 +43,12 @@ namespace CatalogManager
                 FullName = q.InputDirectory,
                 PlaybackFormat = q.PlaybackFormat
             }).ToList();
+        }
+
+        public List<FoundVideo> GetPendingSegmenting()
+        {
+            // Return a list of summaries for pending segment jobs. 
+            return new List<FoundVideo>();
         }
 
         public List<FoundVideo> FindFiles(string dir, string prefix)
@@ -84,7 +91,7 @@ namespace CatalogManager
 
         public async Task<bool> UploadFile(IFormFile file)
         {
-            string targetFolder = Path.Combine(_configuration.ImportDirectory, "01_pending");
+            string targetFolder = Path.Combine(_configuration.ImportDirectory, "01_ingest");
 
             Helpers.FileHelpers.TouchDirectory(targetFolder);
 
@@ -103,12 +110,12 @@ namespace CatalogManager
             }
         }
 
-        public void QueueFiles()
+        public void IngestFiles()
         {
             var pendingFiles = FindFiles();
 
             var queuedDirectory = Path.Combine(_configuration.ImportDirectory, "02_queued");
-            var completeDirectory = Path.Combine(_configuration.ImportDirectory, "03_awaiting_move");
+            var completeDirectory = Path.Combine(_configuration.ImportDirectory, "03_transcode_complete");
 
             foreach (var pending in pendingFiles)
             {
@@ -126,8 +133,8 @@ namespace CatalogManager
         {
             var tags = _repository.DefineTags(pending.SuggestedTags);
 
-            var inputFullName = Path.Combine(queuedDirectory, pending.FileName);
-            
+            var step2FullName = Path.Combine(queuedDirectory, pending.FileName);
+
 
             var meta = _metadata.GetMetadata(pending.FullName);
             var toSave = new Video()
@@ -135,6 +142,7 @@ namespace CatalogManager
                 Name = Path.GetFileNameWithoutExtension(pending.FileName),
                 Length = meta.Duration,
                 VideoEncodeQueue = new List<VideoEncodeQueue>(),
+                VideoSegmentQueue = new List<VideoSegmentQueue>(),
                 VideoTag = tags.Select(t => new VideoTag()
                 {
                     Tag = t
@@ -146,12 +154,12 @@ namespace CatalogManager
 
             foreach (var preset in presets)
             {
-                var outputFullName = Path.Combine(outputDirectory, $"{Path.GetFileNameWithoutExtension(pending.FileName)}_{preset.MaxHeight}.mp4");
+                var step3FullName = Path.Combine(outputDirectory, $"{Path.GetFileNameWithoutExtension(pending.FileName)}_{preset.MaxHeight}.mp4");
                 toSave.VideoEncodeQueue.Add(new VideoEncodeQueue()
                 {
                     VideoId = 0,
-                    InputDirectory = inputFullName,
-                    OutputDirectory = outputFullName,
+                    InputDirectory = step2FullName,
+                    OutputDirectory = step3FullName,
                     Encoder = preset.Encoder,
                     RenderSpeed = preset.RenderSpeed,
                     VideoFormat = preset.VideoFormat,
@@ -162,13 +170,18 @@ namespace CatalogManager
                 });
             }
 
-            try
+            if (presets.Any(p => p.PlaybackFormat == "dash"))
             {
-                toSave = _repository.SaveVideo(toSave);
+                toSave.VideoSegmentQueue.Add(new VideoSegmentQueue());
+
+                var subtitleSaveDir = Path.Combine(_configuration.ImportDirectory, "04_shaka_packager", Path.GetFileNameWithoutExtension(pending.FileName));
+                Helpers.FileHelpers.TouchDirectory(subtitleSaveDir);
+                 
+                // TODO - This is file system work. Should not be in database function
+                _metadata.FindSubtitles(pending.FullName, subtitleSaveDir);
             }
-            catch (Exception ex)
-            {
-            }
+
+            toSave = _repository.SaveVideo(toSave);
 
             return toSave.Id;
         }

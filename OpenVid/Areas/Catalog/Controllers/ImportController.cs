@@ -24,7 +24,8 @@ namespace OpenVid.Areas.Catalog.Controllers
             var model = new ImportViewModel()
             {
                 FilesPendingQueueing = _importService.FindFiles(),
-                FilesPendingEncode = _importService.GetQueuedFiles()
+                FilesPendingEncode = _importService.GetQueuedFiles(),
+                FilesPendingSegmenting = _importService.GetPendingSegmenting()
             };
             return View(model);
         }
@@ -52,7 +53,7 @@ namespace OpenVid.Areas.Catalog.Controllers
         /// </summary>
         public IActionResult Queue()
         {
-            _importService.QueueFiles();
+            _importService.IngestFiles();
             return Ok();
         }
     }
