@@ -7,6 +7,6 @@ namespace OpenVid.Areas.Catalog.Models.Import
     {
         public List<FoundVideo> FilesPendingQueueing { get; set; }
         public List<FoundVideo> FilesPendingEncode { get; set; }
-        public List<FoundVideo> FilesPendingSegmenting { get; set; }
+        public List<SegmentJob> FilesPendingSegmenting { get; set; }
     }
 }

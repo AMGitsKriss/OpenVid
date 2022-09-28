@@ -45,10 +45,16 @@ namespace CatalogManager
             }).ToList();
         }
 
-        public List<FoundVideo> GetPendingSegmenting()
+        public List<SegmentJob> GetPendingSegmenting()
         {
             // Return a list of summaries for pending segment jobs. 
-            return new List<FoundVideo>();
+            return _repository.GetPendingSegmentJobs().Select(v => new SegmentJob()
+            {
+                JobId = v.Id,
+                VideoId = v.VideoId,
+                Name = v.Video.Name,
+                IsReady = v.IsReady
+            }).ToList();
         }
 
         public List<FoundVideo> FindFiles(string dir, string prefix)

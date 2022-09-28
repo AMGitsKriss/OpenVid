@@ -207,7 +207,7 @@ namespace Database
             {
                 _context.Update(encodeJob);
             }
-            
+
             _context.SaveChanges();
 
             return encodeJob.Id != 0;
@@ -257,8 +257,8 @@ namespace Database
 
         public bool IsFileStillNeeded(int videoId)
         {
-            return _context.VideoEncodeQueue.Any(v => 
-                v.VideoId== videoId && 
+            return _context.VideoEncodeQueue.Any(v =>
+                v.VideoId == videoId &&
                 !v.IsDone);
         }
 
@@ -266,13 +266,13 @@ namespace Database
         {
             var isAnyIncomplete = _context.VideoEncodeQueue.Where(v =>
                 v.VideoId == videoId &&
-                v.PlaybackFormat == "dash"&&
+                v.PlaybackFormat == "dash" &&
                 !v.IsDone);
 
             return isAnyIncomplete;
         }
 
-        public IEnumerable<IEnumerable<VideoSegmentQueueItem>> GetPendingSegmentQueue()
+        public IEnumerable<IEnumerable<VideoSegmentQueueItem>> GetPendingSegmentItems()
         {
             // Return segments for videos that are done, but also for videos that are finished encoding. 
             var pendingEncodes = _context.VideoEncodeQueue.Where(e => !e.IsDone).Select(e => e.VideoId).Distinct();
@@ -282,6 +282,11 @@ namespace Database
             var firstBatch = result.ToList().GroupBy(r => r.VideoId).Select(g => g.Select(x => x));
 
             return firstBatch;
+        }
+
+        public IQueryable<VideoSegmentQueue> GetPendingSegmentJobs()
+        {
+            return _context.VideoSegmentQueue.Include(j => j.Video).Where(j => !j.IsDone);
         }
 
         public void SetPendingSegmentingDone(int videoId)
