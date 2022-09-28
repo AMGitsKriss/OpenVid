@@ -1,5 +1,6 @@
 ﻿using CatalogManager.Models;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -60,7 +61,7 @@ namespace CatalogManager.Metadata
             process.Close();
         }
 
-        public void FindSubtitles(string source, string outputFolder)
+        public IEnumerable<SubtitleFile> FindSubtitles(string source, string outputFolder)
         {
             string args = $"-i \"{source}\"";
             Process proc = new Process();
@@ -92,18 +93,28 @@ namespace CatalogManager.Metadata
                 var stream = match.Groups[2].Value;
                 var language = match.Groups[3].Value;
                 var format = match.Groups[4].Value;
-                ExtractSubtitles(source, outputFolder, stream, language);
+                var fileName = $"{stream.Replace("0:", "")}_{language}.vtt";
+                var fileInfo = new SubtitleFile()
+                {
+                    SourceFileFullName = source,
+                    OutputFolder = outputFolder,
+                    OutputFile = fileName,
+                    StreamId = stream,
+                    Language = language
+                };
+                ExtractSubtitles(fileInfo);
+                yield return fileInfo;
             }
 
             proc.WaitForExit();
             proc.Close();
         }
 
-        public void ExtractSubtitles(string source, string outputFolder, string stream, string language)
+        public void ExtractSubtitles(SubtitleFile file)
         {
-            var outputFile = Path.Combine(outputFolder, $"{stream.Replace("0:", "")}_{language}.vtt");
+            var outputFileFullName = Path.Combine(file.OutputFolder, file.OutputFile);
 
-            string args = $"-y -i \"{source}\" -map {stream} \"{outputFile}\"";
+            string args = $"-y -i \"{file.SourceFileFullName}\" -map {file.StreamId} \"{outputFileFullName}\"";
             Process proc = new Process();
             proc.StartInfo.FileName = @"c:\ffmpeg\ffmpeg.exe";
             proc.StartInfo.Arguments = args;

@@ -1,4 +1,5 @@
 ﻿using CatalogManager.Models;
+using System.Collections.Generic;
 
 namespace CatalogManager.Metadata
 {
@@ -6,6 +7,6 @@ namespace CatalogManager.Metadata
     {
         MediaProperties GetMetadata(string location);
         void CreateThumbnail(string videoPath, string thumbPath, int framesIntoVideo);
-        void FindSubtitles(string source, string outputFolder);
+        IEnumerable<SubtitleFile> FindSubtitles(string source, string outputFolder);
     }
 }

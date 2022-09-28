@@ -1,5 +1,4 @@
-﻿using CatalogManager.Encoder;
-using CatalogManager.Metadata;
+﻿using CatalogManager.Metadata;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -14,7 +13,6 @@ namespace CatalogManager
             services.AddScoped<ImportService>();
             services.AddScoped<PlaybackService>();
             services.AddScoped<IMetadataStrategy, FFMpegStrategy>();
-            services.AddScoped<IEncoderStrategy, HandbrakeStrategy>();
 
             return services;
         }

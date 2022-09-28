@@ -149,6 +149,8 @@ namespace CatalogManager
                 }).ToList()
             };
 
+            toSave = _repository.SaveVideo(toSave);
+
             // If our source is 720p, don't bother trying to use the 1080p preset.
             var presets = GetPresets(pending.FullName);
 
@@ -157,7 +159,7 @@ namespace CatalogManager
                 var step3FullName = Path.Combine(outputDirectory, $"{Path.GetFileNameWithoutExtension(pending.FileName)}_{preset.MaxHeight}.mp4");
                 toSave.VideoEncodeQueue.Add(new VideoEncodeQueue()
                 {
-                    VideoId = 0,
+                    VideoId = toSave.Id,
                     InputDirectory = step2FullName,
                     OutputDirectory = step3FullName,
                     Encoder = preset.Encoder,
@@ -172,13 +174,29 @@ namespace CatalogManager
 
             if (presets.Any(p => p.PlaybackFormat == "dash"))
             {
-                toSave.VideoSegmentQueue.Add(new VideoSegmentQueue());
+                var segmentJob = new VideoSegmentQueue()
+                {
+                    VideoId = toSave.Id,
+                    VideoSegmentQueueItem = new List<VideoSegmentQueueItem>()
+                };
+                toSave.VideoSegmentQueue.Add(segmentJob);
 
                 var subtitleSaveDir = Path.Combine(_configuration.ImportDirectory, "04_shaka_packager", Path.GetFileNameWithoutExtension(pending.FileName));
                 Helpers.FileHelpers.TouchDirectory(subtitleSaveDir);
-                 
-                // TODO - This is file system work. Should not be in database function
-                _metadata.FindSubtitles(pending.FullName, subtitleSaveDir);
+
+                // TODO - This is file system work. Should not be in database function. Can it be moved to the Encoder App?
+                var subtitleFiles = _metadata.FindSubtitles(pending.FullName, subtitleSaveDir);
+                foreach (var subtitle in subtitleFiles)
+                {
+                    segmentJob.VideoSegmentQueueItem.Add(new VideoSegmentQueueItem()
+                    {
+                        VideoId = toSave.Id,
+                        ArgStream = "text",
+                        ArgInputFile = subtitle.OutputFile,
+                        ArgInputFolder = subtitle.OutputFolder,
+                        ArgStreamFolder = $"subtitle_{subtitle.Language}"
+                    });
+                }
             }
 
             toSave = _repository.SaveVideo(toSave);
