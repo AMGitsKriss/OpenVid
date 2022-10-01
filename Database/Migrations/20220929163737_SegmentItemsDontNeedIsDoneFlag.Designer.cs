@@ -4,14 +4,16 @@ using Database.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Database.Migrations
 {
     [DbContext(typeof(OpenVidContext))]
-    partial class OpenVidContextModelSnapshot : ModelSnapshot
+    [Migration("20220929163737_SegmentItemsDontNeedIsDoneFlag")]
+    partial class SegmentItemsDontNeedIsDoneFlag
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -510,11 +512,6 @@ namespace Database.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)")
                         .IsUnicode(true);
-
-                    b.Property<string>("ArgStreamId")
-                        .HasColumnType("varchar(32)")
-                        .HasMaxLength(32)
-                        .IsUnicode(false);
 
                     b.Property<int>("VideoId")
                         .HasColumnName("VideoID")

@@ -94,13 +94,13 @@ namespace CatalogManager.Metadata
                 var language = match.Groups[3].Value;
                 var format = match.Groups[4].Value;
                 var fileName = $"{stream.Replace("0:", "")}_{language}.vtt";
-                var fileInfo = new SubtitleFile()
+                var fileInfo = new SubtitleFile() // TODO - Debug with Re-Zero
                 {
                     SourceFileFullName = source,
                     OutputFolder = outputFolder,
                     OutputFile = fileName,
                     StreamId = stream,
-                    Language = language
+                    Language = language ?? "und"
                 };
                 ExtractSubtitles(fileInfo);
                 yield return fileInfo;

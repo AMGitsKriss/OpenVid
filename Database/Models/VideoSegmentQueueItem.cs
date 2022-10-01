@@ -1,10 +1,4 @@
-﻿using System;
-
-// Code scaffolded by EF Core assumes nullable reference types (NRTs) are not used or disabled.
-// If you have enabled NRTs for your project, then un-comment the following line:
-// #nullable disable
-
-namespace Database.Models
+﻿namespace Database.Models
 {
     public partial class VideoSegmentQueueItem
     {
@@ -23,12 +17,16 @@ namespace Database.Models
         /// eg. audio, video, text
         /// </summary>
         public string ArgStream { get; set; }
+        /// <summary>
+        /// eg. en, eng, jp, jpn
+        /// </summary>
+        public string? ArgLanguage { get; set; }
 
         /// <summary>
         /// eg. audio_eng, 720, subtitles_eng
         /// </summary>
         public string ArgStreamFolder { get; set; }
-        public bool IsDone { get; set; }
+        public string? ArgStreamId { get; set; }
 
         public virtual VideoSegmentQueue VideoSegmentQueue { get; set; }
         public virtual Video Video { get; set; }

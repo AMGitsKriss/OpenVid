@@ -277,7 +277,7 @@ namespace Database
             // Return segments for videos that are done, but also for videos that are finished encoding. 
             var pendingEncodes = _context.VideoEncodeQueue.Where(e => !e.IsDone).Select(e => e.VideoId).Distinct();
 
-            var result = _context.VideoSegmentQueueItem.Where(s => !pendingEncodes.Contains(s.VideoId) && !s.IsDone);
+            var result = _context.VideoSegmentQueueItem.Where(s => !pendingEncodes.Contains(s.VideoId) && !s.VideoSegmentQueue.IsDone);
 
             var firstBatch = result.ToList().GroupBy(r => r.VideoId).Select(g => g.Select(x => x));
 
@@ -287,20 +287,6 @@ namespace Database
         public IQueryable<VideoSegmentQueue> GetPendingSegmentJobs()
         {
             return _context.VideoSegmentQueue.Include(j => j.Video).Where(j => !j.IsDone);
-        }
-
-        public void SetPendingSegmentingDone(int videoId)
-        {
-            var segmentsForvideo = _context.VideoSegmentQueueItem.Where(s => s.VideoId == videoId).ToList();
-
-            foreach (var item in segmentsForvideo)
-            {
-                item.IsDone = true;
-            }
-
-            _context.UpdateRange(segmentsForvideo);
-
-            _context.SaveChanges();
         }
 
         public IQueryable<VideoSegmentQueue> GetSegmentJobsForVideo(int videoId)
