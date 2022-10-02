@@ -23,7 +23,7 @@ namespace CatalogManager
         public void TryGenerateThumbnail(int id)
         {
             var video = _repository.GetVideo(id);
-            var source = video.VideoSource.OrderByDescending(s=> s.Size).FirstOrDefault();
+            var source = video.VideoSource.FirstOrDefault(s => s.Extension == "mp4");
 
             if (source == null) 
                 return;

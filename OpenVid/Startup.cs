@@ -131,12 +131,6 @@ namespace OpenVid
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-            app.UseStaticFiles(new StaticFileOptions
-            {
-                FileProvider = new PhysicalFileProvider(
-                Configuration["Catalog:BucketDirectory"]),
-                RequestPath = "/Content"
-            });
 
             app.UseSession();
 

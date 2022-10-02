@@ -213,20 +213,21 @@ namespace CatalogManager
         private List<EncoderPresetOptions> GetPresets(string fileFullName)
         {
             // TODO - This is gnarly. Is there a nicer way to do it?
+            // TODO - Base this on width instead of height. Movies seem to be 1920x800, not *really* 1080p
             var results = new List<EncoderPresetOptions>();
             var metadata = _metadata.GetMetadata(fileFullName);
 
             var mp4Presets = _configuration.EncoderPresets.Where(v => v.MaxHeight <= metadata.Height && v.PlaybackFormat == "mp4").ToList();
-            var smalledmp4Preset = _configuration.EncoderPresets.Where(v => v.PlaybackFormat == "mp4").OrderByDescending(v => v.MaxHeight).FirstOrDefault();
-            if (!mp4Presets.Any() && smalledmp4Preset != null)
-                results.Add(smalledmp4Preset);
+            var smallestmp4Preset = _configuration.EncoderPresets.Where(v => v.PlaybackFormat == "mp4").OrderBy(v => v.MaxHeight).FirstOrDefault();
+            if (!mp4Presets.Any() && smallestmp4Preset != null)
+                results.Add(smallestmp4Preset);
             else
                 results.AddRange(mp4Presets);
 
             var mpdPresets = _configuration.EncoderPresets.Where(v => v.MaxHeight <= metadata.Height && v.PlaybackFormat == "dash").ToList();
-            var smalledmpdPreset = _configuration.EncoderPresets.Where(v => v.PlaybackFormat == "dash").OrderByDescending(v => v.MaxHeight).FirstOrDefault();
-            if (!mpdPresets.Any() && smalledmpdPreset != null)
-                results.Add(smalledmpdPreset);
+            var smallestmpdPreset = _configuration.EncoderPresets.Where(v => v.PlaybackFormat == "dash").OrderBy(v => v.MaxHeight).FirstOrDefault();
+            if (!mpdPresets.Any() && smallestmpdPreset != null)
+                results.Add(smallestmpdPreset);
             else
                 results.AddRange(mpdPresets);
 
