@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using CatalogManager;
-using CatalogManager.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using OpenVid.Areas.Catalog.Models.Import;
@@ -17,7 +13,7 @@ namespace OpenVid.Areas.Catalog.Controllers
 
         public ImportController(ImportService importService)
         {
-            _importService = importService; ;
+            _importService = importService;
         }
 
         public IActionResult Index()
@@ -55,7 +51,7 @@ namespace OpenVid.Areas.Catalog.Controllers
         public IActionResult Queue()
         {
             _importService.IngestFiles();
-            return Ok();
+            return Json(new object());
         }
     }
 }

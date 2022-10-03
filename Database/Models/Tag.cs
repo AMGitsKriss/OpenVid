@@ -18,7 +18,7 @@ namespace Database.Models
         public string Name { get; set; }
         public string ShortCode { get; set; }
         public string Description { get; set; }
-        public int Type { get; set; }
+        public int? Type { get; set; }
 
         public virtual TagType TypeNavigation { get; set; }
         public virtual ICollection<VideoTag> VideoTag { get; set; }

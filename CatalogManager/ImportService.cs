@@ -139,9 +139,6 @@ namespace CatalogManager
         {
             var tags = _repository.DefineTags(pending.SuggestedTags);
 
-            var step2FullName = Path.Combine(queuedDirectory, pending.FileName);
-
-
             var meta = _metadata.GetMetadata(pending.FullName);
             var toSave = new Video()
             {
@@ -162,12 +159,11 @@ namespace CatalogManager
 
             foreach (var preset in presets)
             {
-                var step3FullName = Path.Combine(outputDirectory, $"{Path.GetFileNameWithoutExtension(pending.FileName)}_{preset.MaxHeight}.mp4");
                 toSave.VideoEncodeQueue.Add(new VideoEncodeQueue()
                 {
                     VideoId = toSave.Id,
-                    InputDirectory = step2FullName,
-                    OutputDirectory = step3FullName,
+                    InputDirectory = pending.FileName,
+                    OutputDirectory = $"{Path.GetFileNameWithoutExtension(pending.FileName)}_{preset.MaxHeight}.mp4",
                     Encoder = preset.Encoder,
                     RenderSpeed = preset.RenderSpeed,
                     VideoFormat = preset.VideoFormat,
@@ -217,15 +213,25 @@ namespace CatalogManager
             var results = new List<EncoderPresetOptions>();
             var metadata = _metadata.GetMetadata(fileFullName);
 
+            // Find MP4 Presets
             var mp4Presets = _configuration.EncoderPresets.Where(v => v.MaxHeight <= metadata.Height && v.PlaybackFormat == "mp4").ToList();
             var smallestmp4Preset = _configuration.EncoderPresets.Where(v => v.PlaybackFormat == "mp4").OrderBy(v => v.MaxHeight).FirstOrDefault();
+
+            // Find MPD PResets
+            var mpdPresets = _configuration.EncoderPresets.Where(v => v.MaxHeight <= metadata.Height && v.PlaybackFormat == "dash").ToList();
+            var smallestmpdPreset = _configuration.EncoderPresets.Where(v => v.PlaybackFormat == "dash").OrderBy(v => v.MaxHeight).FirstOrDefault();
+
+            // Set MP4
             if (!mp4Presets.Any() && smallestmp4Preset != null)
+            {
+                if (mpdPresets.Any() && smallestmp4Preset.MaxHeight > mpdPresets.Select(m => m.MaxHeight).Max())
+                    smallestmp4Preset.MaxHeight = mpdPresets.Select(m => m.MaxHeight).Max();
                 results.Add(smallestmp4Preset);
+            }
             else
                 results.AddRange(mp4Presets);
 
-            var mpdPresets = _configuration.EncoderPresets.Where(v => v.MaxHeight <= metadata.Height && v.PlaybackFormat == "dash").ToList();
-            var smallestmpdPreset = _configuration.EncoderPresets.Where(v => v.PlaybackFormat == "dash").OrderBy(v => v.MaxHeight).FirstOrDefault();
+            // Set MPD
             if (!mpdPresets.Any() && smallestmpdPreset != null)
                 results.Add(smallestmpdPreset);
             else
