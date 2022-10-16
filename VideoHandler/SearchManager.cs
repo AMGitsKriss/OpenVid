@@ -72,11 +72,16 @@ namespace VideoHandler
             else if (order?.Value == "size")
                 results = results.OrderByDescending(x => x.VideoSource.Sum(s => s.Size)).ToList();
             else if (order?.Value == "size_asc")
-                results = results.OrderBy(x => x.VideoSource.Sum(s => s.Size)).ToList();
+                results = results.OrderBy(x => x.VideoSource.Sum(s => s.Size)).ToList();            
+            else if (order?.Value == "quality")
+                results = results.OrderByDescending(x => x.VideoSource.Max(s => s.Width) * x.VideoSource.Max(s => s.Height) * (x.VideoSource.Max(s => s.Size) / 1024) / x.Length.TotalSeconds / 1000000).ToList();
+            else if (order?.Value == "quality_desc")
+                results = results.OrderBy(x => x.VideoSource.Max(s => s.Width) * x.VideoSource.Max(s => s.Height) * (x.VideoSource.Max(s => s.Size) / 1024) / x.Length.TotalSeconds / 1000000).ToList();
             else
                 results = results.OrderByDescending(x => x.Id).ToList();
 
             return results;
+            // ((x.VideoSource.Width * x.VideoSource.Height * (x.VideoSource.Size / 1024)) / x.VideoSource.DurationInSeconds / 1000000
         }
 
         public List<SearchParameter> MapSearchQueryToParameters(string searchQuery)

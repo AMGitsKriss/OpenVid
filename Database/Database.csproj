@@ -8,6 +8,10 @@
   <ItemGroup>
     <Compile Remove="Migrations\20220925191035_SegmentQueueItemNameChange.cs" />
     <Compile Remove="Migrations\20220925191035_SegmentQueueItemNameChange.Designer.cs" />
+    <Compile Remove="Migrations\20221005155951_TagTypeShouldBeNullable.cs" />
+    <Compile Remove="Migrations\20221005155951_TagTypeShouldBeNullable.Designer.cs" />
+    <Compile Remove="Migrations\20221005165004_TagTypeShouldBeNullable.cs" />
+    <Compile Remove="Migrations\20221005165004_TagTypeShouldBeNullable.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

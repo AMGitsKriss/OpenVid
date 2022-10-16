@@ -4,14 +4,16 @@ using Database.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Database.Migrations
 {
     [DbContext(typeof(OpenVidContext))]
-    partial class OpenVidContextModelSnapshot : ModelSnapshot
+    [Migration("20221006212008_RemoveVideoDescriptionMaxLength")]
+    partial class RemoveVideoDescriptionMaxLength
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -570,6 +572,10 @@ namespace Database.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Md5")
+                        .IsUnique()
+                        .HasName("IX_VideoSource_Unique");
 
                     b.HasIndex("VideoId");
 

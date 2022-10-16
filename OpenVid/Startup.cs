@@ -124,8 +124,12 @@ namespace OpenVid
                 }
             }
 
-            app.UseExceptionHandler("/Error"); 
-            app.UseStatusCodePagesWithReExecute("/Error/{0}");
+            bool.TryParse(Configuration["DevErrors"], out bool devErrors);
+            if (!devErrors)
+            {
+                app.UseExceptionHandler("/Error");
+                app.UseStatusCodePagesWithReExecute("/Error/{0}");
+            }
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();

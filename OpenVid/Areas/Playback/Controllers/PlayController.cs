@@ -34,9 +34,6 @@ namespace OpenVid.Areas.Playback.Controllers
         [Route("{id:int}")]
         public IActionResult Index(int id)
         {
-            if (id < 0)
-                return View(DashVideo());
-
             var video = _videoService.GetVideo(id);
 
             if (video == null)
@@ -85,7 +82,7 @@ namespace OpenVid.Areas.Playback.Controllers
                     Width = s.Width,
                     Height = s.Height,
                     Size = s.Size,
-
+                    DurationInSeconds = (int)video.Length.TotalSeconds
                 }).ToList()
             };
 
@@ -103,39 +100,6 @@ namespace OpenVid.Areas.Playback.Controllers
                     AlreadyUsed = tagsOnVideo.Contains(t)
                 }).ToList()
             };
-        }
-
-        private PlayViewModel DashVideo()
-        {
-            PlayViewModel viewModel = new PlayViewModel()
-            {
-                VideoSources = new Dictionary<string, string>() { 
-                    { "mpd", "http://cdn.qvvz.uk/test3/dash.mpd" },
-                    { "m3u8", "http://cdn.qvvz.uk/test3/tls.m3u8" },
-                    { "mp4", "http://cdn.qvvz.uk/520.mp4" }
-                },
-                FileBaseUrl = _configuration["FileBaseUrl"],
-                Update = new UpdateFormViewModel()
-                {
-                    Id = 0,
-                    Name = "",
-                    Description = "",
-                    Tags = " ",
-                    RatingId = 0,
-                    PossibleRatings = _videoService.GetRatings(),
-                    FileBaseUrl = _configuration["FileBaseUrl"],
-                    SuggestedTags = new List<SuggestedTagViewModel>(),
-                    Metadata = new List<MetadataViewModel>(){ new MetadataViewModel()
-                    {
-                        Md5 = "",
-                        Extension = "",
-                        Width = 0,
-                        Height = 0,
-                        Size = 0
-                    } }
-                }
-            };
-            return viewModel;
         }
     }
 }

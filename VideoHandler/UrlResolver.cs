@@ -22,12 +22,10 @@ namespace VideoHandler
 
             foreach (var src in video.VideoSource)
             {
-                // TODO - REFACTOR: Use Configuration Options here
-                var bucketDirectory = $"{_configuration["Urls:BucketDirectory"]}\\video\\{src.Md5.Substring(0, 2)}\\";
-                var internalDirectory = $"{_configuration["Urls:InternalDirectory"]}\\video\\";
-                var fileName = $"{src.Md5}.{src.Extension}";
 
                 if (src.Extension == "mp4")
+                    sources.Add(src.Extension, $"{_configuration["Urls:BucketUrl"]}/video/{src.Md5.Substring(0, 2)}/{src.Md5}.{src.Extension}");
+                else if (src.Extension == "webm")
                     sources.Add(src.Extension, $"{_configuration["Urls:BucketUrl"]}/video/{src.Md5.Substring(0, 2)}/{src.Md5}.{src.Extension}");
                 else if (src.Extension == "mpd")
                     sources.Add(src.Extension, $"{_configuration["Urls:BucketUrl"]}/video/{src.Md5.Substring(0, 2)}/{src.Md5}/dash.{src.Extension}");

@@ -2,7 +2,7 @@
 
 <b>Tags</b>
 <ul>
-    @foreach (var tag in Model.Where(t => t.Type == 0))
+    @foreach (var tag in Model.Where(t => (t.Type ?? 0) == 0))
     {
         <li>@tag.VideoTag.Count() - @Html.ActionLink(@tag.Name, SiteMap.Playback_Search, new { SearchString = $"tag:{tag.Name}" })</li>
     }

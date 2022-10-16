@@ -120,6 +120,8 @@ namespace Database.Models
 
                 entity.Property(e => e.Description).IsUnicode(false);
 
+                entity.Property(e => e.Type).IsRequired(false);
+
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(100)
@@ -250,7 +252,6 @@ namespace Database.Models
                 entity.Property(e => e.Id).HasColumnName("ID");
 
                 entity.Property(e => e.Description)
-                    .HasMaxLength(500)
                     .IsUnicode(false);
 
                 entity.Property(e => e.Length).HasColumnType("time(0)");
@@ -319,7 +320,7 @@ namespace Database.Models
                 entity.HasOne(d => d.Video)
                     .WithMany(p => p.VideoSegmentQueue)
                     .HasForeignKey(d => d.VideoId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_VideoSegmentQueue_Video");
             });
 
@@ -355,22 +356,18 @@ namespace Database.Models
                 entity.HasOne(d => d.Video)
                     .WithMany(p => p.VideoSegmentQueueItem)
                     .HasForeignKey(d => d.VideoId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_VideoSegmentQueueItem_Video");
 
                 entity.HasOne(d => d.VideoSegmentQueue)
                     .WithMany(p => p.VideoSegmentQueueItem)
                     .HasForeignKey(d => d.VideoSegmentQueueId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_VideoSegmentQueueItem_VideoSegmentQueue");
             });
 
             modelBuilder.Entity<VideoSource>(entity =>
             {
-                entity.HasIndex(e => e.Md5)
-                    .HasName("IX_VideoSource_Unique")
-                    .IsUnique();
-
                 entity.Property(e => e.Id).HasColumnName("ID");
 
                 entity.Property(e => e.Extension)

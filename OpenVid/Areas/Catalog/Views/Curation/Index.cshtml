@@ -54,8 +54,11 @@
                         type: 'POST',
                         url: '@Url.Action(SiteMap.VideoManagement_Destroy)',
                         data: { id: id   },
-                        success: function(data) {
-                            $('#' + id).remove();
+                        success: function (data) {
+                            if (data.isSuccess)
+                                $('#' + id).remove();
+                            else
+                                alert(data.message);
                         },
                         error: function(error) {
                             alert('There was a server error.');

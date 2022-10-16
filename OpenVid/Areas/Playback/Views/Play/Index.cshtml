@@ -5,8 +5,8 @@
 
 }
 <div class="video-container">
-    <div class="youtube-theme">
-        <video id="youtube-theme" data-shaka-player height=720 autostart></video>
+    <div class="youtube-theme" >
+        <video id="youtube-theme" data-shaka-player autostart></video>
     </div>
 
     <script>
@@ -24,7 +24,7 @@
             @if (Model.VideoSources.ContainsKey("m3u8"))
             {
                 <text>
-                if (support.manifest.mpd)
+                if (support.manifest.m3u8)
                 {
                     return '@Model.VideoSources["m3u8"]';
                 }
@@ -33,13 +33,19 @@
             @if (Model.VideoSources.ContainsKey("mp4"))
             {
                 <text>
-                if (support.manifest.mpd)
-                {
-                    return '@Model.VideoSources["mp4"]';
-                }
+                return '@Model.VideoSources["mp4"]';
                 </text>
             }
-            return '';
+            else if (Model.VideoSources.ContainsKey("webm")) {
+                <text>
+                    return '@Model.VideoSources["webm"]';
+                </text>
+            }
+            else {
+                <text>
+                    return '';
+                </text>
+            }
         }
 
         async function init() {

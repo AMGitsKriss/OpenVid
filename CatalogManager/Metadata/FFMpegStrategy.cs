@@ -42,19 +42,24 @@ namespace CatalogManager.Metadata
         // 14680, 14657, 14560, 14232, 13102, 12044, 11959, 14743
         public void CreateThumbnail(string videoPath, string thumbPath, int framesIntoVideo)
         {
-            var cmd = $" -y -itsoffset -1 -i \"{videoPath}\" -vcodec mjpeg -vframes {framesIntoVideo} -filter:v \"scale=300:168:force_original_aspect_ratio=decrease,pad=300:168:-1:-1:color=black\" \"{thumbPath}\"";
+            var cmd = $" -ss 5 -y -itsoffset -1 -i \"{videoPath}\" -vcodec mjpeg -frames:1 -filter:v \"scale=300:168:force_original_aspect_ratio=decrease,pad=300:168:-1:-1:color=black\" \"{thumbPath}\"";
 
             var startInfo = new ProcessStartInfo
             {
                 WindowStyle = ProcessWindowStyle.Normal,
                 FileName = @"c:\ffmpeg\ffmpeg.exe", // TODO - [ffmpeg] Should be configurable.What if I want to install this elsewhere?
-                Arguments = cmd
+                Arguments = cmd,
+                RedirectStandardError = true,
+                RedirectStandardOutput = true
             };
 
             var process = new Process
             {
                 StartInfo = startInfo
             };
+
+            string outputString = process.StandardOutput.ReadToEnd();
+            string errorString = process.StandardError.ReadToEnd();
 
             process.Start();
             process.WaitForExit();

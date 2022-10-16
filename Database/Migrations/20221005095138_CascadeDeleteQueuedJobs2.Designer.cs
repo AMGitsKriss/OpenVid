@@ -4,14 +4,16 @@ using Database.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Database.Migrations
 {
     [DbContext(typeof(OpenVidContext))]
-    partial class OpenVidContextModelSnapshot : ModelSnapshot
+    [Migration("20221005095138_CascadeDeleteQueuedJobs2")]
+    partial class CascadeDeleteQueuedJobs2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -358,7 +360,8 @@ namespace Database.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("Description")
-                        .HasColumnType("varchar(max)")
+                        .HasColumnType("varchar(500)")
+                        .HasMaxLength(500)
                         .IsUnicode(false);
 
                     b.Property<bool>("IsDeleted")
@@ -571,6 +574,10 @@ namespace Database.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Md5")
+                        .IsUnique()
+                        .HasName("IX_VideoSource_Unique");
+
                     b.HasIndex("VideoId");
 
                     b.ToTable("VideoSource");
@@ -700,7 +707,6 @@ namespace Database.Migrations
                         .WithMany("VideoSegmentQueue")
                         .HasForeignKey("VideoId")
                         .HasConstraintName("FK_VideoSegmentQueue_Video")
-                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 

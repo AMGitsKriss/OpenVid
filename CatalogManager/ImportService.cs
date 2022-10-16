@@ -126,7 +126,7 @@ namespace CatalogManager
             foreach (var pending in pendingFiles)
             {
                 // DATABASE
-                var videoId = CreateVideoInDatabase(pending, queuedDirectory, completeDirectory);
+                var videoId = CreateVideoInDatabase(pending);
                 if (videoId == 0)
                     continue;
 
@@ -135,7 +135,7 @@ namespace CatalogManager
             }
         }
 
-        private int CreateVideoInDatabase(FoundVideo pending, string queuedDirectory, string outputDirectory)
+        private int CreateVideoInDatabase(FoundVideo pending)
         {
             var tags = _repository.DefineTags(pending.SuggestedTags);
 
@@ -213,23 +213,30 @@ namespace CatalogManager
             var results = new List<EncoderPresetOptions>();
             var metadata = _metadata.GetMetadata(fileFullName);
 
+            // 1080p ultrawide is usually more like 800p with a 1920 width. This way we'll pretend it has black bars so we get the width consistent
+            int heightIfSizteenNine = (int)Math.Ceiling(metadata.Width * 0.5625d);
+
             // Find MP4 Presets
-            var mp4Presets = _configuration.EncoderPresets.Where(v => v.MaxHeight <= metadata.Height && v.PlaybackFormat == "mp4").ToList();
+            var mp4Presets = _configuration.EncoderPresets.Where(v => v.MaxHeight <= heightIfSizteenNine && v.PlaybackFormat == "mp4").ToList();
             var smallestmp4Preset = _configuration.EncoderPresets.Where(v => v.PlaybackFormat == "mp4").OrderBy(v => v.MaxHeight).FirstOrDefault();
 
             // Find MPD PResets
-            var mpdPresets = _configuration.EncoderPresets.Where(v => v.MaxHeight <= metadata.Height && v.PlaybackFormat == "dash").ToList();
+            var mpdPresets = _configuration.EncoderPresets.Where(v => v.MaxHeight <= heightIfSizteenNine && v.PlaybackFormat == "dash").ToList();
             var smallestmpdPreset = _configuration.EncoderPresets.Where(v => v.PlaybackFormat == "dash").OrderBy(v => v.MaxHeight).FirstOrDefault();
 
             // Set MP4
             if (!mp4Presets.Any() && smallestmp4Preset != null)
             {
                 if (mpdPresets.Any() && smallestmp4Preset.MaxHeight > mpdPresets.Select(m => m.MaxHeight).Max())
-                    smallestmp4Preset.MaxHeight = mpdPresets.Select(m => m.MaxHeight).Max();
+                    smallestmp4Preset.MaxHeight = mpdPresets.Select(m => m.MaxHeight).Max(); 
+                else if (smallestmpdPreset != null && smallestmp4Preset.MaxHeight > smallestmpdPreset.MaxHeight)
+                    smallestmp4Preset.MaxHeight = smallestmpdPreset.MaxHeight;
                 results.Add(smallestmp4Preset);
             }
             else
+            {
                 results.AddRange(mp4Presets);
+            }
 
             // Set MPD
             if (!mpdPresets.Any() && smallestmpdPreset != null)
