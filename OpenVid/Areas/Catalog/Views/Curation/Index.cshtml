@@ -4,7 +4,7 @@
 }
 
 <div class="breadcrumb float-right">
-    <button disabled class="btn btn-danger">Delete All</button>
+    <button disabled id="delete-all" class="btn btn-danger">Delete All</button>
 </div>
 
 <h3 class="page-header">
@@ -41,28 +41,44 @@
 </div>
 
 <script>
-                $(document).on('click', '.delete-btn', function(e) {
-                    if (confirm("Are you sure you want to permanently delete this video?"))
-                        deleteVideo($(this).attr('data-id'));
-                });
+    $(document).on('click', '.delete-btn', function(e) {
+        if (confirm("Are you sure you want to permanently delete this video?"))
+            deleteVideo($(this).attr('data-id'));
+    });
 
-                function deleteVideo(id) {
-                    var formData = new FormData();
-                    formData.append('id', id);
+    $(document).on('click', '#delete-all', function(e) {
+        $(this).attr('disabled', '');
+        if (confirm("Are you sure you want to permanently all flagged videos?"))
+            deleteAll($(this).attr('data-id'));
+    });
 
-                    $.ajax({
-                        type: 'POST',
-                        url: '@Url.Action(SiteMap.VideoManagement_Destroy)',
-                        data: { id: id   },
-                        success: function (data) {
-                            if (data.isSuccess)
-                                $('#' + id).remove();
-                            else
-                                alert(data.message);
-                        },
-                        error: function(error) {
-                            alert('There was a server error.');
-                        }
-                    });
-                }
+    function deleteAll() {
+        $('.delete-btn').each(function() {
+            var id = $(this).attr('data-id');
+            $(this).attr('disabled', '');
+            setInterval(deleteVideo, 2000, id);
+        });
+    }
+
+    function deleteVideo(id) {
+        var formData = new FormData();
+        formData.append('id', id);
+
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action(SiteMap.VideoManagement_Destroy)',
+            data: {
+                id: id
+            },
+            success: function(data) {
+                if (data.isSuccess)
+                    $('#' + id).remove();
+                else
+                    alert(data.message);
+            },
+            error: function(error) {
+                alert('There was a server error.');
+            }
+        });
+    }
 </script>

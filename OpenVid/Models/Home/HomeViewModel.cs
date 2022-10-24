@@ -1,10 +1,10 @@
-﻿using Database.Models;
+﻿using OpenVid.Models.Shared;
 using System.Collections.Generic;
 
 namespace OpenVid.Models.Home
 {
     public class HomeViewModel : BaseViewModel
     {
-        public List<Tag> Tags { get; set; }
+        public List<TagViewModel> TagGroups { get; set; }
     }
 }

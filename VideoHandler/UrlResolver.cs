@@ -24,13 +24,13 @@ namespace VideoHandler
             {
 
                 if (src.Extension == "mp4")
-                    sources.Add(src.Extension, $"{_configuration["Urls:BucketUrl"]}/video/{src.Md5.Substring(0, 2)}/{src.Md5}.{src.Extension}");
+                    sources.TryAdd(src.Extension, $"{_configuration["Urls:BucketUrl"]}/video/{src.Md5.Substring(0, 2)}/{src.Md5}.{src.Extension}");
                 else if (src.Extension == "webm")
-                    sources.Add(src.Extension, $"{_configuration["Urls:BucketUrl"]}/video/{src.Md5.Substring(0, 2)}/{src.Md5}.{src.Extension}");
+                    sources.TryAdd(src.Extension, $"{_configuration["Urls:BucketUrl"]}/video/{src.Md5.Substring(0, 2)}/{src.Md5}.{src.Extension}");
                 else if (src.Extension == "mpd")
-                    sources.Add(src.Extension, $"{_configuration["Urls:BucketUrl"]}/video/{src.Md5.Substring(0, 2)}/{src.Md5}/dash.{src.Extension}");
+                    sources.TryAdd(src.Extension, $"{_configuration["Urls:BucketUrl"]}/video/{src.Md5.Substring(0, 2)}/{src.Md5}/dash.{src.Extension}");
                 else if (src.Extension == "m3u8")
-                    sources.Add(src.Extension, $"{_configuration["Urls:BucketUrl"]}/video/{src.Md5.Substring(0, 2)}/{src.Md5}/hls.{src.Extension}");
+                    sources.TryAdd(src.Extension, $"{_configuration["Urls:BucketUrl"]}/video/{src.Md5.Substring(0, 2)}/{src.Md5}/hls.{src.Extension}");
             }
             return sources;
         }

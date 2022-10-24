@@ -121,7 +121,6 @@ namespace CatalogManager
             var pendingFiles = FindFiles();
 
             var queuedDirectory = Path.Combine(_configuration.ImportDirectory, "02_queued");
-            var completeDirectory = Path.Combine(_configuration.ImportDirectory, "03_transcode_complete");
 
             foreach (var pending in pendingFiles)
             {
@@ -130,7 +129,8 @@ namespace CatalogManager
                 if (videoId == 0)
                     continue;
 
-                if (!MoveFileToDirectory(pending.FullName, queuedDirectory, Path.Combine(queuedDirectory, pending.FileName)))
+                var newFileName = $"{Path.GetFileNameWithoutExtension(pending.FileName.Replace(".", string.Empty))}{Path.GetExtension(pending.FileName)}";
+                if (!MoveFileToDirectory(pending.FullName, queuedDirectory, Path.Combine(queuedDirectory, newFileName)))
                     _repository.DeleteVideo(videoId);
             }
         }
@@ -159,11 +159,13 @@ namespace CatalogManager
 
             foreach (var preset in presets)
             {
+                var newFileName = $"{Path.GetFileNameWithoutExtension(pending.FileName).Replace(".", string.Empty)}{Path.GetExtension(pending.FileName)}";
+                var newFileNameWithoutExtension = Path.GetFileNameWithoutExtension(newFileName);
                 toSave.VideoEncodeQueue.Add(new VideoEncodeQueue()
                 {
                     VideoId = toSave.Id,
-                    InputDirectory = pending.FileName,
-                    OutputDirectory = $"{Path.GetFileNameWithoutExtension(pending.FileName)}_{preset.MaxHeight}.mp4",
+                    InputDirectory = newFileName,
+                    OutputDirectory = $"{newFileNameWithoutExtension}_{preset.MaxHeight}.mp4",
                     Encoder = preset.Encoder,
                     RenderSpeed = preset.RenderSpeed,
                     VideoFormat = preset.VideoFormat,
@@ -228,7 +230,7 @@ namespace CatalogManager
             if (!mp4Presets.Any() && smallestmp4Preset != null)
             {
                 if (mpdPresets.Any() && smallestmp4Preset.MaxHeight > mpdPresets.Select(m => m.MaxHeight).Max())
-                    smallestmp4Preset.MaxHeight = mpdPresets.Select(m => m.MaxHeight).Max(); 
+                    smallestmp4Preset.MaxHeight = mpdPresets.Select(m => m.MaxHeight).Max();
                 else if (smallestmpdPreset != null && smallestmp4Preset.MaxHeight > smallestmpdPreset.MaxHeight)
                     smallestmp4Preset.MaxHeight = smallestmpdPreset.MaxHeight;
                 results.Add(smallestmp4Preset);

@@ -40,9 +40,9 @@ namespace CatalogManager.Metadata
 
         // TODO - Fix thumbnails. Test Videos:
         // 14680, 14657, 14560, 14232, 13102, 12044, 11959, 14743
-        public void CreateThumbnail(string videoPath, string thumbPath, int framesIntoVideo)
+        public void CreateThumbnail(string videoPath, string thumbPath, TimeSpan timeIntoVideo)
         {
-            var cmd = $" -ss 5 -y -itsoffset -1 -i \"{videoPath}\" -vcodec mjpeg -frames:1 -filter:v \"scale=300:168:force_original_aspect_ratio=decrease,pad=300:168:-1:-1:color=black\" \"{thumbPath}\"";
+            var cmd = $" -ss {timeIntoVideo} -y -itsoffset -1 -i \"{videoPath}\" -vcodec mjpeg -frames:v 1 -filter:v \"scale=300:168:force_original_aspect_ratio=decrease,pad=300:168:-1:-1:color=black\" \"{thumbPath}\"";
 
             var startInfo = new ProcessStartInfo
             {
@@ -58,10 +58,10 @@ namespace CatalogManager.Metadata
                 StartInfo = startInfo
             };
 
-            string outputString = process.StandardOutput.ReadToEnd();
-            string errorString = process.StandardError.ReadToEnd();
 
             process.Start();
+            string outputString = process.StandardOutput.ReadToEnd();
+            string errorString = process.StandardError.ReadToEnd();
             process.WaitForExit();
             process.Close();
         }

@@ -31,7 +31,7 @@ namespace OpenVid.Areas.Playback.Controllers
                 {
                     Id = v.Id,
                     Name = v.Name,
-                    Length = string.Format("{0:00}:{1:00}", (int)v.Length.TotalMinutes, v.Length.Seconds)
+                    Length = v.Length.Hours > 0 ? string.Format("{0:00}:{1:00}:{2:00}", v.Length.Hours, v.Length.Minutes, v.Length.Seconds) : string.Format("{0:00}:{1:00}", v.Length.Minutes, v.Length.Seconds)
                 }).ToList(),
                 TotalPages = totalPages,
                 HasNextPage = pageNo < totalPages,

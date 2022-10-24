@@ -18,9 +18,13 @@ namespace OpenVid.Controllers
 
         public IActionResult Index()
         {
+            var allTags = _manager.GetAllTags().GroupBy(t => t.Type).OrderBy(t => (t.Key ?? 0) );
             HomeViewModel viewModel = new HomeViewModel()
             {
-                Tags = _manager.GetAllTags().ToList()
+                TagGroups = allTags.Select(t => new Models.Shared.TagViewModel() { 
+                    Category = t.FirstOrDefault()?.TypeNavigation?.Name ?? "Tags",
+                    Tags = t.ToList()
+                }).ToList()
             };
 
             return View(viewModel);

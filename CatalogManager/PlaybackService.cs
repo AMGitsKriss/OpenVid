@@ -2,6 +2,7 @@
 using CatalogManager.Metadata;
 using Database;
 using Microsoft.Extensions.Options;
+using System;
 using System.IO;
 using System.Linq;
 
@@ -36,7 +37,10 @@ namespace CatalogManager
             FileHelpers.TouchDirectory(Path.Combine(_configuration.BucketDirectory, "thumbnail"));
             FileHelpers.TouchDirectory(Path.Combine(_configuration.BucketDirectory, "thumbnail", idString.Substring(0, 2)));
 
-            _metadata.CreateThumbnail(videoPath, thumbnailTarget, _configuration.ThumbnailFramesIntoVideo);
+            // Thumbnail timestamp = 1 sec for every 4 mins of length
+            var thumbTimespan = TimeSpan.FromSeconds(video.Length.TotalMinutes / 4);
+
+            _metadata.CreateThumbnail(videoPath, thumbnailTarget, thumbTimespan);
         }
     }
 }

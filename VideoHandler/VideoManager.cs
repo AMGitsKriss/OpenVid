@@ -89,7 +89,7 @@ namespace VideoHandler
 
             //THUMBNAIL
             string thumbPath = Path.Combine(thumbnailDirectory, $"{md5}.jpg");
-            _ffmpeg.CreateThumbnail(request.FileNameFull, thumbPath, 60);
+            _ffmpeg.CreateThumbnail(request.FileNameFull, thumbPath, TimeSpan.FromSeconds(60));
 
             var metaData = GetMetadata(request.FileNameFull);
             FileInfo fileInfo = new FileInfo(request.FileNameFull);

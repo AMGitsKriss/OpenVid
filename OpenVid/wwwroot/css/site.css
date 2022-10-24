@@ -16,8 +16,34 @@
 
 .shaka-video-container,
 .video-container {
-    height: 100%;
     max-height: 720px;
+}
+
+@media screen and (min-width: 768px) {
+    .shaka-video-container, .video-container {
+        height: 100%;
+    }
+
+    .navbar-brand {
+        width: initial;
+    }
+
+    .mobile-only {
+        display: none !important;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .desktop-only {
+        display: none !important;
+    }
+    .navbar-brand {
+        margin-left: 0px !important;
+    }
+}
+
+.navbar-header {
+    width: 100%;
 }
 
 video {
@@ -62,4 +88,8 @@ div.message-container {
 div.error-container p,
 div.error-container h1 {
     margin: 0;
+}
+
+.no-border{
+    border:none !important;
 }

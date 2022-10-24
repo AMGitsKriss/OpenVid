@@ -1,19 +1,12 @@
-﻿@model List<Database.Models.Tag>
+﻿@model List<OpenVid.Models.Shared.TagViewModel>
 
-<b>Tags</b>
-<ul>
-    @foreach (var tag in Model.Where(t => (t.Type ?? 0) == 0))
-    {
-        <li>@tag.VideoTag.Count() - @Html.ActionLink(@tag.Name, SiteMap.Playback_Search, new { SearchString = $"tag:{tag.Name}" })</li>
-    }
-</ul>
-
-<br />
-
-<b>Cast</b>
-<ul>
-    @foreach (var tag in Model.Where(t => t.Type == (byte)1))
-    {
-        <li>@tag.VideoTag.Count() - @Html.ActionLink(@tag.Name, SiteMap.Playback_Search, new { SearchString = $"tag:{tag.Name}" })</li>
-    }
-</ul>
+@foreach (var tagGroup in Model)
+{
+    <b>@tagGroup.Category</b>
+    <ul>
+        @foreach (var tag in tagGroup.Tags)
+        {
+            <li>@tag.VideoTag.Count() - @Html.ActionLink(@tag.Name, SiteMap.Playback_Search, new { SearchString = $"tag:{tag.Name}" })</li>
+        }
+    </ul>
+}
