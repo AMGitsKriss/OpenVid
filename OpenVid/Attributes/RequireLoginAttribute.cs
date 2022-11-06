@@ -1,7 +1,6 @@
-﻿using Database.Users;
+﻿using CatalogManager;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.Extensions.Configuration;
 using System;
 using System.Security.Claims;
 
@@ -17,12 +16,10 @@ namespace OrionDashboard.Web.Attributes
         }
         public void OnAuthorization(AuthorizationFilterContext context)
         {
+            var permissionsService = context.HttpContext.RequestServices.GetService(typeof(PermissionsService)) as PermissionsService;
             var userId = context.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier);
-            var configuration = context.HttpContext.RequestServices.GetService(typeof(IConfiguration)) as IConfiguration;
 
-            bool.TryParse(configuration["Authentication:RequireLogin"], out bool requireLogin);
-
-            if (!_forceLogin && !requireLogin)
+            if (!_forceLogin && permissionsService.AllowAnonymous())
                 return;
 
             if (userId == null)

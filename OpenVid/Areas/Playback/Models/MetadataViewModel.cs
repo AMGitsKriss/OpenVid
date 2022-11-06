@@ -1,4 +1,4 @@
-﻿namespace OpenVid.Areas.Playback.Models.Update
+﻿namespace OpenVid.Areas.Playback.Models
 {
     public class MetadataViewModel
     {

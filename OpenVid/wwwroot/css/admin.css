@@ -165,3 +165,11 @@ input::-webkit-inner-spin-button {
 .field-validation-error {
     color: red;
 }
+
+.panel-body > .video-container{
+    margin:-15px;
+}
+
+#Video .video-container {
+    height: 456px;
+}

@@ -18,5 +18,6 @@ namespace VideoHandler
         Video SaveVideo(Video toSave);
         bool SoftDelete(int id);
         IEnumerable<Video> GetVideos();
+        void SetVideoName(int id, string name);
     }
 }

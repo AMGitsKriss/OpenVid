@@ -37,6 +37,7 @@
     .desktop-only {
         display: none !important;
     }
+
     .navbar-brand {
         margin-left: 0px !important;
     }
@@ -90,6 +91,18 @@ div.error-container h1 {
     margin: 0;
 }
 
-.no-border{
-    border:none !important;
+.no-border {
+    border: none !important;
+}
+
+#detailsWrapper .panel-heading {
+    display: none;
+}
+
+#videoManagement{
+    display:none;
+}
+
+#detailsWrapper #videoManagement{
+    display:initial;
 }

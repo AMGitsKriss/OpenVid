@@ -1,7 +1,6 @@
 ﻿using CatalogManager.Metadata;
 using Database;
 using Database.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -239,6 +238,16 @@ namespace VideoHandler
         public IEnumerable<Tag> GetAllTags()
         {
             return _repository.GetAllTags();
+        }
+
+        public void SetVideoName(int id, string name)
+        {
+            var video = GetVideo(id);
+            if (video != null)
+            {
+                video.Name = name;
+                SaveVideo(video);
+            }
         }
     }
 }

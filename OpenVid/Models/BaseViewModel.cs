@@ -8,6 +8,5 @@ namespace OpenVid.Models
     public abstract class BaseViewModel
     {
         public string SearchString { get; set; }
-        public string FileBaseUrl { get; set; } = "~";
     }
 }

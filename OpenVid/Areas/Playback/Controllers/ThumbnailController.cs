@@ -11,35 +11,72 @@ namespace OpenVid.Areas.Playback.Controllers
     public class ThumbnailController : Controller
     {
         private readonly CatalogImportOptions _configuration;
-        private readonly PlaybackService _playbackService;
+        private readonly ThumbnailService _playbackService;
 
-        public ThumbnailController(IOptions<CatalogImportOptions> configuration, PlaybackService playbackService)
+        public ThumbnailController(IOptions<CatalogImportOptions> configuration, ThumbnailService playbackService)
         {
             _configuration = configuration.Value;
             _playbackService = playbackService;
         }
 
         [Route("[area]/[controller]/{id}")]
-        public IActionResult Index([FromRoute]int id)
+        public IActionResult Index([FromRoute] int id)
+        {
+            var thumbnail = GetManualThumbnail(id) ?? GetAutoThumbnail(id) ?? GetDefaultThumbnail();
+
+            return File(thumbnail, "image/jpeg");
+        }
+
+        public IActionResult Auto(int id)
+        {
+            return File(GetAutoThumbnail(id) ?? GetDefaultThumbnail(), "image/jpeg");
+        }
+
+        public IActionResult Manual(int id)
+        {
+            return File(GetManualThumbnail(id) ?? GetDefaultThumbnail(), "image/jpeg");
+        }
+
+        private byte[] GetManualThumbnail(int id)
         {
             var idString = id.ToString().PadLeft(2, '0');
             var thumbnailFolder = Path.Combine(_configuration.BucketDirectory, "thumbnail", idString.Substring(0, 2));
-            var thumbnailFile = $"{idString}.jpg";
-            var fileFullName = Path.Combine(thumbnailFolder, thumbnailFile);
+            var manualThumbnailFile = $"m{idString}.jpg";
 
-            // Try once to make it
-            if (!System.IO.File.Exists(fileFullName))
+            // Check if we've manually assigned one
+            var manualThumbnailFullName = Path.Combine(thumbnailFolder, manualThumbnailFile);
+            if (!System.IO.File.Exists(manualThumbnailFullName))
+            {
+                return null;
+            }
+
+            return System.IO.File.ReadAllBytes(manualThumbnailFullName);
+        }
+
+        private byte[] GetAutoThumbnail(int id)
+        {
+            var idString = id.ToString().PadLeft(2, '0');
+            var thumbnailFolder = Path.Combine(_configuration.BucketDirectory, "thumbnail", idString.Substring(0, 2));
+            var autoThumbnailFile = $"{idString}.jpg";
+
+            var autoThumbnailFullName = Path.Combine(thumbnailFolder, autoThumbnailFile);
+            if (!System.IO.File.Exists(autoThumbnailFullName))
             {
                 _playbackService.TryGenerateThumbnail(id);
             }
 
             // Otherwise just return the placeholder card
-            if (!System.IO.File.Exists(fileFullName))
+            if (!System.IO.File.Exists(autoThumbnailFullName))
             {
-                return File(System.IO.File.ReadAllBytes("wwwroot/img/thumb.png"), "image/png");
+                return null;
             }
 
-            return File(System.IO.File.ReadAllBytes(Path.Combine(thumbnailFolder, thumbnailFile)), "image/jpeg");
+            return System.IO.File.ReadAllBytes(Path.Combine(thumbnailFolder, autoThumbnailFullName));
+        }
+
+        private byte[] GetDefaultThumbnail()
+        {
+            return System.IO.File.ReadAllBytes("wwwroot/img/thumb.png");
         }
     }
 }

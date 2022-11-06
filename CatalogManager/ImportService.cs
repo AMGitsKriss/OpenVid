@@ -1,4 +1,5 @@
-﻿using CatalogManager.Metadata;
+﻿using CatalogManager.Entities;
+using CatalogManager.Metadata;
 using CatalogManager.Models;
 using Database;
 using Database.Models;
@@ -129,8 +130,8 @@ namespace CatalogManager
                 if (videoId == 0)
                     continue;
 
-                var newFileName = $"{Path.GetFileNameWithoutExtension(pending.FileName.Replace(".", string.Empty))}{Path.GetExtension(pending.FileName)}";
-                if (!MoveFileToDirectory(pending.FullName, queuedDirectory, Path.Combine(queuedDirectory, newFileName)))
+                var newFileName = EncodeJobContext.SaveSafeFileName(pending.FileName);
+                if (!MoveFileToDirectory(pending.FullName, queuedDirectory,  newFileName))
                     _repository.DeleteVideo(videoId);
             }
         }
@@ -159,7 +160,7 @@ namespace CatalogManager
 
             foreach (var preset in presets)
             {
-                var newFileName = $"{Path.GetFileNameWithoutExtension(pending.FileName).Replace(".", string.Empty)}{Path.GetExtension(pending.FileName)}";
+                var newFileName = EncodeJobContext.SaveSafeFileName(pending.FileName);
                 var newFileNameWithoutExtension = Path.GetFileNameWithoutExtension(newFileName);
                 toSave.VideoEncodeQueue.Add(new VideoEncodeQueue()
                 {
@@ -197,7 +198,7 @@ namespace CatalogManager
                         VideoId = toSave.Id,
                         ArgStream = "text",
                         ArgInputFile = subtitle.OutputFile,
-                        ArgInputFolder = subtitle.OutputFolder,
+                        ArgInputFolder = Path.Combine("04_shaka_packager", EncodeJobContext.SaveSafeFileName(pending.FileName)),
                         ArgStreamFolder = $"subtitle_{subtitle.Language}"
                     });
                 }
@@ -249,7 +250,7 @@ namespace CatalogManager
             return results;
         }
 
-        private bool MoveFileToDirectory(string sourceFullName, string targetDirectory, string destinationFullName)
+        private bool MoveFileToDirectory(string sourceFullName, string targetDirectory, string destinationFileName)
         {
             try
             {
@@ -257,7 +258,7 @@ namespace CatalogManager
                 {
                     if (!Directory.Exists(targetDirectory))
                         Directory.CreateDirectory(targetDirectory);
-                    File.Move(sourceFullName, destinationFullName);
+                    File.Move(sourceFullName, Path.Combine(targetDirectory, destinationFileName));
                 }
             }
             catch (Exception ex)

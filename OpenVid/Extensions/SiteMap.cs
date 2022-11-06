@@ -18,6 +18,8 @@ namespace OpenVid.Extensions
         public static PageLocation Playback_VideoList { get; set; } = new PageLocation("Playback", "VideoList", "Index");
         public static PageLocation Playback_TagGetTags { get; set; } = new PageLocation("Playback", "Tag", "GetTags");
         public static PageLocation Playback_Thumbnail { get; set; } = new PageLocation("Playback", "Thumbnail", "Index");
+        public static PageLocation Playback_Thumbnail_Auto { get; set; } = new PageLocation("Playback", "Thumbnail", "Auto");
+        public static PageLocation Playback_Thumbnail_Manual { get; set; } = new PageLocation("Playback", "Thumbnail", "Manual");
         public static PageLocation VideoManagement_Destroy { get; set; } = new PageLocation("VideoManagement", "Destroy", "Index");
         public static PageLocation FlagDelete { get; set; } = new PageLocation("VideoManagement", "FlagDelete", "Index"); 
         public static PageLocation Catalog_Import { get; set; } = new PageLocation("Catalog", "Import", "Index");
@@ -26,6 +28,9 @@ namespace OpenVid.Extensions
         public static PageLocation Catalog_Curation { get; set; } = new PageLocation("Catalog", "Curation", "Index");
         public static PageLocation Catalog_ImportPreprocessed { get; set; } = new PageLocation("Catalog", "ImportPreprocessed", "Index");
         public static PageLocation Catalog_ImportSave { get; set; } = new PageLocation("Catalog", "ImportPreprocessed", "Save");
+        public static PageLocation Catalog_Edit { get; set; } = new PageLocation("Catalog", "Edit", "Index");
+        public static PageLocation Catalog_Edit_VideoDetails { get; set; } = new PageLocation("Catalog", "Edit", "VideoDetails");
+        public static PageLocation Catalog_Edit_DeleteThumbnail { get; set; } = new PageLocation("Catalog", "Edit", "DeleteThumbnail");
         public static PageLocation Tags_Management { get; set; } = new PageLocation("Tags", "Management", "Index");
         public static PageLocation Account_Management { get; set; } = new PageLocation("Account", "Management", "Index");
 

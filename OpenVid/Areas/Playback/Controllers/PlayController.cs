@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
+using OpenVid.Areas.Playback.Models;
 using OpenVid.Areas.Playback.Models.Play;
-using OpenVid.Areas.Playback.Models.Shared;
-using OpenVid.Areas.Playback.Models.Update;
 using OpenVid.Extensions;
 using OrionDashboard.Web.Attributes;
-using TagCache;
 using VideoHandler;
 
 namespace OpenVid.Areas.Playback.Controllers
@@ -20,15 +15,11 @@ namespace OpenVid.Areas.Playback.Controllers
 
         private IVideoManager _videoService;
         private IUrlResolver _urlResolver;
-        private IConfiguration _configuration;
-        private TagManager _tagManager;
 
-        public PlayController(IVideoManager videoService, IUrlResolver urlResolver, TagManager tagManager, IConfiguration configuration)
+        public PlayController(IVideoManager videoService, IUrlResolver urlResolver)
         {
             _videoService = videoService;
             _urlResolver = urlResolver;
-            _configuration = configuration;
-            _tagManager = tagManager;
         }
 
         [Route("{id:int}")]
@@ -41,40 +32,28 @@ namespace OpenVid.Areas.Playback.Controllers
 
             PlayViewModel viewModel = new PlayViewModel()
             {
-                VideoSources = _urlResolver.GetVideoUrls(video),
-                FileBaseUrl = _configuration["FileBaseUrl"]
+                Id = id,
+                Name = video.Name,
+                VideoSources = _urlResolver.GetVideoUrls(video)
             };
 
-            //if (!viewModel.VideoSources.Any()) return NotFound();
+            return View(viewModel);
+        }
+
+        public IActionResult VideoDetails(int id)
+        {
+            var video = _videoService.GetVideo(id);
 
             var tagCollection = video.VideoTag.Select(x => x.Tag.Name).OrderBy(t => t);
-            var tagSuggestions = new List<SuggestedTagViewModel>();
 
-            foreach (var item in tagCollection)
-            {
-                tagSuggestions.Add(new SuggestedTagViewModel()
-                {
-                    TagName = item,
-                    RelatedTags = _tagManager.GetRelatedTags(item).Select(t => new RelatedTagViewModel()
-                    {
-                        TagName = t,
-                        AlreadyUsed = tagCollection.Contains(t)
-                    }).ToList()
-                });
-            }
-            tagSuggestions.Add(SuggestTagsFromName(video.Name, tagCollection));
-
-            viewModel.Update = new UpdateFormViewModel()
+            var viewModel = new VideoDetailsViewModel()
             {
                 Id = video.Id,
                 Name = video.Name,
                 Description = video.Description,
-                Tags = string.Join(" ", tagCollection) + " ",
+                Tags = string.Join(", ", tagCollection),
                 IsFlaggedForDeletion = video.IsDeleted,
-                RatingId = video.RatingId ?? 0,
-                PossibleRatings = _videoService.GetRatings(),
-                FileBaseUrl = _configuration["FileBaseUrl"],
-                SuggestedTags = tagSuggestions,
+                Rating = _videoService.GetRatings().FirstOrDefault(r => r.Id == video.RatingId)?.Name ?? "Unrated",
                 Metadata = video.VideoSource.Select(s => new MetadataViewModel()
                 {
                     Md5 = s.Md5,
@@ -83,23 +62,10 @@ namespace OpenVid.Areas.Playback.Controllers
                     Height = s.Height,
                     Size = s.Size,
                     DurationInSeconds = (int)video.Length.TotalSeconds
-                }).ToList()
+                }).First(s => s.Width > 0)
             };
 
-            return View(viewModel);
-        }
-
-        private SuggestedTagViewModel SuggestTagsFromName(string videoName, IEnumerable<string> tagsOnVideo)
-        {
-            return new SuggestedTagViewModel()
-            {
-                TagName = "Video Title",
-                RelatedTags = _tagManager.GetTagsInName(videoName).Select(t => new RelatedTagViewModel()
-                {
-                    TagName = t,
-                    AlreadyUsed = tagsOnVideo.Contains(t)
-                }).ToList()
-            };
+            return PartialView("_VideoDetails", viewModel);
         }
     }
 }

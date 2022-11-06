@@ -22,6 +22,7 @@ namespace Database.Users
         Account_Management = 1,
         Catalog_Import = 2,
         Catalog_Delete = 3,
-        Tag_Management = 4
+        Tag_Management = 4,
+        Catalog_Update = 5
     }
 }

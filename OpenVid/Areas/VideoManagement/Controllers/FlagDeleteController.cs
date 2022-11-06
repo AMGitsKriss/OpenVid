@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using OpenVid.Areas.Playback.Models.Update;
 using OpenVid.Extensions;
 using VideoHandler;
 
@@ -16,11 +15,11 @@ namespace OpenVid.Areas.VideoManagement.Controllers
         }
 
         [HttpPost]
-        public IActionResult Index(UpdateFormViewModel viewModel)
+        public IActionResult Index(int id)
         {
-            _videoManager.SoftDelete(viewModel.Id);
+            _videoManager.SoftDelete(id);
 
-            return RedirectToAction(SiteMap.Playback_Play, new { Id = viewModel.Id });
+            return RedirectToAction(SiteMap.Playback_Play, new { Id = id });
         }
     }
 }

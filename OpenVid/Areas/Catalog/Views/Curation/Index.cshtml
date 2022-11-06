@@ -4,7 +4,7 @@
 }
 
 <div class="breadcrumb float-right">
-    <button disabled id="delete-all" class="btn btn-danger">Delete All</button>
+    <button id="delete-all" class="btn btn-danger">Delete All</button>
 </div>
 
 <h3 class="page-header">
@@ -56,7 +56,7 @@
         $('.delete-btn').each(function() {
             var id = $(this).attr('data-id');
             $(this).attr('disabled', '');
-            setInterval(deleteVideo, 2000, id);
+            setTimeout(deleteVideo, 2000, id);
         });
     }
 

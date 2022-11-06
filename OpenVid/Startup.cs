@@ -147,6 +147,10 @@ namespace OpenVid
                     name: "areas",
                     pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapControllerRoute(
+                    name: "defaultareas",
+                    pattern: "{area:exists}/{controller=Home}/{id?}",
+                    defaults: new { action = "Index" });
+                endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapControllerRoute(

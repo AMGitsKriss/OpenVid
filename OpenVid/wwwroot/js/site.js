@@ -30,6 +30,20 @@ function updateUrlWithPage(page) {
     }
 }
 
+function getPageId() {
+    var url = window.location.href;
+
+    if (url.lastIndexOf('#') > 0)
+        url = url.substring(0, url.lastIndexOf('#') + 1);
+
+    if (url.lastIndexOf('?') > 0)
+        url = url.substring(0, url.lastIndexOf('?') + 1);
+
+    var id = url.substring(url.lastIndexOf('/') + 1);
+
+    return parseInt(id);
+}
+
 // TODO - This will always reload on page 1. Not nice.
 $(window).on("popstate", function (e) {
     if (e.originalEvent.state !== null) {

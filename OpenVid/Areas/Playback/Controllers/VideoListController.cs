@@ -14,13 +14,11 @@ namespace OpenVid.Areas.Playback.Controllers
     {
         private readonly ISearchManager _search;
         private readonly IConfiguration _configuration;
-        private readonly IUrlResolver _urlResolver;
 
-        public VideoListController(IUrlResolver urlResolver, ISearchManager search, IConfiguration configuration)
+        public VideoListController(ISearchManager search, IConfiguration configuration)
         {
             _search = search;
             _configuration = configuration;
-            _urlResolver = urlResolver;
         }
 
         public IActionResult Index(int pageNo = 0, string searchString = "")
@@ -36,8 +34,7 @@ namespace OpenVid.Areas.Playback.Controllers
                 TotalPages = totalPages,
                 HasNextPage = pageNo < totalPages,
                 CurrentPage = pageNo,
-                SearchQuery = searchString,
-                FileBaseUrl = _configuration["FileBaseUrl"]
+                SearchQuery = searchString
             };
             //return PartialView("VideoListEndless", viewModel);
             return PartialView("_VideoListPaginated", viewModel);

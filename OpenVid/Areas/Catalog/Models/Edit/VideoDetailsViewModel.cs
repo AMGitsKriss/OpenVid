@@ -1,11 +1,11 @@
 ﻿using Database.Models;
+using OpenVid.Areas.Playback.Models;
 using OpenVid.Areas.Playback.Models.Shared;
-using OpenVid.Models;
 using System.Collections.Generic;
 
-namespace OpenVid.Areas.Playback.Models.Update
+namespace OpenVid.Areas.Catalog.Models.Edit
 {
-    public class UpdateFormViewModel : BaseViewModel
+    public class VideoDetailsViewModel
     {
         public int Id { get; set; }
         public string Name { get; set; }
@@ -16,5 +16,9 @@ namespace OpenVid.Areas.Playback.Models.Update
         public List<MetadataViewModel> Metadata { get; set; }
         public List<Ratings> PossibleRatings { get; set; }
         public List<SuggestedTagViewModel> SuggestedTags { get; set; }
+    }
+    public class VideoThumbnailsViewModel
+    {
+        public int Id { get; set; }
     }
 }
