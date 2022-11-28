@@ -1,8 +1,13 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 using CatalogManager;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using OpenVid.Areas.Catalog.Models.Import;
+using OpenVid.Models;
+using VideoHandler;
 
 namespace OpenVid.Areas.Catalog.Controllers
 {
@@ -10,10 +15,12 @@ namespace OpenVid.Areas.Catalog.Controllers
     public class ImportController : Controller
     {
         private readonly ImportService _importService;
+        private readonly IVideoManager _videoManager;
 
-        public ImportController(ImportService importService)
+        public ImportController(ImportService importService, IVideoManager videoManager)
         {
             _importService = importService;
+            _videoManager = videoManager;
         }
 
         public IActionResult Index()
@@ -52,6 +59,43 @@ namespace OpenVid.Areas.Catalog.Controllers
         {
             _importService.IngestFiles();
             return Json(new object());
+        }
+
+        public IActionResult VideoSegmentModal(int id)
+        {
+            var video = _videoManager.GetVideo(id);
+            var model = new VideoSegmentItemsViewModel()
+            {
+                VideoId = video.Id,
+                VideoName = video.Name,
+                Segments = video.VideoSegmentQueueItem.ToList()
+            };
+            return PartialView("_VideoSegmentModal", model);
+        }
+
+        [HttpPost]
+        public AjaxResponse SaveThumbnail(UploadSubtitleRequest request)
+        {
+            try
+            {
+                if (!request.Subtitle.ContentType.Contains("application/octet-stream") || request.Subtitle.Length == 0)
+                    throw new Exception("Incorrect file format");
+
+                using (var fileStream = new MemoryStream())
+                {
+                    request.Subtitle.CopyTo(fileStream);
+                    _importService.SaveSubtitle(request.VideoId, request.Language, request.Subtitle.FileName, fileStream.ToArray());
+                }
+
+                return new AjaxResponse();
+            }
+            catch (Exception ex)
+            {
+                return new AjaxResponse()
+                {
+                    Message = ex.Message + " Are you sure this is a jpeg?"
+                };
+            }
         }
     }
 }

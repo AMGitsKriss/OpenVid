@@ -13,6 +13,8 @@
         });
 
         $(document).on('click', '#queueBtn', queueVideos);
+        $(document).on('click', '.componentsButton', getComponentsModal);
+        $(document).on('click', '#submitSubtitles', uploadSubtitle);
     }
 
     function uploadVideos(files, multipleFiles, i) {
@@ -57,9 +59,54 @@
         });
     }
 
+    function getComponentsModal() {
+        var id = $(this).attr('data-id');
+
+        $.ajax({
+            type: 'GET',
+            url: '/Catalog/Import/VideoSegmentModal/' + id,
+            success: function (data) {
+                largeModal(data);
+            },
+            error: function (error) {
+                alert(error.responseText);
+            }
+        });
+    }
+
+    function uploadSubtitle() {
+        var formData = new FormData($('#addSubtites')[0]);
+
+        $.ajax({
+            type: 'POST',
+            url: '/Catalog/Import/SaveThumbnail',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (data) {
+                if (data.isSuccess) {
+                    var id = $('#Id').val();
+                    loadVideoThumbnails(id);
+                }
+                else {
+                    alert(data.message);
+                }
+            },
+            error: function (error) {
+                alert(error.responseText);
+            }
+        });
+    }
+
+
     return {
         init: function () {
             bindEvents();
         }
     };
 }();
+
+function largeModal(data) {
+    $('#modalLarge .modal-dialog').html(data);
+    $('#modalLarge').modal();
+}

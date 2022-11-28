@@ -25,8 +25,10 @@ namespace CatalogManager.Entities
         {
             string extension = Path.GetExtension(fileName);
             fileName = Path.GetFileNameWithoutExtension(fileName);
-            fileName = Regex.Replace(fileName, @"[.\[\]\(\)]", "_");
-            fileName = Regex.Replace(fileName, @"[,!?]", string.Empty);
+            fileName = Regex.Replace(fileName, @" ", "_");
+            fileName = Regex.Replace(fileName, @"[,~!?\-]|\[(.*?)\]|\((.*?)\)", string.Empty);
+            fileName = Regex.Replace(fileName, @"_+", "_");
+            fileName = fileName.Trim('_');
             return $"{fileName}{extension}";
         }
 

@@ -25,6 +25,7 @@ namespace CatalogManager.Metadata
                 Console.WriteLine("Error starting");
             }
             string outputString = proc.StandardOutput.ReadToEnd();
+            string errorString = proc.StandardError.ReadToEnd();
             string[] metaData = outputString.Trim().Split(new char[] { 'x', '\n' });
             // Remove the milliseconds
             MediaProperties properties = new MediaProperties()
@@ -58,7 +59,6 @@ namespace CatalogManager.Metadata
                 StartInfo = startInfo
             };
 
-
             process.Start();
             string outputString = process.StandardOutput.ReadToEnd();
             string errorString = process.StandardError.ReadToEnd();
@@ -90,14 +90,14 @@ namespace CatalogManager.Metadata
             // 
             var outputFiltered = outpuyByLine.Where(s => s.Contains("Stream #0") && s.Contains("Subtitle: "));
 
-            var regexPattern = @"^(.*?)#(0:\d+)\(([a-zA-Z]+)\): Subtitle: ([a-zA-Z]+)";
+            var regexPattern = @"^(.*?)#(0:\d+)(\(([a-zA-Z]+)\))?: Subtitle: ([a-zA-Z]+)";
             var languages = outputFiltered.Select(s => Regex.Match(s, regexPattern));
 
             foreach (var match in languages)
             {
                 var stream = match.Groups[2].Value;
-                var language = match.Groups[3].Value;
-                var format = match.Groups[4].Value;
+                var language = match.Groups[4].Value;
+                var format = match.Groups[5].Value;
                 var fileName = $"{stream.Replace("0:", "")}_{language}.vtt";
                 var fileInfo = new SubtitleFile() // TODO - Debug with Re-Zero
                 {
@@ -107,7 +107,6 @@ namespace CatalogManager.Metadata
                     StreamId = stream,
                     Language = language ?? "und"
                 };
-                ExtractSubtitles(fileInfo);
                 yield return fileInfo;
             }
 

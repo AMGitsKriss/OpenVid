@@ -41,7 +41,7 @@
     </div>
 
     <button id="updateVideoDetails" class="btn btn-primary m-l-10">Update</button>
-    <input class="btn btn-danger m-l-10" type="submit" value="Delete" formaction="@Url.Action(SiteMap.FlagDelete)" />
+    <input id="deleteVideoDetails" class="btn btn-danger m-l-10" type="submit" value="Delete" formmethod="post" formaction="@Url.Action(SiteMap.FlagDelete)" />
     <a id="videoManagement" class="btn btn-dark m-l-10 float-right" href="@Url.Action(SiteMap.Catalog_Edit, new { Model.Id })">Video Management</a>
 
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.1/themes/base/jquery-ui.css">

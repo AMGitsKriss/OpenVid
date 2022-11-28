@@ -1,4 +1,5 @@
 ﻿using CatalogManager.Entities;
+using CatalogManager.Helpers;
 using CatalogManager.Metadata;
 using CatalogManager.Models;
 using Database;
@@ -64,7 +65,7 @@ namespace CatalogManager
             {
                 var result = new List<FoundVideo>();
 
-                var suggestedTags = dir.Replace(prefix, "").Split(@"\", StringSplitOptions.RemoveEmptyEntries).ToList();
+                var suggestedTags = dir.Replace(prefix, "").Split( new[] {@"\", " "}, StringSplitOptions.RemoveEmptyEntries).ToList();
 
                 // Files
                 foreach (var file in Directory.GetFiles(dir))
@@ -131,7 +132,7 @@ namespace CatalogManager
                     continue;
 
                 var newFileName = EncodeJobContext.SaveSafeFileName(pending.FileName);
-                if (!MoveFileToDirectory(pending.FullName, queuedDirectory,  newFileName))
+                if (!MoveFileToDirectory(pending.FullName, queuedDirectory, newFileName))
                     _repository.DeleteVideo(videoId);
             }
         }
@@ -186,19 +187,22 @@ namespace CatalogManager
                 };
                 toSave.VideoSegmentQueue.Add(segmentJob);
 
-                var subtitleSaveDir = Path.Combine(_configuration.ImportDirectory, "04_shaka_packager", Path.GetFileNameWithoutExtension(pending.FileName));
+                var subtitleSaveDir = Path.Combine(_configuration.ImportDirectory, "04_shaka_packager", Path.GetFileNameWithoutExtension(EncodeJobContext.SaveSafeFileName(pending.FileName)));
                 Helpers.FileHelpers.TouchDirectory(subtitleSaveDir);
 
                 // TODO - This is file system work. Should not be in database function. Can it be moved to the Encoder App?
-                var subtitleFiles = _metadata.FindSubtitles(pending.FullName, subtitleSaveDir);
+                var subtitleFiles = _metadata.FindSubtitles(pending.FullName, subtitleSaveDir).ToList();
+                
                 foreach (var subtitle in subtitleFiles)
                 {
+                    _metadata.ExtractSubtitles(subtitle);
+
                     segmentJob.VideoSegmentQueueItem.Add(new VideoSegmentQueueItem()
                     {
                         VideoId = toSave.Id,
                         ArgStream = "text",
                         ArgInputFile = subtitle.OutputFile,
-                        ArgInputFolder = Path.Combine("04_shaka_packager", EncodeJobContext.SaveSafeFileName(pending.FileName)),
+                        ArgInputFolder = Path.Combine("04_shaka_packager", Path.GetFileNameWithoutExtension(EncodeJobContext.SaveSafeFileName(pending.FileName))),
                         ArgStreamFolder = $"subtitle_{subtitle.Language}"
                     });
                 }
@@ -267,5 +271,40 @@ namespace CatalogManager
             }
             return true;
         }
+
+        public void SaveSubtitle(int videoId, string language, string fileName, byte[] file)
+        {
+            var video = _repository.GetVideo(videoId);
+
+            var extention = Path.GetExtension(fileName);
+            var newFileName = EncodeJobContext.SaveSafeFileName(fileName);
+
+            var packagerFolderName = Path.GetFileNameWithoutExtension(video.VideoEncodeQueue.First().InputDirectory);
+            var subtitleSaveDir = Path.Combine(_configuration.ImportDirectory, "04_shaka_packager", packagerFolderName);
+            Helpers.FileHelpers.TouchDirectory(subtitleSaveDir);
+
+            if (extention == ".vtt")
+            {
+                // TODO - Save as is
+            }
+            if (extention == ".srt")
+            {
+                newFileName = newFileName.Replace(".srt", ".vtt");
+                SrtHelper.ConvertSrtToVtt(file, Path.Combine(subtitleSaveDir, newFileName));
+            }
+
+            video.VideoSegmentQueueItem.Add(new VideoSegmentQueueItem()
+            {
+                VideoId = video.Id,
+                VideoSegmentQueueId = video.VideoSegmentQueue.Last().Id,
+                ArgStream = "text",
+                ArgInputFile = newFileName,
+                ArgInputFolder = Path.Combine("04_shaka_packager", packagerFolderName),
+                ArgStreamFolder = $"subtitle_{language}"
+            });
+
+            _repository.SaveVideo(video);
+        }
+
     }
 }

@@ -30,6 +30,7 @@
 
     function bindEvents() {
         $(document).on('click', '#updateVideoDetails', updateVideo);
+        $(document).on('click', '#deleteVideoDetails', deleteVideo);
         $(document).on('change', '#Image', uploadThumbnail);
         $(document).on('click', '#deleteImage', deleteThumbnail);
     }
@@ -73,6 +74,26 @@
         $.ajax({
             type: 'POST',
             url: '/Catalog/Edit/VideoDetails',
+            data: request,
+            success: function (data) {
+                loadVideoDetails(request.id);
+                $('#VideoDetails').show();
+            },
+            error: function (error) {
+                alert(error.responseText);
+            }
+        });
+    }
+
+    function deleteVideo() {
+        $('#VideoDetails').hide();
+        var request = {
+            id: $('#Id').val()
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: '/VideoManagement/FlagDelete',
             data: request,
             success: function (data) {
                 loadVideoDetails(request.id);

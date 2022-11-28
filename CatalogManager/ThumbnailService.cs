@@ -59,6 +59,7 @@ namespace CatalogManager
             var thumbnailFolder = Path.Combine(_configuration.BucketDirectory, "thumbnail", idString.Substring(0, 2));
             var manualThumbnailFile = $"m{idString}.jpg";
 
+            FileHelpers.TouchDirectory(thumbnailFolder);
             var manualThumbnailFullName = Path.Combine(thumbnailFolder, manualThumbnailFile);
 
             newImage.Save(manualThumbnailFullName);
