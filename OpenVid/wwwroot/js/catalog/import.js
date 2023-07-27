@@ -79,7 +79,7 @@
 
         $.ajax({
             type: 'POST',
-            url: '/Catalog/Import/SaveThumbnail',
+            url: '/Catalog/Import/SaveSubtitles',
             data: formData,
             processData: false,
             contentType: false,

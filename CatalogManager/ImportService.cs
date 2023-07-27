@@ -190,18 +190,22 @@ namespace CatalogManager
                 var subtitleSaveDir = Path.Combine(_configuration.ImportDirectory, "04_shaka_packager", Path.GetFileNameWithoutExtension(EncodeJobContext.SaveSafeFileName(pending.FileName)));
                 Helpers.FileHelpers.TouchDirectory(subtitleSaveDir);
 
+                var subtitleBackupDir = Path.Combine(_configuration.BucketDirectory, "Subtitles", toSave.Id.ToString().PadLeft(2, '0').Substring(0, 2), toSave.Id.ToString());
+
                 // TODO - This is file system work. Should not be in database function. Can it be moved to the Encoder App?
-                var subtitleFiles = _metadata.FindSubtitles(pending.FullName, subtitleSaveDir).ToList();
+                var subtitleFiles = _metadata.FindSubtitles(pending.FullName).ToList();
                 
                 foreach (var subtitle in subtitleFiles)
                 {
-                    _metadata.ExtractSubtitles(subtitle);
+                    Helpers.FileHelpers.TouchDirectory(subtitleBackupDir);
+                    _metadata.ExtractSubtitles(subtitle, subtitleSaveDir);
+                    _metadata.ExtractSubtitles(subtitle, subtitleBackupDir, false);
 
                     segmentJob.VideoSegmentQueueItem.Add(new VideoSegmentQueueItem()
                     {
                         VideoId = toSave.Id,
                         ArgStream = "text",
-                        ArgInputFile = subtitle.OutputFile,
+                        ArgInputFile = $"{subtitle.OutputFileName}.vtt",
                         ArgInputFolder = Path.Combine("04_shaka_packager", Path.GetFileNameWithoutExtension(EncodeJobContext.SaveSafeFileName(pending.FileName))),
                         ArgStreamFolder = $"subtitle_{subtitle.Language}"
                     });
@@ -282,6 +286,10 @@ namespace CatalogManager
             var packagerFolderName = Path.GetFileNameWithoutExtension(video.VideoEncodeQueue.First().InputDirectory);
             var subtitleSaveDir = Path.Combine(_configuration.ImportDirectory, "04_shaka_packager", packagerFolderName);
             Helpers.FileHelpers.TouchDirectory(subtitleSaveDir);
+
+            var subtitleBackupDir = Path.Combine(_configuration.BucketDirectory, "subtitles", videoId.ToString().PadLeft(2, '0').Substring(0, 2), videoId.ToString());
+            Helpers.FileHelpers.TouchDirectory(Path.GetDirectoryName(subtitleBackupDir));
+            File.WriteAllText("myFile.txt", System.Text.Encoding.UTF8.GetString(file));
 
             if (extention == ".vtt")
             {

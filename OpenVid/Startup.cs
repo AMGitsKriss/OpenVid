@@ -51,6 +51,7 @@ namespace OpenVid
               .AddScoped<IFilter, GeneralFilter>()
               .AddScoped<IFilter, HashFilter>()
               .AddScoped<IFilter, TagFilter>()
+              .AddScoped<IFilter, CategoryFilter>()
               .AddScoped<IFilter, MetaFilter>()
               .AddScoped<IFilter, ExtensionFilter>()
               .AddScoped<IFilter, RatingFilter>()

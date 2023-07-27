@@ -19,6 +19,7 @@ namespace Database
         VideoSource GetVideoSource(string md5);
         VideoSource SaveVideoSource(VideoSource toSave);
         bool DeleteVideo(int id);
+        TagType GetCategory(string categoryName);
         bool DeleteSource(string md5);
         IQueryable<Video> GetSoftDeletedVideos();
         void RemoveTagsFromVideo(IEnumerable<VideoTag> removeTags);

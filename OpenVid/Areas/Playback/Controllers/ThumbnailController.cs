@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using OrionDashboard.Web.Attributes;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace OpenVid.Areas.Playback.Controllers
 {
@@ -20,16 +21,16 @@ namespace OpenVid.Areas.Playback.Controllers
         }
 
         [Route("[area]/[controller]/{id}")]
-        public IActionResult Index([FromRoute] int id)
+        public async Task<IActionResult> Index([FromRoute] int id)
         {
-            var thumbnail = GetManualThumbnail(id) ?? GetAutoThumbnail(id) ?? GetDefaultThumbnail();
+            var thumbnail = GetManualThumbnail(id) ?? await GetAutoThumbnail(id) ?? GetDefaultThumbnail();
 
             return File(thumbnail, "image/jpeg");
         }
 
-        public IActionResult Auto(int id)
+        public async Task<IActionResult> Auto(int id)
         {
-            return File(GetAutoThumbnail(id) ?? GetDefaultThumbnail(), "image/jpeg");
+            return File(await GetAutoThumbnail(id) ?? GetDefaultThumbnail(), "image/jpeg");
         }
 
         public IActionResult Manual(int id)
@@ -53,7 +54,7 @@ namespace OpenVid.Areas.Playback.Controllers
             return System.IO.File.ReadAllBytes(manualThumbnailFullName);
         }
 
-        private byte[] GetAutoThumbnail(int id)
+        private async Task<byte[]> GetAutoThumbnail(int id)
         {
             var idString = id.ToString().PadLeft(2, '0');
             var thumbnailFolder = Path.Combine(_configuration.BucketDirectory, "thumbnail", idString.Substring(0, 2));
@@ -62,7 +63,7 @@ namespace OpenVid.Areas.Playback.Controllers
             var autoThumbnailFullName = Path.Combine(thumbnailFolder, autoThumbnailFile);
             if (!System.IO.File.Exists(autoThumbnailFullName))
             {
-                _playbackService.TryGenerateThumbnail(id);
+                await _playbackService.TryGenerateThumbnail(id);
             }
 
             // Otherwise just return the placeholder card

@@ -74,7 +74,7 @@ namespace OpenVid.Areas.Catalog.Controllers
         }
 
         [HttpPost]
-        public AjaxResponse SaveThumbnail(UploadSubtitleRequest request)
+        public AjaxResponse SaveSubtitles(UploadSubtitleRequest request)
         {
             try
             {

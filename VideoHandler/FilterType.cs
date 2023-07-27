@@ -12,6 +12,7 @@
         Rating,
         RatingOrSafer,
         RatingOrRiskier,
-        Hash
+        Hash,
+        Category
     }
 }

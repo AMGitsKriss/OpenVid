@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace CatalogManager.Metadata
 {
@@ -41,7 +42,7 @@ namespace CatalogManager.Metadata
 
         // TODO - Fix thumbnails. Test Videos:
         // 14680, 14657, 14560, 14232, 13102, 12044, 11959, 14743
-        public void CreateThumbnail(string videoPath, string thumbPath, TimeSpan timeIntoVideo)
+        public async Task CreateThumbnail(string videoPath, string thumbPath, TimeSpan timeIntoVideo)
         {
             var cmd = $" -ss {timeIntoVideo} -y -itsoffset -1 -i \"{videoPath}\" -vcodec mjpeg -frames:v 1 -filter:v \"scale=300:168:force_original_aspect_ratio=decrease,pad=300:168:-1:-1:color=black\" \"{thumbPath}\"";
 
@@ -66,7 +67,7 @@ namespace CatalogManager.Metadata
             process.Close();
         }
 
-        public IEnumerable<SubtitleFile> FindSubtitles(string source, string outputFolder)
+        public IEnumerable<SubtitleFile> FindSubtitles(string source)
         {
             string args = $"-i \"{source}\"";
             Process proc = new Process();
@@ -98,12 +99,12 @@ namespace CatalogManager.Metadata
                 var stream = match.Groups[2].Value;
                 var language = match.Groups[4].Value;
                 var format = match.Groups[5].Value;
-                var fileName = $"{stream.Replace("0:", "")}_{language}.vtt";
+                var fileName = $"{stream.Replace("0:", "")}_{language}";
                 var fileInfo = new SubtitleFile() // TODO - Debug with Re-Zero
                 {
                     SourceFileFullName = source,
-                    OutputFolder = outputFolder,
-                    OutputFile = fileName,
+                    OriginalFormat = format,
+                    OutputFileName = fileName,
                     StreamId = stream,
                     Language = language ?? "und"
                 };
@@ -114,19 +115,31 @@ namespace CatalogManager.Metadata
             proc.Close();
         }
 
-        public void ExtractSubtitles(SubtitleFile file)
+        public void ExtractSubtitles(SubtitleFile file, string outputFolder, bool convertToVtt = true)
         {
-            var outputFileFullName = Path.Combine(file.OutputFolder, file.OutputFile);
+            var outputFileWithExtension = $"{file.OutputFileName}.{file.OriginalFormat}";
+            if(file.OriginalFormat == "subrip")
+                outputFileWithExtension = $"{file.OutputFileName}.srt";
+            if (convertToVtt)
+                outputFileWithExtension = $"{file.OutputFileName}.vtt";
+
+            var outputFileFullName = Path.Combine(outputFolder, outputFileWithExtension);
 
             string args = $"-y -i \"{file.SourceFileFullName}\" -map {file.StreamId} \"{outputFileFullName}\"";
             Process proc = new Process();
             proc.StartInfo.FileName = @"c:\ffmpeg\ffmpeg.exe";
             proc.StartInfo.Arguments = args;
             proc.StartInfo.WindowStyle = ProcessWindowStyle.Normal;
+            proc.StartInfo.RedirectStandardOutput = true;
+            proc.StartInfo.RedirectStandardError = true;
             if (!proc.Start())
             {
                 Console.WriteLine("Error starting");
             }
+
+            string outputString = proc.StandardOutput.ReadToEnd();
+            string errorString = proc.StandardError.ReadToEnd();
+
             proc.WaitForExit();
             proc.Close();
         }

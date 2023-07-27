@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using CatalogManager;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using OpenVid.Areas.Catalog.Models.ImportPreprocessed;
 using System;
 using System.Collections.Generic;
@@ -13,11 +15,13 @@ namespace OpenVid.Areas.Catalog.Controllers
     [Area("catalog")]
     public class ImportPreprocessedController : Controller
     {
-        private IVideoManager _save;
+        private readonly IVideoManager _save;
+        private readonly CatalogImportOptions _configuration;
 
-        public ImportPreprocessedController(IVideoManager save)
+        public ImportPreprocessedController(IVideoManager save, IOptions<CatalogImportOptions> configuration)
         {
             _save = save;
+            _configuration = configuration.Value;
         }
 
         public IActionResult Index()
@@ -82,7 +86,7 @@ namespace OpenVid.Areas.Catalog.Controllers
 
         private List<FoundVideoViewModel> FindFiles()
         {
-            var importDir = $@"{Directory.GetCurrentDirectory()}\wwwroot\import_queue";
+            var importDir = $@"{_configuration.InternalDirectory}\import_queue";
             Directory.CreateDirectory(importDir);
             return FindFiles(importDir, importDir);
         }
@@ -93,7 +97,7 @@ namespace OpenVid.Areas.Catalog.Controllers
             {
                 var result = new List<FoundVideoViewModel>();
 
-                var suggestedTags = dir.Replace(prefix, "").Split(@"\", StringSplitOptions.RemoveEmptyEntries).ToList();
+                var suggestedTags = dir.Replace(prefix, "").Split(new char[] { '\\', ' ' }, StringSplitOptions.RemoveEmptyEntries).ToList();
 
                 // Files
                 foreach (var file in Directory.GetFiles(dir))

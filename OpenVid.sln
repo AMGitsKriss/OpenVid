@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30621.155
+# Visual Studio Version 17
+VisualStudioVersion = 17.6.33815.320
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenVid", "OpenVid\OpenVid.csproj", "{9CFC4E13-F6E0-4146-B28B-1F404B74E034}"
 EndProject
@@ -28,8 +28,8 @@ Global
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{9CFC4E13-F6E0-4146-B28B-1F404B74E034}.Atlas|Any CPU.ActiveCfg = Release|Any CPU
-		{9CFC4E13-F6E0-4146-B28B-1F404B74E034}.Debug|Any CPU.ActiveCfg = Release|Any CPU
-		{9CFC4E13-F6E0-4146-B28B-1F404B74E034}.Debug|Any CPU.Build.0 = Release|Any CPU
+		{9CFC4E13-F6E0-4146-B28B-1F404B74E034}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9CFC4E13-F6E0-4146-B28B-1F404B74E034}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9CFC4E13-F6E0-4146-B28B-1F404B74E034}.Prime|Any CPU.ActiveCfg = Release|Any CPU
 		{9CFC4E13-F6E0-4146-B28B-1F404B74E034}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9CFC4E13-F6E0-4146-B28B-1F404B74E034}.Release|Any CPU.Build.0 = Release|Any CPU

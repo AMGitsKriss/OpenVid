@@ -8,6 +8,7 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace CatalogManager
 {
@@ -24,7 +25,7 @@ namespace CatalogManager
             _metadata = metadata;
         }
 
-        public void TryGenerateThumbnail(int id)
+        public async Task TryGenerateThumbnail(int id)
         {
             var video = _repository.GetVideo(id);
             var source = video.VideoSource.FirstOrDefault(s => s.Extension == "mp4");
@@ -43,9 +44,14 @@ namespace CatalogManager
             // Thumbnail timestamp = 1 sec for every 4 mins of length
             var thumbTimespan = TimeSpan.FromSeconds(video.Length.TotalMinutes / 4);
 
-            _metadata.CreateThumbnail(videoPath, thumbnailTarget, thumbTimespan);
+            int timeout = 1000;
+            var thumbnailTask = _metadata.CreateThumbnail(videoPath, thumbnailTarget, thumbTimespan);
+            if (await Task.WhenAny(thumbnailTask, Task.Delay(timeout)) == thumbnailTask)
+            {
+                thumbnailTask.Dispose();
+            }
         }
-        
+
         public void SaveThumbnailForVideo(int id, byte[] image)
         {
             if (image == null)

@@ -293,5 +293,10 @@ namespace Database
         {
             return _context.VideoSegmentQueue.Where(q => q.VideoId == videoId);
         }
+
+        public TagType GetCategory(string categoryName)
+        {
+            return _context.TagType.FirstOrDefault(c => c.Name.ToLower() == categoryName.ToLower());
+        }
     }
 }

@@ -16,19 +16,38 @@ namespace Tests
             var folder = @$"Z:\inetpub\wwwkrissflix\wwwroot\import\04_shaka_packager\{fileWithoutExt}\";
             var inputFile = @$"{folder}{fileWithoutExt}_720.mp4";
 
-            var subtitles = subtitleExtractor.FindSubtitles(inputFile, folder).ToList();
+            var subtitles = subtitleExtractor.FindSubtitles(inputFile).ToList();
         }
 
         [Test]
-        [TestCase(@"C:\handbrakecli\720_src.mkv", 1)]
-        [TestCase(@"C:\handbrakecli\kon.mkv" ,1)]
+        [TestCase(@"Z:\inetpub\wwwkrissflix\wwwroot\import\02_queued\The_Prince_of_Egypt.mkv", 1)]
+        [TestCase(@"C:\handdbrakecli\720_src.mkv", 1)]
+        [TestCase(@"C:\handbrakecli\kon.mkv", 1)]
         public void Parse(string inputFile, int expectedCount)
         {
             var subtitleExtractor = new FFMpegStrategy();
 
-            var folder = @$"Z:\TEST_DIR\";
+            var folder = @$"P:\kvbx_virtual\subtitles\56\565\";
 
-            var subtitles = subtitleExtractor.FindSubtitles(inputFile, folder).ToList();
+            var subtitles = subtitleExtractor.FindSubtitles(inputFile).ToList();
+
+            subtitleExtractor.ExtractSubtitles(subtitles[0], folder, false);
+
+            Assert.That(subtitles.Count() == expectedCount);
+        }
+
+        //[Ignore("Manual extraction of subtitles without commandline faff")]
+        [Test]
+        [TestCase(@"P:\Movies and Series\English Movies\Von Ryan's Express\Von Ryan's Express [MultiLang-MultiSub].mkv", 1, "srt")]
+        public void ManualExtrack(string inputFile, int expectedCount, string type)
+        {
+            var subtitleExtractor = new FFMpegStrategy();
+
+            var folder = @$"C:\Users\Kriss\Desktop\test_subs\{type}\";
+
+            var subtitles = subtitleExtractor.FindSubtitles(inputFile).ToList();
+
+            subtitleExtractor.ExtractSubtitles(subtitles[2], folder, false);
 
             Assert.That(subtitles.Count() == expectedCount);
         }

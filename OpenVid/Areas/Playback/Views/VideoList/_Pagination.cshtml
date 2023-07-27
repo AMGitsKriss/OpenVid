@@ -1,0 +1,60 @@
+﻿@model OpenVid.Areas.Playback.Models.VideoList.VideoListViewModel
+<ul id="searchPages" class="pagination mb-2" data-search-query="@Model.SearchQuery">
+
+    @if (Model.CurrentPage == 1)
+    {
+        <li class="page-item disabled"><a class="page-link" data-page="@(Model.CurrentPage-1)">‹</a></li>
+    }
+    else
+    {
+        <li class="page-item cursor-pointer"><a class="loadMore page-link" data-page="@(Model.CurrentPage-1)">‹</a></li>
+    }
+
+    @if (Model.CurrentPage > 1)
+    {
+        <li class="page-item cursor-pointer"><a class="loadMore page-link" data-page="1">1</a></li>
+    }
+    @if (Model.CurrentPage > 2)
+    {
+        <li class="page-item"><span class="page-link" style="background-color:transparent; border:none;">...</span></li>
+    }
+
+    @if (Model.CurrentPage >= 4)
+    {
+        <li class="page-item cursor-pointer"><a class="loadMore page-link" data-page="@(Model.CurrentPage -2)">@(Model.CurrentPage -2)</a></li>
+    }
+    @if (Model.CurrentPage - 2 >= 1)
+    {
+        <li class="page-item cursor-pointer"><a class="loadMore page-link" data-page="@(Model.CurrentPage-1)">@(Model.CurrentPage -1)</a></li>
+    }
+
+    @* ACTIVE PAGE *@
+    <li class="page-item active"><a class="page-link">@Model.CurrentPage</a></li>
+
+    @if (Model.CurrentPage <= Model.TotalPages - 1)
+    {
+        <li class="page-item cursor-pointer"><a class="loadMore page-link" data-page="@(Model.CurrentPage + 1)">@(Model.CurrentPage + 1)</a></li>
+    }
+    @if (Model.CurrentPage <= Model.TotalPages - 2)
+    {
+        <li class="page-item cursor-pointer"><a class="loadMore page-link" data-page="@(Model.CurrentPage+2)">@(Model.CurrentPage + 2)</a></li>
+    }
+
+    @if (Model.CurrentPage < Model.TotalPages - 3)
+    {
+        <li class="page-item"><span class="page-link" style="background-color:transparent; border:none;">...</span></li>
+    }
+    @if (Model.CurrentPage < Model.TotalPages - 2)
+    {
+        <li class="page-item cursor-pointer"><a class="loadMore page-link" data-page="@(Model.TotalPages)">@(Model.TotalPages)</a></li>
+    }
+
+    @if (Model.CurrentPage == Model.TotalPages)
+    {
+        <li class="page-item disabled"><a class="page-link" data-page="@(Model.CurrentPage + 1)">›</a></li>
+    }
+    else
+    {
+        <li class="page-item cursor-pointer"><a class="loadMore page-link" data-page="@(Model.CurrentPage + 1)">›</a></li>
+    }
+</ul>

@@ -29,6 +29,7 @@
                 played: 'rgb(255,0,0)',
             },
             'castReceiverAppId': '07AEE832',
+            'overflowMenuButtons': ['quality', 'captions', 'language', 'loop', 'playback_rate', 'cast']
         }
         ui.configure(config);
 
