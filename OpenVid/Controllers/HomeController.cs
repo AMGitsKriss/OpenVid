@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using OpenVid.Models.Home;
 using OrionDashboard.Web.Attributes;
+using Serilog;
 using VideoHandler;
 
 namespace OpenVid.Controllers
@@ -9,11 +10,13 @@ namespace OpenVid.Controllers
     [RequireLogin]
     public class HomeController : Controller
     {
-        private IVideoManager _manager;
+        private readonly IVideoManager _manager;
+        private readonly ILogger _logger;
 
-        public HomeController(IVideoManager manager)
+        public HomeController(IVideoManager manager, ILogger logger)
         {
             _manager = manager;
+            _logger = logger;
         }
 
         public IActionResult Index()

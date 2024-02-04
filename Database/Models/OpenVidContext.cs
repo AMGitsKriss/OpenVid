@@ -42,7 +42,7 @@ namespace Database.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer("name=ConnectionStrings:DefaultDatabase");
+                optionsBuilder.UseSqlServer("name=ConnectionStrings:DefaultDatabase", a => a.EnableRetryOnFailure());
             }
         }
 

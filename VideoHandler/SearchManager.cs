@@ -77,6 +77,8 @@ namespace VideoHandler
                 results = results.OrderByDescending(x => x.VideoSource.Max(s => s.Width) * x.VideoSource.Max(s => s.Height) * (x.VideoSource.Max(s => s.Size) / 1024) / x.Length.TotalSeconds / 1000000).ToList();
             else if (order?.Value == "quality_desc")
                 results = results.OrderBy(x => x.VideoSource.Max(s => s.Width) * x.VideoSource.Max(s => s.Height) * (x.VideoSource.Max(s => s.Size) / 1024) / x.Length.TotalSeconds / 1000000).ToList();
+            else if (order?.Value == "md5")
+                results = results.OrderBy(x => x.VideoSource.Min(s => s.Md5)).ToList();
             else
                 results = results.OrderByDescending(x => x.Id).ToList();
 

@@ -9,6 +9,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Configuration;
+using Serilog;
+using Serilog.Events;
 using System;
 using TagCache;
 using VideoHandler;
@@ -28,6 +32,13 @@ namespace OpenVid
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSerilog(loggerConfig => {
+                loggerConfig.WriteTo.Seq("http://localhost:5341/", apiKey: "lAr93RAGSr1iILEr1Kta");
+                loggerConfig.MinimumLevel.Override("Microsoft", LogEventLevel.Error);
+                loggerConfig.MinimumLevel.Override("System", LogEventLevel.Error);
+                loggerConfig.Enrich.WithProperty("Application", Configuration["Logging:Application:Name"] ?? "OpenVid");
+                loggerConfig.Enrich.FromLogContext();
+            });
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
 
             services.AddDistributedMemoryCache();
