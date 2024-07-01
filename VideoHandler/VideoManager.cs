@@ -95,6 +95,7 @@ namespace VideoHandler
             var newVideo = new Video()
             {
                 Name = Path.GetFileNameWithoutExtension(request.FileName),
+                Description = Path.GetFileNameWithoutExtension(request.FileName),
                 Length = metaData.Duration,
                 VideoSource = new List<VideoSource>()
                     {

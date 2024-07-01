@@ -9,6 +9,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Serilog;
 
 namespace CatalogManager
 {
@@ -17,16 +18,20 @@ namespace CatalogManager
         private readonly CatalogImportOptions _configuration;
         private readonly IVideoRepository _repository;
         private readonly IMetadataStrategy _metadata;
+        private readonly ILogger _logger;
 
-        public ThumbnailService(IOptions<CatalogImportOptions> configuration, IVideoRepository repository, IMetadataStrategy metadata)
+        public ThumbnailService(ILogger logger, IOptions<CatalogImportOptions> configuration, IVideoRepository repository, IMetadataStrategy metadata)
         {
             _configuration = configuration.Value;
             _repository = repository;
             _metadata = metadata;
+            _logger = logger;
         }
 
         public async Task TryGenerateThumbnail(int id)
         {
+            _logger.Information($"Attempting to generate thumbnail for {id}.");
+
             var video = _repository.GetVideo(id);
             var source = video.VideoSource.FirstOrDefault(s => s.Extension == "mp4");
 
@@ -49,7 +54,10 @@ namespace CatalogManager
             if (await Task.WhenAny(thumbnailTask, Task.Delay(timeout)) == thumbnailTask)
             {
                 thumbnailTask.Dispose();
+                _logger.Warning($"Timeout while generating thumbnail for {id}.");
             }
+            else
+                _logger.Information($"Completed to generation of thumbnail for {id}.");
         }
 
         public void SaveThumbnailForVideo(int id, byte[] image)

@@ -36,7 +36,7 @@ namespace TagCache
         private IQueryable<string> GetMutualTags(Tag tag)
         {
             var videoTags = _repository.TagsWithVideos().Where(t => t.TagId == tag.Id);
-            var allTags = videoTags.SelectMany(vt => vt.Video.VideoTag).Where(t => t.TagId != tag.Id && t.Tag.Type == 0).Select(t => t.Tag.Name);
+            var allTags = videoTags.SelectMany(vt => vt.Video.VideoTag).Where(t => t.TagId != tag.Id).Select(t => t.Tag.Name);
 
             return allTags;
         }
