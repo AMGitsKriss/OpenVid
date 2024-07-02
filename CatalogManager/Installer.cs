@@ -12,7 +12,7 @@ namespace CatalogManager
             services.Configure<PermissionOptions>(configuration.GetSection("Authentication"));
 
             services.AddScoped<ImportService>();
-            services.AddScoped<ThumbnailService>();
+            services.AddSingleton<ThumbnailService>();
             services.AddScoped<PermissionsService>();
             services.AddScoped<IMetadataStrategy, FFMpegStrategy>();
 

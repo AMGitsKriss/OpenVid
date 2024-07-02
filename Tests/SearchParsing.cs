@@ -24,7 +24,7 @@ namespace Tests
         {
             SearchManager service = new SearchManager(null, null);
             var searchParams = service.MapSearchQueryToParameters(searchString);
-            Assert.AreEqual(expectedCount, searchParams.Count());
+            Assert.Equals(expectedCount, searchParams.Count());
         }
 
         [TestCase(@"one ""another one"" (something else)", 3)]

@@ -42,7 +42,7 @@ namespace CatalogManager.Metadata
 
         // TODO - Fix thumbnails. Test Videos:
         // 14680, 14657, 14560, 14232, 13102, 12044, 11959, 14743
-        public async Task CreateThumbnail(string videoPath, string thumbPath, TimeSpan timeIntoVideo)
+        public async Task CreateThumbnail(string videoPath, string thumbPath, TimeSpan timeIntoVideo, int? timeout = null)
         {
             var cmd = $" -ss {timeIntoVideo} -y -itsoffset -1 -i \"{videoPath}\" -vcodec mjpeg -frames:v 1 -filter:v \"scale=300:168:force_original_aspect_ratio=decrease,pad=300:168:-1:-1:color=black\" \"{thumbPath}\"";
 
@@ -63,7 +63,10 @@ namespace CatalogManager.Metadata
             process.Start();
             string outputString = process.StandardOutput.ReadToEnd();
             string errorString = process.StandardError.ReadToEnd();
-            process.WaitForExit();
+            if (timeout != null)
+                process.WaitForExit(timeout.Value);
+            else
+                process.WaitForExit();
             process.Close();
         }
 
@@ -118,7 +121,7 @@ namespace CatalogManager.Metadata
         public void ExtractSubtitles(SubtitleFile file, string outputFolder, bool convertToVtt = true)
         {
             var outputFileWithExtension = $"{file.OutputFileName}.{file.OriginalFormat}";
-            if(file.OriginalFormat == "subrip")
+            if (file.OriginalFormat == "subrip")
                 outputFileWithExtension = $"{file.OutputFileName}.srt";
             if (convertToVtt)
                 outputFileWithExtension = $"{file.OutputFileName}.vtt";

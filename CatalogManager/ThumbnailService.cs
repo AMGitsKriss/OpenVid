@@ -10,6 +10,8 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Serilog;
+using System.Collections.Generic;
+using System.Threading;
 
 namespace CatalogManager
 {
@@ -19,6 +21,9 @@ namespace CatalogManager
         private readonly IVideoRepository _repository;
         private readonly IMetadataStrategy _metadata;
         private readonly ILogger _logger;
+
+        private readonly Queue<int> _thumbnailTasks = new();
+        private Thread _thread = null;
 
         public ThumbnailService(ILogger logger, IOptions<CatalogImportOptions> configuration, IVideoRepository repository, IMetadataStrategy metadata)
         {
@@ -30,34 +35,51 @@ namespace CatalogManager
 
         public async Task TryGenerateThumbnail(int id)
         {
-            _logger.Information($"Attempting to generate thumbnail for {id}.");
+            if (!_thumbnailTasks.Contains(id))
+                _thumbnailTasks.Enqueue(id);
 
-            var video = _repository.GetVideo(id);
-            var source = video.VideoSource.FirstOrDefault(s => s.Extension == "mp4");
+            var state = _thread == null ? null : _thread.ThreadState.ToString();
+            _logger.Information($"Thumbnail generation thread state: {state}");
 
-            if (source == null)
-                return;
-
-            var idString = id.ToString().PadLeft(2, '0');
-
-            var videoPath = Path.Combine(_configuration.BucketDirectory, "video", source.Md5.Substring(0, 2), $"{source.Md5}.{source.Extension}");
-            var thumbnailTarget = Path.Combine(_configuration.BucketDirectory, "thumbnail", idString.Substring(0, 2), $"{idString}.jpg");
-
-            FileHelpers.TouchDirectory(Path.Combine(_configuration.BucketDirectory, "thumbnail"));
-            FileHelpers.TouchDirectory(Path.Combine(_configuration.BucketDirectory, "thumbnail", idString.Substring(0, 2)));
-
-            // Thumbnail timestamp = 1 sec for every 4 mins of length
-            var thumbTimespan = TimeSpan.FromSeconds(video.Length.TotalMinutes / 4);
-
-            int timeout = 1000;
-            var thumbnailTask = _metadata.CreateThumbnail(videoPath, thumbnailTarget, thumbTimespan);
-            if (await Task.WhenAny(thumbnailTask, Task.Delay(timeout)) == thumbnailTask)
+            if (_thread == null || _thread.ThreadState == ThreadState.Stopped)
             {
-                thumbnailTask.Dispose();
-                _logger.Warning($"Timeout while generating thumbnail for {id}.");
+                _logger.Information($"Restarting thread.");
+                _thread = new Thread(async () => await ThumbnailThread());
             }
-            else
+
+            //Task.Run(() => _metadata.CreateThumbnail(videoPath, thumbnailTarget, thumbTimespan));
+        }
+
+        public async Task ThumbnailThread()
+        {
+            while (_thumbnailTasks.Any())
+            {
+                var id = _thumbnailTasks.Dequeue();
+
+                _logger.Information($"Attempting to generate thumbnail for {id}.");
+
+                var video = _repository.GetVideo(id);
+                var source = video.VideoSource.FirstOrDefault(s => s.Extension == "mp4");
+
+                if (source == null)
+                    return;
+
+                var idString = id.ToString().PadLeft(2, '0');
+
+                var videoPath = Path.Combine(_configuration.BucketDirectory, "video", source.Md5.Substring(0, 2), $"{source.Md5}.{source.Extension}");
+                var thumbnailTarget = Path.Combine(_configuration.BucketDirectory, "thumbnail", idString.Substring(0, 2), $"{idString}.jpg");
+
+                FileHelpers.TouchDirectory(Path.Combine(_configuration.BucketDirectory, "thumbnail"));
+                FileHelpers.TouchDirectory(Path.Combine(_configuration.BucketDirectory, "thumbnail", idString.Substring(0, 2)));
+
+                // Thumbnail timestamp = Start 1 sec in for every 4 mins of length
+                var thumbTimespan = TimeSpan.FromSeconds(video.Length.TotalMinutes / 4);
+
+                var startTime = DateTime.Now;
+                await _metadata.CreateThumbnail(videoPath, thumbnailTarget, thumbTimespan);
+                var duration = DateTime.Now - startTime;
                 _logger.Information($"Completed to generation of thumbnail for {id}.");
+            }
         }
 
         public void SaveThumbnailForVideo(int id, byte[] image)

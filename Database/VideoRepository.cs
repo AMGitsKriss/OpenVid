@@ -25,7 +25,7 @@ namespace Database
 
         public IQueryable<Video> GetViewableVideos()
         {
-            return GetAllVideos().Include(x => x.VideoTag).ThenInclude(x => x.Video).ThenInclude(x => x.Rating).Where(v => !v.IsDeleted && v.VideoSource.Any()).OrderByDescending(x => x.Id);
+            return GetAllVideos().Where(v => !v.IsDeleted && v.VideoSource.Any()).OrderByDescending(x => x.Id);
         }
 
         public IQueryable<Video> GetSoftDeletedVideos()

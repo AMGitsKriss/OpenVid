@@ -8,7 +8,7 @@ namespace CatalogManager.Metadata
     public interface IMetadataStrategy
     {
         MediaProperties GetMetadata(string location);
-        Task CreateThumbnail(string videoPath, string thumbPath, TimeSpan timeIntoVideo);
+        Task CreateThumbnail(string videoPath, string thumbPath, TimeSpan timeIntoVideo, int? timeout = null);
         IEnumerable<SubtitleFile> FindSubtitles(string source);
         void ExtractSubtitles(SubtitleFile subtitleFiles, string outputFolder, bool convertToVtt = true);
     }
