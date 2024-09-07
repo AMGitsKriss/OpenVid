@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 // Code scaffolded by EF Core assumes nullable reference types (NRTs) are not used or disabled.
 // If you have enabled NRTs for your project, then un-comment the following line:
- #nullable disable
+#nullable disable
 
 namespace Database.Models
 {
@@ -12,6 +12,8 @@ namespace Database.Models
         public Tag()
         {
             VideoTag = new HashSet<VideoTag>();
+            TagImplicationFrom = new HashSet<TagImplication>();
+            TagImplicationTo = new HashSet<TagImplication>();
         }
 
         public int Id { get; set; }
@@ -22,5 +24,7 @@ namespace Database.Models
 
         public virtual TagType TypeNavigation { get; set; }
         public virtual ICollection<VideoTag> VideoTag { get; set; }
+        public virtual ICollection<TagImplication> TagImplicationFrom { get; set; }
+        public virtual ICollection<TagImplication> TagImplicationTo { get; set; }
     }
 }

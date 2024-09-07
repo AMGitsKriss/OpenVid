@@ -2,6 +2,7 @@
 using Database;
 using Database.Models;
 using Microsoft.Extensions.Configuration;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -18,12 +19,14 @@ namespace VideoHandler
         private readonly IConfiguration _configuration;
         private readonly IVideoRepository _repository;
         private readonly IMetadataStrategy _ffmpeg;
+        private readonly ILogger _logger;
 
-        public VideoManager(IVideoRepository repository, IConfiguration configuration, IMetadataStrategy ffmpeg)
+        public VideoManager(ILogger logger, IVideoRepository repository, IConfiguration configuration, IMetadataStrategy ffmpeg)
         {
             _configuration = configuration;
             _repository = repository;
             _ffmpeg = ffmpeg;
+            _logger = logger;
         }
 
         public IEnumerable<Video> GetVideos()
@@ -90,7 +93,20 @@ namespace VideoHandler
             //string thumbPath = Path.Combine(thumbnailDirectory, $"{md5}.jpg");
             //_ffmpeg.CreateThumbnail(request.FileNameFull, thumbPath, TimeSpan.FromSeconds(60));
 
-            var metaData = GetMetadata(request.FileNameFull);
+            MediaProperties metaData = null;
+            try
+            {
+                metaData = GetMetadata(request.FileNameFull);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, $"Failed to fetch metadata for {request.FileNameFull}");
+                throw;
+            }
+
+            if (!File.Exists(request.FileNameFull))
+                throw new FileNotFoundException($"File {request.FileNameFull} no longer exists");
+
             FileInfo fileInfo = new FileInfo(request.FileNameFull);
             var newVideo = new Video()
             {

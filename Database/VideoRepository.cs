@@ -175,6 +175,13 @@ namespace Database
         {
             try
             {
+                if (!_context.TagType.Any())
+                {
+                    _context.Add(new TagType() { Name = "Default" });
+                    _context.SaveChanges();
+                }
+                var tagType = _context.TagType.First();
+
                 var existingTags = _context.Tag.Select(x => x.Name.ToLower());
 
                 foreach (var unsafeTag in tags)
@@ -182,7 +189,7 @@ namespace Database
                     string tag = unsafeTag.Trim().ToLower();
                     if (!existingTags.Contains(tag))
                     {
-                        _context.Tag.Add(new Tag() { Name = tag });
+                        _context.Tag.Add(new Tag() { Name = tag, Type = tagType.Id });
                     }
                 }
 

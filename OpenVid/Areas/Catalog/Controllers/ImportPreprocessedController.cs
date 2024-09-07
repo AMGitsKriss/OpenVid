@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using OpenVid.Areas.Catalog.Models.ImportPreprocessed;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -17,11 +18,13 @@ namespace OpenVid.Areas.Catalog.Controllers
     {
         private readonly IVideoManager _save;
         private readonly CatalogImportOptions _configuration;
+        private readonly ILogger _logger;
 
-        public ImportPreprocessedController(IVideoManager save, IOptions<CatalogImportOptions> configuration)
+        public ImportPreprocessedController(ILogger logger, IVideoManager save, IOptions<CatalogImportOptions> configuration)
         {
             _save = save;
             _configuration = configuration.Value;
+            _logger = logger;
         }
 
         public IActionResult Index()
@@ -46,7 +49,7 @@ namespace OpenVid.Areas.Catalog.Controllers
             {
                 response = new SaveVideoResponse()
                 {
-                    Message = $"The file {fileInfo.FileName} could not longer be found."
+                    Message = $"The file {fileName} could not longer be found."
                 };
                 return Json(response);
             }
@@ -72,6 +75,7 @@ namespace OpenVid.Areas.Catalog.Controllers
             }
             catch (Exception ex)
             {
+                _logger.Error(ex, ex.Message);
                 response = new SaveVideoResponse()
                 {
                     Message = ex.Message

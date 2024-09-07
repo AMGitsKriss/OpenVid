@@ -37,6 +37,7 @@ namespace Database.Models
         public virtual DbSet<VideoSegmentQueueItem> VideoSegmentQueueItem { get; set; }
         public virtual DbSet<VideoSource> VideoSource { get; set; }
         public virtual DbSet<VideoTag> VideoTag { get; set; }
+        public virtual DbSet<TagImplication> TagImplication { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -136,6 +137,26 @@ namespace Database.Models
                     .HasForeignKey(d => d.Type)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Tag_TagType");
+            });
+
+            modelBuilder.Entity<TagImplication>(entity =>
+            {
+                entity.Property(e => e.FromId).HasColumnName("FromId");
+                entity.Property(e => e.ToId).HasColumnName("ToId");
+
+                entity.HasKey(e => new { e.FromId, e.ToId });
+
+                entity.HasOne(d => d.From)
+                    .WithMany(p => p.TagImplicationFrom)
+                    .HasForeignKey(d => d.FromId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_TagImplication_FromId");
+
+                entity.HasOne(d => d.To)
+                    .WithMany(p => p.TagImplicationTo)
+                    .HasForeignKey(d => d.ToId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_TagImplication_ToId");
             });
 
             modelBuilder.Entity<TagType>(entity =>

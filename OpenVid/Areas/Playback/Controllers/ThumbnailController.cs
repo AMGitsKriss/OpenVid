@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using OrionDashboard.Web.Attributes;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace OpenVid.Areas.Playback.Controllers
@@ -13,11 +14,13 @@ namespace OpenVid.Areas.Playback.Controllers
     {
         private readonly CatalogImportOptions _configuration;
         private readonly ThumbnailService _playbackService;
+        private readonly FlickbookService _flickbookService;
 
-        public ThumbnailController(IOptions<CatalogImportOptions> configuration, ThumbnailService playbackService)
+        public ThumbnailController(IOptions<CatalogImportOptions> configuration, ThumbnailService playbackService, FlickbookService flickbookService)
         {
             _configuration = configuration.Value;
             _playbackService = playbackService;
+            _flickbookService = flickbookService;
         }
 
         [Route("[area]/[controller]/{id}")]
@@ -60,13 +63,15 @@ namespace OpenVid.Areas.Playback.Controllers
             var thumbnailFolder = Path.Combine(_configuration.BucketDirectory, "thumbnail", idString.Substring(0, 2));
             var autoThumbnailFile = $"{idString}.jpg";
 
+
             var autoThumbnailFullName = Path.Combine(thumbnailFolder, autoThumbnailFile);
             if (!System.IO.File.Exists(autoThumbnailFullName))
             {
-                await _playbackService.TryGenerateThumbnail(id);
+                Task.Run(async () => await _playbackService.TryGenerateThumbnail(id));
+                Task.Run(async () => await _flickbookService.TryGenerateThumbnail(id));
+                Thread.Sleep(3000);
             }
 
-            // Otherwise just return the placeholder card
             if (!System.IO.File.Exists(autoThumbnailFullName))
             {
                 return null;
