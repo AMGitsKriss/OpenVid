@@ -12,8 +12,8 @@ namespace CatalogManager
             services.Configure<PermissionOptions>(configuration.GetSection("Authentication"));
 
             services.AddScoped<ImportService>();
-            //services.AddSingleton<ThumbnailService>();
-            //services.AddSingleton<FlickbookService>();
+            services.AddSingleton<ThumbnailService>();
+            services.AddSingleton<FlickbookService>();
             services.AddScoped<PermissionsService>();
             services.AddScoped<IMetadataStrategy, FFMpegStrategy>();
 
