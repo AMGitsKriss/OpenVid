@@ -49,14 +49,21 @@ namespace VideoHandler
                 var existingTags = _repository.TagsWithVideos().Where(x => video.Id == x.VideoId && tagIDs.Contains(x.TagId)).Select(x => x.TagId).ToList();
 
                 _repository.RemoveTagsFromVideo(removeTags);
+                
+                var desiredTags = tags.Where(t => !existingTags.Contains(t.Id)).Select(t => new VideoTag() { TagId = t.Id, VideoId = video.Id }).ToList();
+                var implications = _repository.GetTagImplications()
+                    .Where(i => desiredTags.Select(t => t.TagId)
+                    .Contains(i.FromId))
+                    .Select(i => new VideoTag() { TagId = i.To.Id, VideoId = video.Id }).ToList();
+                var tagsToAdd = desiredTags.UnionBy(implications, t => t.TagId);
 
-                var tagsToAdd = tags.Where(t => !existingTags.Contains(t.Id)).Select(t => new VideoTag() { TagId = t.Id, VideoId = video.Id });
                 _repository.AddTagsToVideo(tagsToAdd);
 
                 return tags;
             }
             catch (Exception ex)
             {
+                _logger.Error(ex.Message, ex);
                 return null;
             }
         }
@@ -265,6 +272,11 @@ namespace VideoHandler
                 video.Name = name;
                 SaveVideo(video);
             }
+        }
+
+        public IEnumerable<TagImplication> GetTagImplications()
+        {
+            return _repository.GetTagImplications();
         }
     }
 }

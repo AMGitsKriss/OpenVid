@@ -34,5 +34,6 @@ namespace Database
         IEnumerable<IEnumerable<VideoSegmentQueueItem>> GetPendingSegmentItems();
         IQueryable<VideoSegmentQueue> GetSegmentJobsForVideo(int videoId);
         IQueryable<VideoSegmentQueue> GetPendingSegmentJobs();
+        IEnumerable<TagImplication> GetTagImplications();
     }
 }

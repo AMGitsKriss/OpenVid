@@ -50,7 +50,14 @@ namespace Database
 
         public IQueryable<Tag> GetAllTags()
         {
-            var result = _context.Tag.Include(x => x.TypeNavigation).Include(x => x.VideoTag).ThenInclude(x => x.Video).ThenInclude(x => x.VideoSource).Where(x => x.VideoTag.Any(v => !v.Video.IsDeleted && v.Video.VideoSource.Any())).OrderByDescending(x => x.VideoTag.Count()).ThenBy(x => x.Name);
+            var result = _context.Tag
+                .Include(x => x.TypeNavigation)
+                .Include(x => x.VideoTag).ThenInclude(x => x.Video).ThenInclude(x => x.VideoSource)
+                .Include(x => x.TagImplicationTo)
+                .Include(x => x.TagImplicationFrom)
+                .Where(x => x.VideoTag.Any(v => !v.Video.IsDeleted && v.Video.VideoSource.Any()))
+                .OrderByDescending(x => x.VideoTag.Count())
+                .ThenBy(x => x.Name);
             return result;
         }
 
@@ -304,6 +311,11 @@ namespace Database
         public TagType GetCategory(string categoryName)
         {
             return _context.TagType.FirstOrDefault(c => c.Name.ToLower() == categoryName.ToLower());
+        }
+
+        public IEnumerable<TagImplication> GetTagImplications()
+        {
+            return _context.TagImplication.Include(x => x.From).Include(x => x.To);
         }
     }
 }

@@ -19,5 +19,6 @@ namespace VideoHandler
         bool SoftDelete(int id);
         IEnumerable<Video> GetVideos();
         void SetVideoName(int id, string name);
+        IEnumerable<TagImplication> GetTagImplications();
     }
 }

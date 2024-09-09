@@ -40,8 +40,8 @@
 
             @foreach (var area in SiteMap.AdminMenu.GroupBy(g => g.Area))
             {
-                @if (area.Count() > 1)
-                {
+                @*@if (area.Count() > 1)
+                {*@
                     var isSelected = area.Select(c => c.Controller).Contains(currentController) && currentArea == area.First().Area;
 
                     <li class="has-sub @((isSelected) ? "expand" : string.Empty)">
@@ -59,7 +59,7 @@
                             }
                         </ul>
                     </li>
-                }
+                @*}
                 else
                 {
                     <li class="@((area.First().Controller == currentController && area.First().Area == currentArea) ? "active" : string.Empty)">
@@ -68,7 +68,7 @@
                             <span>@area.First().Controller</span>
                         </a>
                     </li>
-                }
+                }*@
 
                 @*<li class="@(item.HasChildren ? "has-sub" : string.Empty) @(item.IsActive(currentController, currentArea) ? "active" : string.Empty)">
                     @if (item.HasChildren)

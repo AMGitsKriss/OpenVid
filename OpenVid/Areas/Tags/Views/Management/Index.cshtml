@@ -1,4 +1,5 @@
-﻿@{
+﻿@model OpenVid.Areas.Tags.Models.Management.TagManagementViewModel
+@{
     ViewBag.Title = "Tag Management";
 }
 <div class="breadcrumb float-right">
@@ -14,7 +15,27 @@
     <div class="col-md-12">
         @using (Html.BeginPanel("Find Tags", true))
         {
-            <p>Big list of tags will go in here eventually. We'll want to perform CRUD opetations on them.</p>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th class="col-1" scope="col">#</th>
+                        <th class="col-3" scope="col">Name</th>
+                        <th class="col-2" scope="col">Type</th>
+                        <th class="col-6" scope="col">Implications</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Tags)
+                    {
+                        <tr>
+                            <th scope="row">@item.Id</th>
+                            <td>@item.Name</td>
+                            <td>@item.Type</td>
+                            <td>@string.Join(", ", item.Implications.Select(i => i.Value))</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
         }
     </div>
 </div>
