@@ -1,0 +1,30 @@
+﻿@using OpenVid.Models.Shared
+@model Dictionary<Guid, List<VideoViewModel>>
+@{
+    ViewBag.Title = "Possible Duplicates";
+}
+
+<h3 class="page-header">
+    Possible Duplicates
+</h3>
+
+
+<div class="row">
+    <div class="col-md-12">
+        @using (Html.BeginPanel("Possible Duplicates", true))
+        {
+            @foreach (var group in Model)
+            {
+                <div class="row border-right mb-2">
+                    <strong>@(group.Key)</strong>
+                </div>
+                <div class="row border-right mb-2">
+                    @foreach (var video in group.Value)
+                    {
+                        await Html.RenderPartialAsync("~/Areas/Playback/Views/VideoList/_Thumbnail.cshtml", video);
+                    }
+                </div>
+            }
+        }
+    </div>
+</div>

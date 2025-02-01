@@ -34,6 +34,7 @@ namespace OpenVid.Areas.Playback.Controllers
             {
                 Id = id,
                 Name = video.Name,
+                Loop = video.Length.TotalSeconds <= 5,
                 VideoSources = _urlResolver.GetVideoUrls(video)
             };
 

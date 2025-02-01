@@ -244,6 +244,21 @@ namespace OpenVid.Areas.Catalog.Controllers
             }
         }
 
+        [HttpGet]
+        public IActionResult RefreshImplications()
+        {
+            var allVids = _videoService.GetVideos().ToList();
+            foreach (var video in allVids)
+            {
+                var tags = _videoService.GetVideo(video.Id).VideoTag.Select(t => t.Tag);
+                var results = _videoService.SaveTagsForVideo(video, tags).ToList();
+
+                var diff = results.Select(t => t.Id).Where(t => !tags.Select(e => e.Id).Contains(t)).ToList();
+            }
+
+            return Ok();
+        }
+
         // TODO - Copied from Playcontroller. This should be in a service.
         private SuggestedTagViewModel SuggestTagsFromName(string videoName, IEnumerable<string> tagsOnVideo)
         {

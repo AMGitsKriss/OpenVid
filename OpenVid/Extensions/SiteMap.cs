@@ -31,6 +31,7 @@ namespace OpenVid.Extensions
         public static PageLocation Catalog_Edit { get; set; } = new PageLocation("Catalog", "Edit", "Index");
         public static PageLocation Catalog_Edit_VideoDetails { get; set; } = new PageLocation("Catalog", "Edit", "VideoDetails");
         public static PageLocation Catalog_Edit_DeleteThumbnail { get; set; } = new PageLocation("Catalog", "Edit", "DeleteThumbnail");
+        public static PageLocation Catalog_Duplicates { get; set; } = new PageLocation("Catalog", "Duplicates", "Index");
         public static PageLocation Tags_Management { get; set; } = new PageLocation("Tags", "Management", "Index");
         public static PageLocation Account_Management { get; set; } = new PageLocation("Account", "Management", "Index");
 
@@ -41,7 +42,8 @@ namespace OpenVid.Extensions
             Catalog_Import,
             Catalog_ImportPreprocessed,
             Catalog_Curation,
-            Tags_Management
+            Tags_Management,
+            Catalog_Duplicates
         };
 
         public static string Action(this IUrlHelper urlHelper, PageLocation page)

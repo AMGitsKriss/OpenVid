@@ -3,6 +3,7 @@
     ViewBag.Title = "Tag Management";
 }
 <div class="breadcrumb float-right">
+    <a class="btn btn-dark m-r-10" data-toggle="tooltip" href="@Url.Action("RefreshImplications", "Edit", new { Area = "Catalog"})" title="Churn through all videos and make sure implication tags are present.">Refresh Implications</a>
     <button disabled class="btn btn-dark" data-toggle="tooltip" title="Check for unused tags and delete them.">Kull Unused</button>
 </div>
 
@@ -20,7 +21,8 @@
                     <tr>
                         <th class="col-1" scope="col">#</th>
                         <th class="col-3" scope="col">Name</th>
-                        <th class="col-2" scope="col">Type</th>
+                        <th class="col-1" scope="col">Type</th>
+                        <th class="col-1" scope="col">Total</th>
                         <th class="col-6" scope="col">Implications</th>
                     </tr>
                 </thead>
@@ -31,6 +33,7 @@
                             <th scope="row">@item.Id</th>
                             <td>@item.Name</td>
                             <td>@item.Type</td>
+                            <td>@item.Total</td>
                             <td>@string.Join(", ", item.Implications.Select(i => i.Value))</td>
                         </tr>
                     }

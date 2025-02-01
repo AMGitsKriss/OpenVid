@@ -8,6 +8,7 @@ using VideoHandler.Models;
 using System.Reflection;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
+using System.Reflection.Metadata;
 
 namespace VideoHandler.SearchFilters
 {
@@ -62,11 +63,23 @@ namespace VideoHandler.SearchFilters
             return result.ToList();
         }
 
+        private List<Video> Horizontal()
+        {
+            var results = _repo.GetViewableVideos().Where(x => x.VideoSource.FirstOrDefault().Width >= x.VideoSource.FirstOrDefault().Height).ToList();
+            return results;
+        }
+
+        private List<Video> Vertical()
+        {
+            var results = _repo.GetViewableVideos().Where(x => x.VideoSource.FirstOrDefault().Width <= x.VideoSource.FirstOrDefault().Height).ToList();
+            return results;
+        }
+
         public class DurationComparer : IEqualityComparer<Video>
         {
             public bool Equals(Video x, Video y)
             {
-                int secondsVariance = 3;
+                int secondsVariance = 1;
 
                 return Math.Abs(x.Length.TotalSeconds - y.Length.TotalSeconds) <= secondsVariance;
             }

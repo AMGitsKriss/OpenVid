@@ -57,6 +57,7 @@ namespace OpenVid
             services.AddScoped<ISearchManager, SearchManager>();
             services.AddScoped<IVideoManager, VideoManager>();
             services.AddScoped<IUrlResolver, UrlResolver>();
+            services.AddScoped<DuplicateFinder>();
 
             services
               .AddScoped<IFilter, GeneralFilter>()

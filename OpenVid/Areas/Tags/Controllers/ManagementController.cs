@@ -1,6 +1,8 @@
 ﻿using Database;
 using Microsoft.AspNetCore.Mvc;
 using OpenVid.Areas.Tags.Models.Management;
+using OpenVid.Models;
+using System.Diagnostics;
 using System.Linq;
 using VideoHandler;
 
@@ -15,6 +17,7 @@ namespace OpenVid.Areas.Tags.Controllers
         {
             _videoManager = videoManager;
         }
+
         public IActionResult Index()
         {
             var test = _videoManager.GetAllTags().ToList();
@@ -25,6 +28,7 @@ namespace OpenVid.Areas.Tags.Controllers
                     Id = t.Id,
                     Name = t.Name,
                     Type = t.TypeNavigation.Name,
+                    Total = t.VideoTag.Count(),
                     Implications = t.TagImplicationFrom.ToDictionary(k => k.To.Id, v => v.To.Name)
                 })
                 .OrderBy(t => t.Id)

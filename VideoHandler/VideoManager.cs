@@ -1,6 +1,7 @@
 ﻿using CatalogManager.Metadata;
 using Database;
 using Database.Models;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Configuration;
 using Serilog;
 using System;
@@ -43,18 +44,22 @@ namespace VideoHandler
         {
             try
             {
-                var tagIDs = tags.Select(x => x.Id);
+                var tagIDs = tags.Select(x => x.Id).ToList();
                 var removeTags = _repository.TagsWithVideos().Where(x => video.Id == x.VideoId && !tagIDs.Contains(x.TagId)).ToList();
                 //var removeTags = _context.VideoTag.Where(x => video.Id == x.VideoId && !tagIDs.Contains(x.TagId)).ToList();
                 var existingTags = _repository.TagsWithVideos().Where(x => video.Id == x.VideoId && tagIDs.Contains(x.TagId)).Select(x => x.TagId).ToList();
 
                 _repository.RemoveTagsFromVideo(removeTags);
-                
+
                 var desiredTags = tags.Where(t => !existingTags.Contains(t.Id)).Select(t => new VideoTag() { TagId = t.Id, VideoId = video.Id }).ToList();
-                var implications = _repository.GetTagImplications()
-                    .Where(i => desiredTags.Select(t => t.TagId)
-                    .Contains(i.FromId))
-                    .Select(i => new VideoTag() { TagId = i.To.Id, VideoId = video.Id }).ToList();
+                /*var implications = _repository.GetTagImplications()
+                    .Where(i => tagIDs.Contains(i.FromId)
+                        && !existingTags.Contains(i.ToId))
+                    .Select(i => new VideoTag() { TagId = i.To.Id, VideoId = video.Id })
+                    .ToList();*/
+                var implications = GetImplications(tags.ToList())
+                    .Where(i => !existingTags.Contains(i.Id))
+                    .Select(i => new VideoTag() { TagId = i.Id, VideoId = video.Id });
                 var tagsToAdd = desiredTags.UnionBy(implications, t => t.TagId);
 
                 _repository.AddTagsToVideo(tagsToAdd);
@@ -63,9 +68,27 @@ namespace VideoHandler
             }
             catch (Exception ex)
             {
-                _logger.Error(ex.Message, ex);
+                _logger.Error(ex, ex.Message);
                 return null;
             }
+        }
+
+        private List<Tag> GetImplications(List<Tag> tags)
+        {
+            var tagIDs = tags.Select(x => x.Id).ToList();
+
+            var implications = _repository.GetTagImplications()
+                    .Where(i => tagIDs.Contains(i.FromId))
+                    .Select(i => i.To)
+                    .ToList();
+
+            var implicationIDs = implications.Select(x => x.Id).ToList();
+            var updatedList = tags.UnionBy(implications, t => t.Id).ToList();
+
+            if (tagIDs.Count() == updatedList.Count())
+                return updatedList;
+
+            return GetImplications(updatedList);
         }
 
         public List<Ratings> GetRatings()

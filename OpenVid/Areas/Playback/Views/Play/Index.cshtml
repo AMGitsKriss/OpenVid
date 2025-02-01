@@ -5,7 +5,7 @@
 }
 <div class="video-container">
     <div class="youtube-theme">
-        <video id="youtube-theme" data-shaka-player autostart></video>
+        <video id="youtube-theme" data-shaka-player autostart @(Model.Loop ? "loop" : "")></video>
     </div>
 </div>
 

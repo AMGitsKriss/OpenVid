@@ -7,6 +7,7 @@ namespace OpenVid.Areas.Playback.Models.Play
     {
         public int Id { get; set; }
         public string Name { get; set; }
+        public bool Loop { get; set; }
         public Dictionary<string, string> VideoSources { get; set; }
     }
 }
