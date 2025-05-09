@@ -32,17 +32,23 @@ namespace VideoHandler
             _configuration = configuration;
             _repository = repository;
 
-            _threshold = 1000;
+            /*_threshold = 1000;
             _postThumbnails = LoadHistograms();
             _candidates = LoadCandidates();
 
             _checked = LoadChecked();
-            _duplicateGroups = LoadGroups();
+            _duplicateGroups = LoadGroups();*/
         }
 
-        public Dictionary<Guid, DuplicateContainer> Get()
+        public Dictionary<Guid, DuplicateContainer> Get(int? minSecs = null, int? maxSecs = null)
         {
-            return _duplicateGroups.Where(kv => kv.Value.Videos.Count > 1).ToDictionary();
+            var videos = _repository.GetViewableVideos().ToList();
+            return videos
+                .Where(v => (minSecs == null || v.Length.TotalSeconds >= minSecs.Value) && (maxSecs == null || v.Length.TotalSeconds <= maxSecs.Value))
+                .GroupBy(g => g.Length)
+                .Where(g => g.Count() > 1)
+                .ToDictionary(k => Guid.NewGuid(), v => new DuplicateContainer(Guid.NewGuid(), v.ToList()));
+            return _duplicateGroups.Where(kv => kv.Value.Videos.Where(v => !v.IsDeleted).Count() > 1).ToDictionary();
         }
 
         public void Update()

@@ -20,7 +20,7 @@ namespace Database
 
         public IQueryable<Video> GetAllVideos()
         {
-            return _context.Video.Include(v => v.VideoSource);
+            return _context.Video.Include(v => v.VideoSource).Include(v => v.VideoTag).ThenInclude(v => v.Tag);
         }
 
         public IQueryable<Video> GetViewableVideos()

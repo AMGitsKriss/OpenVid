@@ -15,6 +15,8 @@ namespace VideoHandler
         internal IVideoRepository _repo;
         private IEnumerable<IFilter> _filters;
 
+        private List<Video> _allResults = null; // Because this is transient, shared across the request.
+
         public SearchManager(IVideoRepository repo, IEnumerable<IFilter> filters)
         {
             _repo = repo;
@@ -32,6 +34,9 @@ namespace VideoHandler
 
         public List<Video> Query(string searchQuery)
         {
+            if (_allResults != null)
+                return _allResults;
+
             var parameters = MapSearchQueryToParameters(searchQuery);
 
             var order = parameters.FirstOrDefault(x => x.Type == FilterType.Order);
@@ -72,7 +77,7 @@ namespace VideoHandler
             else if (order?.Value == "size")
                 results = results.OrderByDescending(x => x.VideoSource.Sum(s => s.Size)).ToList();
             else if (order?.Value == "size_asc")
-                results = results.OrderBy(x => x.VideoSource.Sum(s => s.Size)).ToList();            
+                results = results.OrderBy(x => x.VideoSource.Sum(s => s.Size)).ToList();
             else if (order?.Value == "quality")
                 results = results.OrderByDescending(x => x.VideoSource.Max(s => s.Width) * x.VideoSource.Max(s => s.Height) * (x.VideoSource.Max(s => s.Size) / 1024) / x.Length.TotalSeconds / 1000000).ToList();
             else if (order?.Value == "quality_desc")
@@ -82,8 +87,16 @@ namespace VideoHandler
             else
                 results = results.OrderByDescending(x => x.Id).ToList();
 
+            _allResults = results;
             return results;
             // ((x.VideoSource.Width * x.VideoSource.Height * (x.VideoSource.Size / 1024)) / x.VideoSource.DurationInSeconds / 1000000
+        }
+
+        public List<Tag> TagQuery(string searchString)
+        {
+            var searchResults = Query(searchString);
+            var tags = searchResults.SelectMany(v => v.VideoTag.Select(vt => vt.Tag)).OrderByDescending(t => t.VideoTag.Count()).DistinctBy(t => t.Id);
+            return tags.ToList();
         }
 
         public List<SearchParameter> MapSearchQueryToParameters(string searchQuery)

@@ -2,12 +2,7 @@
 using System.Linq;
 using OpenVid.Models.Shared;
 using VideoHandler;
-using OpenVid.Areas.VideoManagement.Models.Curation;
 using OpenVid.Extensions;
-using System.Collections.Generic;
-using Database.Models;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
-using static MediaToolkit.Model.Metadata;
 
 namespace OpenVid.Areas.Catalog.Controllers
 {
@@ -22,13 +17,13 @@ namespace OpenVid.Areas.Catalog.Controllers
             _duplicateFinder = duplicateFinder;
             _urlResolver = urlResolver;
         }
-        public IActionResult Index(bool rescan = false)
+        public IActionResult Index(bool rescan = false, int? minSecs = null, int? maxSecs = null)
         {
             //var results = _duplicateFinder.Get();
             if (rescan)
                 _duplicateFinder.Update();
 
-            var results = _duplicateFinder.Get().ToDictionary(kv => kv.Key, kv => kv.Value.Videos.Select(
+            var results = _duplicateFinder.Get(minSecs: minSecs, maxSecs: maxSecs).OrderBy(kv => kv.Value.TotalSeconds).ToDictionary(kv => kv.Key, kv => kv.Value.Videos.Select(
                 v => new VideoViewModel
                 {
                     Id = v.Id,

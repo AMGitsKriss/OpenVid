@@ -37,7 +37,7 @@ namespace VideoHandler.SearchFilters
             }
             else
             {
-                result = _repo.TagsWithVideos().Where(x => x.TagId == tagObject.Id && !x.Video.IsDeleted).Select(x => x.Video).ToList();
+                result = _repo.GetViewableVideos().Where(x => x.VideoTag.Select(t => t.TagId).Contains(tagObject.Id)).ToList();
             }
             return result.ToList();
 

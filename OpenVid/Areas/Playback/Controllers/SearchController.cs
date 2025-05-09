@@ -35,7 +35,7 @@ namespace OpenVid.Areas.Playback.Controllers
             var tags = selectedVideos.SelectMany(x => x.VideoTag);
             var tagIDs = tags.Select(x => x.TagId).ToList();
 
-            var allTags = _videoManager.GetAllTags().Where(x => tagIDs.Contains(x.Id)).GroupBy(t => t.Type).OrderBy(t => (t.Key ?? 0));
+            var allTags = _search.TagQuery(searchString).GroupBy(t => t.Type).OrderBy(t => (t.Key ?? 0));
             viewModel.TagGroups = allTags.Select(t => new TagViewModel()
             {
                 Category = t.FirstOrDefault()?.TypeNavigation?.Name ?? "Tags",
