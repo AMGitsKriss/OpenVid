@@ -1,8 +1,8 @@
-﻿@model OpenVid.Models.Home.HomeViewModel
+﻿@model OpenVid.Areas.Playback.Models.Search.SearchViewModel
 
     <div class="row">
         <div class="col-md-2 border-right">
-            @{await Html.RenderPartialAsync("_TagList", Model.TagGroups);}
+            @{await Html.RenderPartialAsync("_TagList", Model);}
         </div>
         <div class="col-md-10">
             <div class="newPage">

@@ -1,12 +1,26 @@
-﻿@model List<OpenVid.Models.Shared.TagViewModel>
+﻿@model OpenVid.Areas.Playback.Models.Search.SearchViewModel
 
-@foreach (var tagGroup in Model)
+@foreach (var tagGroup in Model.TagGroups)
 {
     <b>@tagGroup.Category</b>
     <ul>
         @foreach (var tag in tagGroup.Tags)
         {
-            <li>@tag.VideoTag.Count() - @Html.ActionLink(@tag.Name, SiteMap.Playback_Search, new { SearchString = $"tag:{tag.Name}" })</li>
+            var tagAlreadySearched = Model.SearchString?.Contains($"tag:{tag.Name}") ?? false;
+
+            var plusText = Html.ActionLink("+", SiteMap.Playback_Search, new { SearchString = $"{Model.SearchString} tag:{tag.Name}" });
+            var minusText = Html.ActionLink("—", SiteMap.Playback_Search, new { SearchString = $"{Model.SearchString} -tag:{tag.Name}" });
+            @if (!tagAlreadySearched)
+            {
+                <li>
+                    @plusText
+                    @(" / ")
+                    @minusText
+                    @tag.VideoTag.Count()
+                    @(" - ")
+                    @Html.ActionLink(@tag.Name, SiteMap.Playback_Search, new { SearchString = $"tag:{tag.Name}" })
+                </li>
+            }
         }
     </ul>
 }

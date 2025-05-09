@@ -68,6 +68,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Models\Home\" />
     <Folder Include="wwwroot\import\01_ingest\" />
     <Folder Include="wwwroot\import\02_queued\" />
     <Folder Include="wwwroot\import\03_transcode_complete\" />
